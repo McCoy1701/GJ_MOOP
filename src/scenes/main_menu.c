@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <Archimedes.h>
 
+#include "defines.h"
 #include "scene_1.h"
 
 static void mm_Logic( float );
@@ -10,6 +11,8 @@ static void play_button( void );
 static void load_button( void );
 static void settings_button( void );
 static void quit_button( void );
+
+static aWidget_t* last_hovered;
 
 void MainMenuInit( void )
 {
@@ -64,6 +67,29 @@ static void mm_Logic( float dt )
   }
 
   a_DoWidget();
+
+  if ( app.delegate.logic != mm_Logic )
+  {
+    return;
+  }
+
+  aContainerWidget_t* container = a_GetContainerFromWidget( "main_menu" );
+
+  aWidget_t* hovered = NULL;
+  for ( int i = 0; i < container->num_components; i++ )
+  {
+    if ( container->components[i].state == WI_HOVERING )
+    {
+      hovered = &container->components[i];
+      break;
+    }
+  }
+
+  if ( hovered != NULL && hovered != last_hovered )
+  {
+    a_AudioPlaySound( &sfx_move, NULL );
+  }
+  last_hovered = hovered;
 }
 
 static void mm_Draw( float dt )
@@ -92,19 +118,24 @@ static void mm_Draw( float dt )
 
 static void play_button( void )
 {
+  a_AudioPlaySound( &sfx_click, NULL );
+  printf( "Play button pressed\n" );
   Scene1Init();
   a_WidgetCacheFree();
 }
 
 static void load_button( void )
 {
+  a_AudioPlaySound( &sfx_click, NULL );
 }
 
 static void settings_button( void )
 {
+  a_AudioPlaySound( &sfx_click, NULL );
 }
 
 static void quit_button( void )
 {
+  a_AudioPlaySound( &sfx_click, NULL );
 }
 

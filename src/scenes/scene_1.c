@@ -22,7 +22,7 @@ static void s1_Logic( float dt )
     MainMenuInit();
   }
 
-  a_DoWidget();
+  //a_DoWidget();
 }
 
 static void s1_Draw( float dt )
@@ -48,6 +48,6 @@ static void s1_Draw( float dt )
   
   a_DrawText( "New Scene", 500, 250, fps_style );
 
-  a_DrawWidgets();
+  //a_DrawWidgets();
 }
 
