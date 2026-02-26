@@ -14,16 +14,8 @@ static void quit_button( void );
 
 static aWidget_t* last_hovered;
 
-void MainMenuInit( void )
+static void mm_BindActions( void )
 {
-  app.delegate.logic = mm_Logic;
-  app.delegate.draw  = mm_Draw;
-  
-  app.options.scale_factor = 1;
-  
-  a_WidgetsInit( "resources/widgets/main_menu.auf" );
-  app.active_widget = a_GetWidget( "main_menu" );
-
   aContainerWidget_t* container = a_GetContainerFromWidget( "main_menu" );
   for ( int i = 0; i < container->num_components; i++ )
   {
@@ -32,22 +24,34 @@ void MainMenuInit( void )
     {
       current->action = play_button;
     }
-    
+
     if ( strncmp( current->name, "load", MAX_NAME_LENGTH ) == 0 )
     {
       current->action = load_button;
     }
-    
+
     if ( strncmp( current->name, "settings", MAX_NAME_LENGTH ) == 0 )
     {
       current->action = settings_button;
     }
-    
+
     if ( strncmp( current->name, "quit", MAX_NAME_LENGTH ) == 0 )
     {
       current->action = quit_button;
     }
   }
+}
+
+void MainMenuInit( void )
+{
+  app.delegate.logic = mm_Logic;
+  app.delegate.draw  = mm_Draw;
+
+  app.options.scale_factor = 1;
+
+  a_WidgetsInit( "resources/widgets/main_menu.auf" );
+  app.active_widget = a_GetWidget( "main_menu" );
+  mm_BindActions();
 }
 
 static void mm_Logic( float dt )
@@ -64,6 +68,7 @@ static void mm_Logic( float dt )
   {
     app.keyboard[A_R] = 0;
     a_WidgetsInit( "resources/widgets/main_menu.auf" );
+    mm_BindActions();
   }
 
   a_DoWidget();
