@@ -61,7 +61,6 @@ static void mm_Logic( float dt )
   {
     app.keyboard[A_R] = 0;
     a_WidgetsInit( "resources/widgets/main_menu.auf" );
-
   }
 
   a_DoWidget();
