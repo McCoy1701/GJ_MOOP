@@ -1,0 +1,24 @@
+.vscode/
+compile_commands.json
+.cache
+core
+core.*
+
+#c
+bin/
+obj/
+tech_demo/bin/
+tech_demo/obj/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+index/
+
+# Wiki
+Archimedes.wiki/
+highscore.dat
