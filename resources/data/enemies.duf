@@ -1,0 +1,86 @@
+# Enemy definitions
+# Each enemy (except rat) has a unique gimmick/mechanic
+
+@rat {
+    name: "Dungeon Rat"
+    glyph: "r"
+    hp: 2
+    damage: 1
+    defense: 0
+    ai: "basic"
+    image_path: ""
+    color: [150, 120, 80, 255]
+    description: "Walks toward you, bites. No tricks."
+}
+
+@skeleton {
+    name: "Skeleton Archer"
+    glyph: "s"
+    hp: 4
+    damage: 2
+    defense: 0
+    ai: "ranged_telegraph"
+    telegraph_turns: 1
+    range: 5
+    image_path: ""
+    color: [220, 220, 200, 255]
+    description: "Telegraphs a line for 1 turn, then shoots. Move out of the line."
+}
+
+@slime {
+    name: "Acid Slime"
+    glyph: "j"
+    hp: 3
+    damage: 1
+    defense: 0
+    ai: "basic"
+    on_death: "poison_pool"
+    pool_duration: 3
+    pool_damage: 1
+    image_path: ""
+    color: [50, 220, 50, 255]
+    description: "Easy to kill but leaves a poison pool on death for 3 turns."
+}
+
+@spitter {
+    name: "Spitter Slime"
+    glyph: "J"
+    hp: 4
+    damage: 1
+    defense: 0
+    ai: "ranged_telegraph"
+    telegraph_turns: 1
+    range: 3
+    on_hit: "poison_pool"
+    pool_duration: 3
+    pool_damage: 1
+    image_path: ""
+    color: [80, 200, 50, 255]
+    description: "Telegraphs the player's tile, then spits a slime puddle onto it."
+}
+
+@knight {
+    name: "Fallen Knight"
+    glyph: "K"
+    hp: 8
+    damage: 3
+    defense: 2
+    ai: "charge"
+    charge_telegraph: 1
+    image_path: ""
+    color: [180, 180, 200, 255]
+    description: "Telegraphs a charge in a straight line. Hits hard if it connects."
+}
+
+@wraith {
+    name: "Wraith"
+    glyph: "W"
+    hp: 6
+    damage: 4
+    defense: 0
+    ai: "phase"
+    phase_cooldown: 2
+    image_path: ""
+    color: [160, 100, 220, 255]
+    description: "Teleports to a random adjacent tile every 2 turns. Unpredictable."
+}

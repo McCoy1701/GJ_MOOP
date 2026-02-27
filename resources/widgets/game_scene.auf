@@ -1,0 +1,85 @@
+[WT_CONTAINER.top_bar]
+(x,y):(8, 8)
+(w,h):(
+    calc(SCREEN.w - 16),
+    50
+)
+boxed:0
+padding:0
+flex:0
+fg:[255,255,255,255]
+bg:[0,0,0,200]
+[WT_CONTAINER.game_viewport]
+(x,y):(
+    8,
+    calc(top_bar.y + top_bar.h + 8)
+)
+(w,h):(
+    calc(SCREEN.w * 0.72),
+    calc(SCREEN.h - 216)
+)
+boxed:0
+padding:0
+fg:[255,255,255,255]
+bg:[0,0,0,255]
+[WT_CONTAINER.console_panel]
+(x,y):(
+    8,
+    calc(SCREEN.h - 142)
+)
+(w,h):(
+    calc(SCREEN.w * 0.72),
+    134
+)
+boxed:0
+padding:0
+fg:[255,255,255,255]
+bg:[0,0,0,200]
+[WT_CONTAINER.inv_panel]
+(x,y):(
+    calc(game_viewport.x + game_viewport.w + 8),
+    calc(top_bar.y + top_bar.h + 8)
+)
+(w,h):(
+    calc(SCREEN.w - game_viewport.x - game_viewport.w - 16),
+    calc(SCREEN.h * 0.55)
+)
+boxed:0
+padding:0
+flex:0
+spacing:0
+fg:[255,255,255,255]
+bg:[0,0,0,200]
+[[WT_OUTPUT.inv_title]]
+label:"Inventory"
+toggle_label:1
+boxed:1
+padding:8
+visible_length:20
+text_offset:5
+fg:[255,255,255,255]
+bg:[50,50,50,200]
+[WT_CONTAINER.key_panel]
+(x,y):(
+    calc(inv_panel.x),
+    calc(inv_panel.y + inv_panel.h + 8)
+)
+(w,h):(
+    calc(inv_panel.w),
+    calc(SCREEN.h - inv_panel.y - inv_panel.h - 16)
+)
+boxed:0
+padding:0
+flex:0
+spacing:0
+fg:[255,255,255,255]
+bg:[0,0,0,200]
+[[WT_OUTPUT.key_title]]
+label:"Equipment"
+toggle_label:1
+boxed:1
+padding:8
+visible_length:20
+text_offset:5
+fg:[255,255,255,255]
+bg:[50,50,50,200]

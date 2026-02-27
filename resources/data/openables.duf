@@ -1,0 +1,83 @@
+# Openables — doors and chests, color-gated by character type
+# required_type determines which character can open them
+# "any" means all characters can open it
+
+# ==============================
+# DOORS — passage between rooms
+# ==============================
+@red_door {
+    name: "Red Door"
+    kind: "door"
+    glyph: "+"
+    required_type: "mercenary"
+    image_path: ""
+    color: [255, 60, 60, 255]
+    description: "Only the Mercenary can force this open."
+}
+@green_door {
+    name: "Green Door"
+    kind: "door"
+    glyph: "+"
+    required_type: "rogue"
+    image_path: ""
+    color: [60, 255, 60, 255]
+    description: "Only the Rogue can pick this lock."
+}
+@blue_door {
+    name: "Blue Door"
+    kind: "door"
+    glyph: "+"
+    required_type: "mage"
+    image_path: ""
+    color: [100, 180, 255, 255]
+    description: "Only the Mage can dispel this seal."
+}
+@white_door {
+    name: "White Door"
+    kind: "door"
+    glyph: "+"
+    required_type: "any"
+    image_path: ""
+    color: [240, 240, 240, 255]
+    description: "Anyone can open this door."
+}
+
+# ==============================
+# CHESTS — contain consumables
+# ==============================
+@red_chest {
+    name: "Red Chest"
+    kind: "chest"
+    glyph: "="
+    required_type: "mercenary"
+    image_path: ""
+    color: [255, 60, 60, 255]
+    description: "A sturdy chest. Only the Mercenary can pry it open."
+}
+@green_chest {
+    name: "Green Chest"
+    kind: "chest"
+    glyph: "="
+    required_type: "rogue"
+    image_path: ""
+    color: [60, 255, 60, 255]
+    description: "A trapped chest. Only the Rogue can disarm and open it."
+}
+@blue_chest {
+    name: "Blue Chest"
+    kind: "chest"
+    glyph: "="
+    required_type: "mage"
+    image_path: ""
+    color: [100, 180, 255, 255]
+    description: "A warded chest. Only the Mage can break the enchantment."
+}
+@white_chest {
+    name: "White Chest"
+    kind: "chest"
+    glyph: "="
+    required_type: "any"
+    image_path: ""
+    color: [240, 240, 240, 255]
+    description: "An unlocked chest. Anyone can open it."
+}

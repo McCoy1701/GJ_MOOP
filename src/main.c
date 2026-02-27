@@ -8,8 +8,7 @@
 #include "defines.h"
 #include "main_menu.h"
 
-aSoundEffect_t sfx_click;
-aSoundEffect_t sfx_move;
+Player_t player;
 
 void aMainloop( void )
 {
@@ -37,9 +36,6 @@ void aMainloop( void )
 int main( void )
 {
   a_Init( SCREEN_WIDTH, SCREEN_HEIGHT, "Archimedes" );
-
-  a_AudioLoadSound( "resources/soundeffects/menu_click.wav", &sfx_click );
-  a_AudioLoadSound( "resources/soundeffects/menu_move.wav", &sfx_move );
 
   MainMenuInit();
 

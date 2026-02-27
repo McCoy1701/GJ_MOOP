@@ -1,0 +1,38 @@
+# Character base stats and definitions
+# Each character type uses a different consumable type for special attacks
+
+@mercenary {
+    name: "Mercenary"
+    glyph: "@"
+    hp: 12
+    base_damage: 2
+    defense: 1
+    consumable_type: "food"
+    image_path: "resources/assets/player_classes/red.png"
+    color: [255, 80, 80, 255]
+    description: "Hits hard, takes hits. Eats food to power up."
+}
+
+@rogue {
+    name: "Rogue"
+    glyph: "@"
+    hp: 8
+    base_damage: 1
+    defense: 0
+    consumable_type: "gadgets"
+    image_path: "resources/assets/player_classes/green.png"
+    color: [80, 255, 80, 255]
+    description: "Fast and deadly at range. Uses arrows and traps."
+}
+
+@mage {
+    name: "Mage"
+    glyph: "@"
+    hp: 6
+    base_damage: 1
+    defense: 0
+    consumable_type: "scrolls"
+    image_path: "resources/assets/player_classes/blue.png"
+    color: [80, 80, 255, 255]
+    description: "Fragile but powerful. Reads scrolls to cast spells."
+}

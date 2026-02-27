@@ -2,8 +2,8 @@
 #define __DEFINES_H__
 
 #include <Archimedes.h>
+#include "player.h"
 
-extern aSoundEffect_t sfx_click;
-extern aSoundEffect_t sfx_move;
+extern Player_t player;
 
 #endif

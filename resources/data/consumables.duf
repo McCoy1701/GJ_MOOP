@@ -1,0 +1,152 @@
+# Consumable items — picked up in the dungeon, used for special attacks
+# type determines which character class can use them
+# bonus_damage = extra damage on top of base attack
+# ==============================
+# FOOD (Mercenary) — modifies your MELEE attack
+# ==============================
+@bread {
+    name: "Stale Bread"
+    type: "food"
+    glyph: "%"
+    bonus_damage: 1
+    effect: "cleave"
+    image_path: ""
+    description: "Your next attack cleaves, hitting all adjacent enemies too."
+    color: [200, 170, 80, 255]
+}
+@chicken_leg {
+    name: "Chicken Leg"
+    type: "food"
+    glyph: "%"
+    bonus_damage: 1
+    effect: "reach"
+    image_path: ""
+    description: "Your next attack hits the target and the tile behind them."
+    color: [210, 170, 100, 255]
+}
+@stew {
+    name: "Hearty Stew"
+    type: "food"
+    glyph: "%"
+    bonus_damage: 1
+    effect: "lifesteal"
+    heal: 2
+    image_path: ""
+    description: "Your next attack restores 2 HP on hit."
+    color: [210, 140, 50, 255]
+}
+@dragon_pepper {
+    name: "Dragon Pepper"
+    type: "food"
+    glyph: "%"
+    bonus_damage: 3
+    effect: "none"
+    image_path: ""
+    description: "Your next attack deals 3 bonus damage. Pure brute force."
+    color: [255, 60, 30, 255]
+}
+# ==============================
+# GADGETS (Rogue) — precision tools, placement matters
+# ==============================
+@flint_arrow {
+    name: "Flint Arrow"
+    type: "gadget"
+    glyph: ")"
+    bonus_damage: 1
+    effect: "shoot"
+    range: 4
+    requires_los: 1
+    image_path: ""
+    description: "Shoot in a straight line up to 4 tiles. Requires line of sight."
+    color: [180, 180, 180, 255]
+}
+@poison_arrow {
+    name: "Poison Arrow"
+    type: "gadget"
+    glyph: ")"
+    bonus_damage: 0
+    effect: "poison"
+    range: 3
+    requires_los: 1
+    ticks: 3
+    tick_damage: 1
+    image_path: ""
+    description: "Poisons target for 1 damage per turn for 3 turns. Patient kills."
+    color: [80, 200, 80, 255]
+}
+@bear_trap {
+    name: "Bear Trap"
+    type: "gadget"
+    glyph: "^"
+    bonus_damage: 2
+    effect: "trap_stun"
+    place_range: 1
+    image_path: ""
+    description: "Place on adjacent tile. Enemy that steps on it takes 2 damage and loses a turn."
+    color: [160, 160, 160, 255]
+}
+@smoke_bomb {
+    name: "Smoke Bomb"
+    type: "gadget"
+    glyph: "*"
+    bonus_damage: 0
+    effect: "smoke"
+    radius: 2
+    duration: 2
+    image_path: ""
+    description: "Drop at your feet. Enemies in 2-tile radius can't target you for 2 turns."
+    color: [120, 120, 120, 255]
+}
+# ==============================
+# SCROLLS (Mage) — rule-breaking, area effects
+# ==============================
+@scroll_spark {
+    name: "Scroll of Spark"
+    type: "scroll"
+    glyph: "?"
+    bonus_damage: 1
+    effect: "magic_bolt"
+    range: 4
+    requires_los: 0
+    image_path: ""
+    description: "Zap any enemy within 4 tiles. Ignores walls and line of sight."
+    color: [255, 255, 150, 255]
+}
+@scroll_frost {
+    name: "Scroll of Frost"
+    type: "scroll"
+    glyph: "?"
+    bonus_damage: 1
+    effect: "freeze"
+    range: 3
+    requires_los: 0
+    duration: 2
+    image_path: ""
+    description: "Deals 1 bonus damage and freezes target for 2 turns."
+    color: [100, 180, 255, 255]
+}
+@scroll_fireball {
+    name: "Scroll of Fireball"
+    type: "scroll"
+    glyph: "?"
+    bonus_damage: 2
+    effect: "aoe"
+    range: 3
+    requires_los: 1
+    aoe_radius: 1
+    image_path: ""
+    description: "Fireball hits target and all enemies within 1 tile of it."
+    color: [255, 100, 30, 255]
+}
+@scroll_teleport {
+    name: "Scroll of Teleport"
+    type: "scroll"
+    glyph: "?"
+    bonus_damage: 0
+    effect: "swap"
+    range: 99
+    requires_los: 0
+    image_path: ""
+    description: "Swap positions with any enemy in the room. Instant repositioning."
+    color: [180, 80, 255, 255]
+}

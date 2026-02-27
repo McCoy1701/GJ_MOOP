@@ -35,9 +35,14 @@ EMSCRIP_C_FLAGS = $(C_FLAGS) $(EFLAGS)
 # ====================================================================
 
 SCENES_SRCS = main_menu.c \
-							scene_1.c
+							game_scene.c \
+							class_select.c \
+							settings.c
 
 GJ_MOOP_SRCS = mechanics.c \
+							items.c \
+							draw_utils.c \
+							console.c \
 
 NATIVE_LIB_OBJS = $(patsubst %.c, $(OBJ_DIR_NATIVE)/%.o, $(GJ_MOOP_SRCS))
 SCENES_LIB_OBJS = $(patsubst %.c, $(OBJ_DIR_SCENES)/%.o, $(SCENES_SRCS))
