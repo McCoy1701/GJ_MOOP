@@ -4,6 +4,7 @@
 #include <Daedalus.h>
 
 #include "items.h"
+#include "player.h"
 
 ClassInfo_t      g_classes[3];
 const char*      g_class_keys[3] = { "mercenary", "rogue", "mage" };
@@ -11,6 +12,8 @@ ConsumableInfo_t g_consumables[MAX_CONSUMABLES];
 int              g_num_consumables = 0;
 OpenableInfo_t   g_openables[MAX_DOORS];
 int              g_num_openables = 0;
+EquipmentInfo_t  g_equipment[MAX_EQUIPMENT];
+int              g_num_equipment = 0;
 
 static aColor_t ParseDUFColor( dDUFValue_t* color_node )
 {
@@ -159,17 +162,69 @@ static void LoadOpenableData( void )
   d_DUFFree( root );
 }
 
+static void LoadEquipmentData( void )
+{
+  dDUFValue_t* root = NULL;
+  dDUFError_t* err = d_DUFParseFile( "resources/data/equipment_starters.duf", &root );
+
+  if ( err != NULL )
+  {
+    printf( "DUF parse error at %d:%d - %s\n",
+            err->line, err->column, d_StringPeek( err->message ) );
+    d_DUFErrorFree( err );
+    return;
+  }
+
+  g_num_equipment = 0;
+  for ( dDUFValue_t* entry = root->child; entry != NULL && g_num_equipment < MAX_EQUIPMENT; entry = entry->next )
+  {
+    EquipmentInfo_t* e = &g_equipment[g_num_equipment];
+    memset( e, 0, sizeof( EquipmentInfo_t ) );
+
+    dDUFValue_t* name    = d_DUFGetObjectItem( entry, "name" );
+    dDUFValue_t* kind    = d_DUFGetObjectItem( entry, "kind" );
+    dDUFValue_t* slot    = d_DUFGetObjectItem( entry, "slot" );
+    dDUFValue_t* glyph   = d_DUFGetObjectItem( entry, "glyph" );
+    dDUFValue_t* color   = d_DUFGetObjectItem( entry, "color" );
+    dDUFValue_t* dmg     = d_DUFGetObjectItem( entry, "damage" );
+    dDUFValue_t* def     = d_DUFGetObjectItem( entry, "defense" );
+    dDUFValue_t* effect  = d_DUFGetObjectItem( entry, "effect" );
+    dDUFValue_t* effval  = d_DUFGetObjectItem( entry, "effect_value" );
+    dDUFValue_t* cls     = d_DUFGetObjectItem( entry, "class" );
+    dDUFValue_t* desc    = d_DUFGetObjectItem( entry, "description" );
+
+    if ( name )   strncpy( e->name, name->value_string, MAX_NAME_LENGTH - 1 );
+    if ( kind )   strncpy( e->kind, kind->value_string, MAX_NAME_LENGTH - 1 );
+    if ( slot )   strncpy( e->slot, slot->value_string, MAX_NAME_LENGTH - 1 );
+    if ( glyph )  strncpy( e->glyph, glyph->value_string, 7 );
+    if ( effect ) strncpy( e->effect, effect->value_string, MAX_NAME_LENGTH - 1 );
+    if ( cls )    strncpy( e->class_name, cls->value_string, MAX_NAME_LENGTH - 1 );
+    if ( desc )   strncpy( e->description, desc->value_string, 255 );
+    if ( dmg )    e->damage = (int)dmg->value_int;
+    if ( def )    e->defense = (int)def->value_int;
+    if ( effval ) e->effect_value = (int)effval->value_int;
+    e->color = ParseDUFColor( color );
+
+    g_num_equipment++;
+  }
+
+  d_DUFFree( root );
+}
+
 void ItemsLoadAll( void )
 {
   memset( g_classes, 0, sizeof( g_classes ) );
   memset( g_consumables, 0, sizeof( g_consumables ) );
   memset( g_openables, 0, sizeof( g_openables ) );
+  memset( g_equipment, 0, sizeof( g_equipment ) );
   g_num_consumables = 0;
   g_num_openables = 0;
+  g_num_equipment = 0;
 
   LoadCharacterData();
   LoadConsumableData();
   LoadOpenableData();
+  LoadEquipmentData();
 }
 
 int ItemsBuildFiltered( int class_idx, FilteredItem_t* out, int max_out )
@@ -204,4 +259,51 @@ int ItemsBuildFiltered( int class_idx, FilteredItem_t* out, int max_out )
   }
 
   return count;
+}
+
+extern Player_t player;
+
+int EquipSlotForKind( const char* kind )
+{
+  if ( strcmp( kind, "weapon" ) == 0 ) return EQUIP_WEAPON;
+  if ( strcmp( kind, "armor" ) == 0 )  return EQUIP_ARMOR;
+  if ( strcmp( kind, "trinket" ) == 0 )
+  {
+    if ( player.equipment[EQUIP_TRINKET1] == -1 ) return EQUIP_TRINKET1;
+    return EQUIP_TRINKET2;
+  }
+  return -1;
+}
+
+void EquipStarterGear( const char* class_key )
+{
+  for ( int i = 0; i < g_num_equipment; i++ )
+  {
+    if ( strcmp( g_equipment[i].class_name, class_key ) != 0 ) continue;
+
+    int slot = EquipSlotForKind( g_equipment[i].slot );
+    if ( slot >= 0 )
+      player.equipment[slot] = i;
+  }
+}
+
+int InventoryAdd( int item_type, int index )
+{
+  for ( int i = 0; i < MAX_INVENTORY; i++ )
+  {
+    if ( player.inventory[i].type == INV_EMPTY )
+    {
+      player.inventory[i].type = item_type;
+      player.inventory[i].index = index;
+      return i;
+    }
+  }
+  return -1;
+}
+
+void InventoryRemove( int slot )
+{
+  if ( slot < 0 || slot >= MAX_INVENTORY ) return;
+  player.inventory[slot].type = INV_EMPTY;
+  player.inventory[slot].index = 0;
 }

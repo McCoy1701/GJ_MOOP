@@ -9,6 +9,7 @@
 #include "main_menu.h"
 
 Player_t player;
+GameSettings_t settings = { .gfx_mode = GFX_IMAGE };
 
 void aMainloop( void )
 {

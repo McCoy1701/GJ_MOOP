@@ -42,7 +42,7 @@ bg:[0,0,0,200]
 )
 (w,h):(
     calc(SCREEN.w - game_viewport.x - game_viewport.w - 16),
-    calc(SCREEN.h * 0.55)
+    calc(SCREEN.h * 0.55 + 24)
 )
 boxed:0
 padding:0
@@ -58,7 +58,7 @@ padding:8
 visible_length:20
 text_offset:5
 fg:[255,255,255,255]
-bg:[50,50,50,200]
+bg:[50,50,50,255]
 [WT_CONTAINER.key_panel]
 (x,y):(
     calc(inv_panel.x),
@@ -82,4 +82,4 @@ padding:8
 visible_length:20
 text_offset:5
 fg:[255,255,255,255]
-bg:[50,50,50,200]
+bg:[50,50,50,255]

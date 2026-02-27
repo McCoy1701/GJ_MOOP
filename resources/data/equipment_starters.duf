@@ -1,0 +1,124 @@
+# Equipment — starter gear only, one of each per class
+
+# ==============================
+# STARTER WEAPONS
+# ==============================
+@rusty_sword {
+    name: "Rusty Sword"
+    kind: "weapon"
+    slot: "weapon"
+    glyph: "/"
+    damage: 1
+    defense: 0
+    effect: "none"
+    class: "mercenary"
+    description: "A dull blade. Better than fists."
+    color: [180, 80, 80, 255]
+}
+@tiny_dagger {
+    name: "Tiny Dagger"
+    kind: "weapon"
+    slot: "weapon"
+    glyph: "/"
+    damage: 1
+    defense: 0
+    effect: "none"
+    class: "rogue"
+    description: "Comically small. Still sharp enough."
+    color: [80, 180, 80, 255]
+}
+@gnarled_staff {
+    name: "Gnarled Staff"
+    kind: "weapon"
+    slot: "weapon"
+    glyph: "/"
+    damage: 1
+    defense: 0
+    effect: "none"
+    class: "mage"
+    description: "Channeling focus. Barely held together."
+    color: [80, 80, 180, 255]
+}
+
+# ==============================
+# STARTER ARMOR
+# ==============================
+@leather_vest {
+    name: "Leather Vest"
+    kind: "armor"
+    slot: "armor"
+    glyph: "["
+    damage: 0
+    defense: 1
+    effect: "none"
+    class: "mercenary"
+    description: "Tough hide. Stops a scratch."
+    color: [180, 80, 80, 255]
+}
+@cloak {
+    name: "Cloak"
+    kind: "armor"
+    slot: "armor"
+    glyph: "["
+    damage: 0
+    defense: 1
+    effect: "none"
+    class: "rogue"
+    description: "Light and quiet."
+    color: [80, 180, 80, 255]
+}
+@robes {
+    name: "Tattered Robes"
+    kind: "armor"
+    slot: "armor"
+    glyph: "["
+    damage: 0
+    defense: 1
+    effect: "none"
+    class: "mage"
+    description: "Thin cloth. Barely counts as protection."
+    color: [80, 80, 180, 255]
+}
+
+# ==============================
+# STARTER TRINKETS (unique passive per class)
+# ==============================
+@iron_ring {
+    name: "Iron Ring"
+    kind: "trinket"
+    slot: "trinket"
+    glyph: "o"
+    damage: 0
+    defense: 0
+    effect: "thorns"
+    effect_value: 1
+    class: "mercenary"
+    description: "Enemies that hit you take 1 damage back."
+    color: [180, 80, 80, 255]
+}
+@shadow_charm {
+    name: "Shadow Charm"
+    kind: "trinket"
+    slot: "trinket"
+    glyph: "o"
+    damage: 0
+    defense: 0
+    effect: "first_strike"
+    effect_value: 1
+    class: "rogue"
+    description: "Your first attack each room deals +1 bonus damage."
+    color: [80, 180, 80, 255]
+}
+@crystal_pendant {
+    name: "Crystal Pendant"
+    kind: "trinket"
+    slot: "trinket"
+    glyph: "o"
+    damage: 0
+    defense: 0
+    effect: "scroll_echo"
+    effect_value: 4
+    class: "mage"
+    description: "Every 4th scroll used is not consumed."
+    color: [80, 80, 180, 255]
+}

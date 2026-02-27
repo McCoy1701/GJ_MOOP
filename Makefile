@@ -26,9 +26,12 @@ CINC = -I$(INC_DIR)/
 LDLIBS = -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -lm
 EFLAGS = -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s SDL2_IMAGE_FORMATS='["png"]' -s USE_SDL_MIXER=2 -s USE_SDL_TTF=2 -sALLOW_MEMORY_GROWTH
 
+ARCHIMEDES_INC = ../Archimedes/include
+DAEDALUS_INC   = ../Daedalus/include
+
 C_FLAGS = -std=c99 -Wall -Wextra $(CINC)
 NATIVE_C_FLAGS = $(C_FLAGS) -ggdb -lArchimedes -lDaedalus
-EMSCRIP_C_FLAGS = $(C_FLAGS) $(EFLAGS)
+EMSCRIP_C_FLAGS = $(C_FLAGS) -I$(ARCHIMEDES_INC) -I$(DAEDALUS_INC) $(EFLAGS)
 
 # ====================================================================
 # GAME JAM MOOP LIBRARY OBJECTS (Core C Files)
@@ -43,26 +46,28 @@ GJ_MOOP_SRCS = mechanics.c \
 							items.c \
 							draw_utils.c \
 							console.c \
+							game_events.c \
 
 NATIVE_LIB_OBJS = $(patsubst %.c, $(OBJ_DIR_NATIVE)/%.o, $(GJ_MOOP_SRCS))
 SCENES_LIB_OBJS = $(patsubst %.c, $(OBJ_DIR_SCENES)/%.o, $(SCENES_SRCS))
 EMCC_LIB_OBJS = $(patsubst %.c, $(OBJ_DIR_EM)/%.o, $(GJ_MOOP_SRCS))
+EMCC_SCENES_OBJS = $(patsubst %.c, $(OBJ_DIR_EM)/%.o, $(SCENES_SRCS))
 
 MAIN_OBJ = $(OBJ_DIR_NATIVE)/main.o
 EM_MAIN_OBJ = $(OBJ_DIR_EM)/main.o
 
 NATIVE_EXE_OBJS = $(SCENES_LIB_OBJS) $(NATIVE_LIB_OBJS) $(MAIN_OBJ)
-EMCC_EXE_OBJS = $(EMCC_LIB_OBJS) $(EM_MAIN_OBJ)
+EMCC_EXE_OBJS = $(EMCC_SCENES_OBJS) $(EMCC_LIB_OBJS) $(EM_MAIN_OBJ)
 
 # ====================================================================
 # PHONY TARGETS
 # ====================================================================
 
-.PHONY: all EM clean bear bearclean
+.PHONY: all em clean bear bearclean
 all: $(BIN_DIR)/native
 
 # Emscripten Targets
-EM: $(INDEX_DIR)/index
+em: $(INDEX_DIR)/index
 
 # ====================================================================
 # DIRECTORY & UTILITY RULES
@@ -100,7 +105,10 @@ $(OBJ_DIR_NATIVE)/main.o: $(SRC_DIR)/main.c | $(OBJ_DIR_NATIVE)
 # COMPILATION RULES (Emscripten - ECC)
 # ====================================================================
 
-$(OBJ_DIR_EM)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR_EM)
+$(OBJ_DIR_EM)/%.o: $(GAME_DIR)/%.c | $(OBJ_DIR_EM)
+	$(ECC) -c $< -o $@ $(EMSCRIP_C_FLAGS)
+
+$(OBJ_DIR_EM)/%.o: $(SCENES_DIR)/%.c | $(OBJ_DIR_EM)
 	$(ECC) -c $< -o $@ $(EMSCRIP_C_FLAGS)
 
 $(OBJ_DIR_EM)/main.o: $(SRC_DIR)/main.c | $(OBJ_DIR_EM)
@@ -114,6 +122,6 @@ $(OBJ_DIR_EM)/main.o: $(SRC_DIR)/main.c | $(OBJ_DIR_EM)
 $(BIN_DIR)/native: $(NATIVE_EXE_OBJS) | $(BIN_DIR)
 	$(CC) $^ -o $@ $(NATIVE_C_FLAGS) $(LDLIBS)
 
-$(INDEX_DIR)/index: $(EMCC_EXE_OBJS) $(LIB_DIR)/libArchimedes.a | $(INDEX_DIR)
+$(INDEX_DIR)/index: $(EMCC_EXE_OBJS) $(LIB_DIR)/libArchimedes.a $(LIB_DIR)/libDaedalus.a | $(INDEX_DIR)
 	$(ECC) $^ -s WASM=1 $(EFLAGS) --shell-file htmlTemplate/template.html --preload-file resources/ -o $@.html
 

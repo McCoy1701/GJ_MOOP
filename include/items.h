@@ -45,6 +45,23 @@ typedef struct
   aImage_t* image;
 } OpenableInfo_t;
 
+#define MAX_EQUIPMENT     16
+
+typedef struct
+{
+  char name[MAX_NAME_LENGTH];
+  char kind[MAX_NAME_LENGTH];       /* "weapon" / "armor" / "trinket" */
+  char slot[MAX_NAME_LENGTH];
+  char glyph[8];
+  aColor_t color;
+  int damage;
+  int defense;
+  char effect[MAX_NAME_LENGTH];
+  int effect_value;
+  char class_name[MAX_NAME_LENGTH]; /* which class gets this as starter */
+  char description[256];
+} EquipmentInfo_t;
+
 typedef struct { int type; int index; } FilteredItem_t;
 
 extern ClassInfo_t      g_classes[3];
@@ -53,8 +70,15 @@ extern ConsumableInfo_t g_consumables[MAX_CONSUMABLES];
 extern int              g_num_consumables;
 extern OpenableInfo_t   g_openables[MAX_DOORS];
 extern int              g_num_openables;
+extern EquipmentInfo_t  g_equipment[MAX_EQUIPMENT];
+extern int              g_num_equipment;
 
 void ItemsLoadAll( void );
 int  ItemsBuildFiltered( int class_idx, FilteredItem_t* out, int max_out );
+
+int  EquipSlotForKind( const char* kind );
+void EquipStarterGear( const char* class_key );
+int  InventoryAdd( int item_type, int index );
+void InventoryRemove( int slot );
 
 #endif

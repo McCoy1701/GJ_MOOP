@@ -1,22 +1,61 @@
 #include <stdio.h>
+#include <string.h>
 #include <Archimedes.h>
 
 #include "defines.h"
+#include "settings.h"
 #include "main_menu.h"
 
 static void st_Logic( float );
 static void st_Draw( float );
 
-static void back_button( void );
+static int st_leaving = 0;
 
-static void st_BindActions( void )
+static void st_ApplySettings( void )
 {
-  aContainerWidget_t* container = a_GetContainerFromWidget( "settings_panel" );
-  for ( int i = 0; i < container->num_components; i++ )
+  aContainerWidget_t* c = a_GetContainerFromWidget( "settings_panel" );
+
+  for ( int i = 0; i < c->num_components; i++ )
   {
-    aWidget_t* current = &container->components[i];
-    if ( strncmp( current->name, "back", MAX_NAME_LENGTH ) == 0 )
-      current->action = back_button;
+    aWidget_t* w = &c->components[i];
+
+    if ( strncmp( w->name, "gfx_mode", MAX_NAME_LENGTH ) == 0 )
+    {
+      aSelectWidget_t* sel = (aSelectWidget_t*)w->data;
+      settings.gfx_mode = sel->value;
+    }
+  }
+}
+
+static void st_Leave( void )
+{
+  st_ApplySettings();
+  st_leaving = 1;
+  a_WidgetCacheFree();
+  MainMenuInit();
+}
+
+static void back_button( void )
+{
+  st_Leave();
+}
+
+static void st_SyncWidgets( void )
+{
+  aContainerWidget_t* c = a_GetContainerFromWidget( "settings_panel" );
+
+  for ( int i = 0; i < c->num_components; i++ )
+  {
+    aWidget_t* w = &c->components[i];
+
+    if ( strncmp( w->name, "back", MAX_NAME_LENGTH ) == 0 )
+      w->action = back_button;
+
+    if ( strncmp( w->name, "gfx_mode", MAX_NAME_LENGTH ) == 0 )
+    {
+      aSelectWidget_t* sel = (aSelectWidget_t*)w->data;
+      sel->value = settings.gfx_mode;
+    }
   }
 }
 
@@ -27,9 +66,10 @@ void SettingsInit( void )
 
   app.options.scale_factor = 1;
 
+  st_leaving = 0;
   a_WidgetsInit( "resources/widgets/settings.auf" );
   app.active_widget = a_GetWidget( "settings_panel" );
-  st_BindActions();
+  st_SyncWidgets();
 }
 
 static void st_Logic( float dt )
@@ -39,8 +79,7 @@ static void st_Logic( float dt )
   if ( app.keyboard[SDL_SCANCODE_ESCAPE] == 1 )
   {
     app.keyboard[SDL_SCANCODE_ESCAPE] = 0;
-    a_WidgetCacheFree();
-    MainMenuInit();
+    st_Leave();
     return;
   }
 
@@ -48,19 +87,25 @@ static void st_Logic( float dt )
   {
     app.keyboard[A_R] = 0;
     a_WidgetsInit( "resources/widgets/settings.auf" );
-    st_BindActions();
+    st_SyncWidgets();
   }
 
   a_DoWidget();
+  if ( !st_leaving )
+    st_ApplySettings();
 }
+
+#define HIGHLIGHT_COLOR  (aColor_t){ 218, 175, 32, 255 }
 
 static void st_Draw( float dt )
 {
   a_DrawWidgets();
-}
 
-static void back_button( void )
-{
-  a_WidgetCacheFree();
-  MainMenuInit();
+  /* Draw highlight around focused widget */
+  aContainerWidget_t* c = a_GetContainerFromWidget( "settings_panel" );
+  if ( c->focus_index >= 0 && c->focus_index < c->num_components )
+  {
+    aWidget_t* focused = &c->components[c->focus_index];
+    a_DrawRect( focused->rect, HIGHLIGHT_COLOR );
+  }
 }

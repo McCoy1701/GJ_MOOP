@@ -1,4 +1,5 @@
 #include <Archimedes.h>
+#include "defines.h"
 #include "draw_utils.h"
 
 #define GLYPH_SCALE 2.0f
@@ -6,6 +7,9 @@
 void DrawImageOrGlyph( aImage_t* img, const char* glyph, aColor_t color,
                        float x, float y, float size )
 {
+  if ( settings.gfx_mode == GFX_ASCII )
+    img = NULL;
+
   if ( img )
   {
     float orig_w = img->rect.w;
@@ -15,13 +19,10 @@ void DrawImageOrGlyph( aImage_t* img, const char* glyph, aColor_t color,
   }
   else if ( glyph && glyph[0] != '\0' )
   {
-    float pad_x = size * 0.1f;
-    float pad_y = size * 0.05f;
-    a_DrawFilledRect( (aRectf_t){ x - pad_x, y - pad_y, size + pad_x * 2, size + pad_y * 2 }, (aColor_t){ 30, 30, 30, 200 } );
     aTextStyle_t style = a_default_text_style;
     style.fg = color;
     style.bg = (aColor_t){ 0, 0, 0, 0 };
-    style.scale = GLYPH_SCALE;
+    style.scale = size / 16.0f;
     style.align = TEXT_ALIGN_CENTER;
     a_DrawText( glyph, (int)( x + size / 2.0f ), (int)y, style );
   }

@@ -39,8 +39,8 @@ static void mage_button( void );
 #define MODAL_LINE_LG     28.0f
 
 /* Embark button */
-#define EMBARK_W          360.0f
-#define EMBARK_H          72.0f
+#define EMBARK_W          288.0f
+#define EMBARK_H          58.0f
 
 /* Back button */
 #define BACK_W            120.0f
@@ -77,10 +77,16 @@ static void cs_SelectClass( int index )
   strncpy( player.consumable_type, g_classes[index].consumable_type, MAX_NAME_LENGTH - 1 );
   strncpy( player.description, g_classes[index].description, 255 );
   player.image = g_classes[index].image;
-  player.inventory_count = 0;
+  player.world_x = WORLD_WIDTH / 2.0f;
+  player.world_y = WORLD_HEIGHT / 2.0f;
+  memset( player.inventory, 0, sizeof( player.inventory ) );
+  player.inv_cursor = 0;
   player.selected_consumable = 0;
+  player.equip_cursor = 0;
+  player.inv_focused = 1;
   for ( int i = 0; i < EQUIP_SLOTS; i++ )
     player.equipment[i] = -1;
+  EquipStarterGear( g_class_keys[index] );
 
   a_WidgetCacheFree();
   GameSceneInit();
@@ -389,24 +395,13 @@ static void cs_Draw( float dt )
     {
       aContainerWidget_t* img_panel = a_GetContainerFromWidget( "image_panel" );
       aRectf_t ir = img_panel->rect;
-      float char_size = ir.w < ir.h ? ir.w : ir.h;
-
-      if ( g_classes[last_class_idx].image )
-      {
-        float orig_w = g_classes[last_class_idx].image->rect.w;
-        float orig_h = g_classes[last_class_idx].image->rect.h;
-        float scaled_w = orig_w * IMAGE_SCALE;
-        float scaled_h = orig_h * IMAGE_SCALE;
-        float img_x = ir.x + ( ir.w - scaled_w ) / 2.0f;
-        float img_y = ir.y + ( ir.h - scaled_h ) / 2.0f;
-        a_BlitRect( g_classes[last_class_idx].image, NULL, &(aRectf_t){ img_x, img_y, orig_w, orig_h }, IMAGE_SCALE );
-      }
-      else
-      {
-        float gx = ir.x + ( ir.w - char_size ) / 2.0f;
-        float gy = ir.y + ( ir.h - char_size ) / 2.0f;
-        DrawImageOrGlyph( NULL, g_classes[last_class_idx].glyph, g_classes[last_class_idx].color, gx, gy, char_size );
-      }
+      float portrait_size = ir.h * 1.2f;
+      float gx = ir.x + ( ir.w - portrait_size ) / 2.0f;
+      float gy = ir.y + ( ir.h - portrait_size ) / 2.0f;
+      DrawImageOrGlyph( g_classes[last_class_idx].image,
+                        g_classes[last_class_idx].glyph,
+                        g_classes[last_class_idx].color,
+                        gx, gy, portrait_size );
     }
 
     /* Draw consumables for the hovered class (left panel) */
