@@ -5,10 +5,9 @@ toggle_label:0
 boxed:1
 hidden:0
 padding:12
-flex:2
+flex:1
 spacing:20
 texture:1
-(w,h):(200,200)
 background:"resources/assets/UI/container/background.png"
 fg:[255,255,0,255]
 bg:[129,151,150,255]

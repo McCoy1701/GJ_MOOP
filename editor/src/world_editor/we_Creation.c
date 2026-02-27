@@ -68,17 +68,5 @@ static void we_CreationDraw( float dt )
 
 void wec_GenerateWorld( void )
 {
-  aContainerWidget_t* container =
-    ( aContainerWidget_t* )app.active_widget->data;
-
-  for ( int i = 0; i < container->num_components; i++ )
-  {
-    aWidget_t* current = &container->components[i];
-
-    if ( strcmp( current->name, "realm_size" ) == 0 )
-    {
-      aSelectWidget_t* realm_size = ( aSelectWidget_t* )current->data;
-    }
-  }
 }
 
