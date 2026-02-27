@@ -9,8 +9,18 @@
 #include <stdio.h>
 #include <Archimedes.h>
 
+#include "ed_defines.h"
+#include "ed_structs.h"
+
+#include "entity_editor.h"
+#include "items_editor.h"
+#include "world_editor.h"
+
 static void ed_Logic( float );
 static void ed_Draw( float );
+
+GlyphArray_t* game_glyphs = NULL;
+aColor_t master_colors[MAX_COLOR_GROUPS][48] = {0};
 
 void EditorInit( void )
 {
@@ -41,27 +51,17 @@ static void ed_Logic( float dt )
 
     if ( strcmp( current->name, "world" ) == 0 )
     {
-      current->action = e_InitWorldEditor;
+      current->action = e_WorldEditorInit;
     }
 
     if ( strcmp( current->name, "item" ) == 0 )
     {
-      current->action = e_InitItemEditor;
+      current->action = e_ItemEditorInit;
     }
 
     if ( strcmp( current->name, "entity" ) == 0 )
     {
-      current->action = e_InitEntityEditor;
-    }
-
-    if ( strcmp( current->name, "colors" ) == 0 )
-    {
-      current->action = e_InitColorEditor;
-    }
-
-    if ( strcmp( current->name, "ui" ) == 0 )
-    {
-      current->action = e_InitUIEditor;
+      current->action = e_EntityEditorInit;
     }
   }
 

@@ -13,9 +13,13 @@ INC_DIR    = include
 BIN_DIR    = bin
 LIB_DIR    = lib
 INDEX_DIR  = index
+EE_DIR     = src/entity_editor
+WE_DIR     = src/world_editor
 
 # Object Directories (Separated for different build types)
 OBJ_DIR_NATIVE = obj/native
+OBJ_DIR_EE     = obj/native/entity_editor
+OBJ_DIR_WE     = obj/native/world_editor
 
 #Flags
 CINC = -I$(INC_DIR)/
@@ -26,16 +30,30 @@ NATIVE_C_FLAGS = $(C_FLAGS) -ggdb -lArchimedes -lDaedalus
 
 
 # ====================================================================
-# GAME JAM MOOP LIBRARY OBJECTS (Core C Files)
+# EDITOR LIBRARY OBJECTS (Core C Files)
 # ====================================================================
 
 EDITOR_SRCS = editor.c \
+							entity_editor.c\
+							items_editor.c\
+							utils.c\
+							world_editor.c
+
+ENTITY_EDITOR_SRCS = ee_Creation.c\
+										 ee_Edit.c
+
+WORLD_EDITOR_SRCS = we_Creation.c\
+										we_Edit.c\
+										we_Load.c\
+										we_Save.c
 
 NATIVE_LIB_OBJS = $(patsubst %.c, $(OBJ_DIR_NATIVE)/%.o, $(EDITOR_SRCS))
+ENTITY_EDITOR_LIB_OBJS = $(patsubst %.c, $(OBJ_DIR_EE)/%.o, $(ENTITY_EDITOR_SRCS))
+WORLD_EDITOR_LIB_OBJS = $(patsubst %.c, $(OBJ_DIR_WE)/%.o, $(WORLD_EDITOR_SRCS))
 
 MAIN_OBJ = $(OBJ_DIR_NATIVE)/main.o
 
-NATIVE_EXE_OBJS = $(NATIVE_LIB_OBJS) $(MAIN_OBJ)
+NATIVE_EXE_OBJS = $(ENTITY_EDITOR_LIB_OBJS) $(WORLD_EDITOR_LIB_OBJS) $(NATIVE_LIB_OBJS) $(MAIN_OBJ)
 
 
 # ====================================================================
@@ -51,7 +69,7 @@ all: $(BIN_DIR)/native
 # ====================================================================
 
 # Ensure the directories exist before attempting to write files to them
-$(BIN_DIR) $(OBJ_DIR_NATIVE) $(OBJ_DIR_EM) $(INDEX_DIR) $(OBJ_DIR_SCENES):
+$(BIN_DIR) $(OBJ_DIR_NATIVE) $(OBJ_DIR_EE) $(OBJ_DIR_WE) $(OBJ_DIR_EM) $(INDEX_DIR) $(OBJ_DIR_SCENES):
 	mkdir -p $@
 
 clean:
@@ -70,6 +88,12 @@ bearclean:
 # ====================================================================
 
 $(OBJ_DIR_NATIVE)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR_NATIVE)
+	$(CC) -c $< -o $@ $(NATIVE_C_FLAGS)
+
+$(OBJ_DIR_EE)/%.o: $(EE_DIR)/%.c | $(OBJ_DIR_EE)
+	$(CC) -c $< -o $@ $(NATIVE_C_FLAGS)
+
+$(OBJ_DIR_WE)/%.o: $(WE_DIR)/%.c | $(OBJ_DIR_WE)
 	$(CC) -c $< -o $@ $(NATIVE_C_FLAGS)
 
 $(OBJ_DIR_NATIVE)/main.o: $(SRC_DIR)/main.c | $(OBJ_DIR_NATIVE)
