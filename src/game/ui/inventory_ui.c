@@ -91,6 +91,7 @@ int InventoryUIFocused( void )
 
 void InventoryUIUnfocus( void )
 {
+  ui_focus = 0;
   show_item_hover = 0;
 }
 
@@ -126,6 +127,16 @@ int InventoryUILogic( int mouse_moved )
       eq_action_cursor++;
       if ( eq_action_cursor >= EQ_ACTION_COUNT ) eq_action_cursor = 0;
       a_AudioPlaySound( sfx_move, NULL );
+    }
+
+    /* Scroll wheel — navigate action menu */
+    if ( app.mouse.wheel != 0 )
+    {
+      eq_action_cursor += ( app.mouse.wheel < 0 ) ? 1 : -1;
+      if ( eq_action_cursor < 0 ) eq_action_cursor = EQ_ACTION_COUNT - 1;
+      if ( eq_action_cursor >= EQ_ACTION_COUNT ) eq_action_cursor = 0;
+      a_AudioPlaySound( sfx_move, NULL );
+      app.mouse.wheel = 0;
     }
 
     /* Mouse hover on action menu rows */
@@ -250,6 +261,16 @@ int InventoryUILogic( int mouse_moved )
       inv_action_cursor++;
       if ( inv_action_cursor >= EQ_ACTION_COUNT ) inv_action_cursor = 0;
       a_AudioPlaySound( sfx_move, NULL );
+    }
+
+    /* Scroll wheel — navigate action menu */
+    if ( app.mouse.wheel != 0 )
+    {
+      inv_action_cursor += ( app.mouse.wheel < 0 ) ? 1 : -1;
+      if ( inv_action_cursor < 0 ) inv_action_cursor = EQ_ACTION_COUNT - 1;
+      if ( inv_action_cursor >= EQ_ACTION_COUNT ) inv_action_cursor = 0;
+      a_AudioPlaySound( sfx_move, NULL );
+      app.mouse.wheel = 0;
     }
 
     /* Mouse hover on action menu rows */

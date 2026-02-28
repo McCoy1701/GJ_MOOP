@@ -19,7 +19,8 @@ UI_DIR     = src/game/ui
 UTILS_DIR  = src/game/utils
 PLAYER_DIR = src/game/player
 SYS_DIR    = src/game/systems
-WORLD_DIR  = src/game/world
+WORLD_DIR    = src/game/world
+ENEMIES_DIR  = src/game/entities/enemies
 
 # Object Directories (Separated for different build types)
 OBJ_DIR_NATIVE = obj/native
@@ -28,7 +29,8 @@ OBJ_DIR_UI     = obj/native/ui
 OBJ_DIR_UTILS  = obj/native/utils
 OBJ_DIR_PLAYER = obj/native/player
 OBJ_DIR_SYS    = obj/native/systems
-OBJ_DIR_WORLD  = obj/native/world
+OBJ_DIR_WORLD    = obj/native/world
+OBJ_DIR_ENEMIES  = obj/native/enemies
 OBJ_DIR_EM     = obj/em
 
 #Flags
@@ -54,18 +56,29 @@ SCENES_SRCS = main_menu.c \
 
 GJ_MOOP_SRCS = console.c\
 
-UI_SRCS     = inventory_ui.c
+UI_SRCS     = inventory_ui.c \
+						tile_actions.c \
+						look_mode.c \
+						hud.c
 UTILS_SRCS  = draw_utils.c \
 							context_menu.c
-PLAYER_SRCS = items.c
+PLAYER_SRCS = items.c \
+						movement.c \
+						rendering.c
 
 SYS_SRCS = tween.c \
 					 game_events.c \
 					 transitions.c \
-					 sound_manager.c
+					 sound_manager.c \
+					 combat.c
 
 WORLD_SRCS = world.c \
 						 game_viewport.c\
+
+ENEMIES_SRCS = enemies.c \
+							 enemy_utils.c \
+							 enemy_rat.c \
+							 rendering.c
 
 NATIVE_LIB_OBJS = $(patsubst %.c, $(OBJ_DIR_NATIVE)/%.o, $(GJ_MOOP_SRCS))
 SCENES_LIB_OBJS = $(patsubst %.c, $(OBJ_DIR_SCENES)/%.o, $(SCENES_SRCS))
@@ -73,7 +86,8 @@ UI_LIB_OBJS     = $(patsubst %.c, $(OBJ_DIR_UI)/%.o, $(UI_SRCS))
 UTILS_LIB_OBJS  = $(patsubst %.c, $(OBJ_DIR_UTILS)/%.o, $(UTILS_SRCS))
 PLAYER_LIB_OBJS = $(patsubst %.c, $(OBJ_DIR_PLAYER)/%.o, $(PLAYER_SRCS))
 SYS_LIB_OBJS    = $(patsubst %.c, $(OBJ_DIR_SYS)/%.o, $(SYS_SRCS))
-WORLD_LIB_OBJS  = $(patsubst %.c, $(OBJ_DIR_WORLD)/%.o, $(WORLD_SRCS))
+WORLD_LIB_OBJS    = $(patsubst %.c, $(OBJ_DIR_WORLD)/%.o, $(WORLD_SRCS))
+ENEMIES_LIB_OBJS  = $(patsubst %.c, $(OBJ_DIR_ENEMIES)/%.o, $(ENEMIES_SRCS))
 EMCC_LIB_OBJS = $(patsubst %.c, $(OBJ_DIR_EM)/%.o, $(GJ_MOOP_SRCS))
 EMCC_SCENES_OBJS = $(patsubst %.c, $(OBJ_DIR_EM)/%.o, $(SCENES_SRCS))
 EMCC_UI_OBJS     = $(patsubst %.c, $(OBJ_DIR_EM)/%.o, $(UI_SRCS))
@@ -84,7 +98,7 @@ EMCC_SYS_OBJS   = $(patsubst %.c, $(OBJ_DIR_EM)/%.o, $(SYS_SRCS))
 MAIN_OBJ = $(OBJ_DIR_NATIVE)/main.o
 EM_MAIN_OBJ = $(OBJ_DIR_EM)/main.o
 
-NATIVE_EXE_OBJS = $(SCENES_LIB_OBJS) $(NATIVE_LIB_OBJS) $(UI_LIB_OBJS) $(UTILS_LIB_OBJS) $(PLAYER_LIB_OBJS) $(SYS_LIB_OBJS) $(WORLD_LIB_OBJS) $(MAIN_OBJ)
+NATIVE_EXE_OBJS = $(SCENES_LIB_OBJS) $(NATIVE_LIB_OBJS) $(UI_LIB_OBJS) $(UTILS_LIB_OBJS) $(PLAYER_LIB_OBJS) $(SYS_LIB_OBJS) $(WORLD_LIB_OBJS) $(ENEMIES_LIB_OBJS) $(MAIN_OBJ)
 EMCC_EXE_OBJS = $(EMCC_SCENES_OBJS) $(EMCC_LIB_OBJS) $(EMCC_UI_OBJS) $(EMCC_UTILS_OBJS) $(EMCC_PLAYER_OBJS) $(EMCC_SYS_OBJS) $(EM_MAIN_OBJ)
 
 # ====================================================================
@@ -102,7 +116,7 @@ em: $(INDEX_DIR)/index
 # ====================================================================
 
 # Ensure the directories exist before attempting to write files to them
-$(BIN_DIR) $(OBJ_DIR_NATIVE) $(OBJ_DIR_EM) $(INDEX_DIR) $(OBJ_DIR_SCENES) $(OBJ_DIR_UI) $(OBJ_DIR_UTILS) $(OBJ_DIR_PLAYER) $(OBJ_DIR_SYS) $(OBJ_DIR_WORLD):
+$(BIN_DIR) $(OBJ_DIR_NATIVE) $(OBJ_DIR_EM) $(INDEX_DIR) $(OBJ_DIR_SCENES) $(OBJ_DIR_UI) $(OBJ_DIR_UTILS) $(OBJ_DIR_PLAYER) $(OBJ_DIR_SYS) $(OBJ_DIR_WORLD) $(OBJ_DIR_ENEMIES):
 	mkdir -p $@
 
 clean:
@@ -140,6 +154,9 @@ $(OBJ_DIR_SYS)/%.o: $(SYS_DIR)/%.c | $(OBJ_DIR_SYS)
 $(OBJ_DIR_WORLD)/%.o: $(WORLD_DIR)/%.c | $(OBJ_DIR_WORLD)
 	$(CC) -c $< -o $@ $(NATIVE_C_FLAGS)
 
+$(OBJ_DIR_ENEMIES)/%.o: $(ENEMIES_DIR)/%.c | $(OBJ_DIR_ENEMIES)
+	$(CC) -c $< -o $@ $(NATIVE_C_FLAGS)
+
 $(OBJ_DIR_NATIVE)/main.o: $(SRC_DIR)/main.c | $(OBJ_DIR_NATIVE)
 	$(CC) -c $< -o $@ $(NATIVE_C_FLAGS)
 
@@ -164,6 +181,9 @@ $(OBJ_DIR_EM)/%.o: $(SYS_DIR)/%.c | $(OBJ_DIR_EM)
 	$(ECC) -c $< -o $@ $(EMSCRIP_C_FLAGS)
 
 $(OBJ_DIR_EM)/%.o: $(WORLD_DIR)/%.c | $(OBJ_DIR_EM)
+	$(ECC) -c $< -o $@ $(EMSCRIP_C_FLAGS)
+
+$(OBJ_DIR_EM)/%.o: $(ENEMIES_DIR)/%.c | $(OBJ_DIR_EM)
 	$(ECC) -c $< -o $@ $(EMSCRIP_C_FLAGS)
 
 $(OBJ_DIR_EM)/%.o: $(SCENES_DIR)/%.c | $(OBJ_DIR_EM)

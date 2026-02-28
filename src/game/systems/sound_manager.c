@@ -137,8 +137,16 @@ void SoundManagerPlayGame( void )
   amb_start_cycle( NULL );
 }
 
+static aTimer_t* footstep_timer = NULL;
+
 void SoundManagerPlayFootstep( void )
 {
+  if ( !footstep_timer ) footstep_timer = a_TimerCreate();
+
+  if ( a_TimerStarted( footstep_timer ) && a_TimerGetTicks( footstep_timer ) < 500 )
+    return;
+
+  a_TimerStart( footstep_timer );
   aAudioOptions_t opts = a_AudioDefaultOptions();
   opts.volume = (int)( AUDIO_MAX_VOLUME * 0.7f );
   a_AudioPlaySound( &footsteps[ rand() % FOOTSTEP_COUNT ], &opts );

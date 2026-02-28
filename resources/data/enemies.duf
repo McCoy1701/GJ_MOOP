@@ -8,7 +8,7 @@
     damage: 1
     defense: 0
     ai: "basic"
-    image_path: ""
+    image_path: "resources/assets/enemies/rat.png"
     color: [150, 120, 80, 255]
     description: "Walks toward you, bites. No tricks."
 }
