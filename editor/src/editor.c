@@ -24,11 +24,20 @@ static void ed_Draw( float );
 GlyphArray_t* game_glyphs = NULL;
 aColor_t master_colors[MAX_COLOR_GROUPS][48] = {0};
 
+aTileset_t* test_set;
+aWorld_t* world;
+
 void EditorInit( void )
 {
   app.delegate.logic = ed_Logic;
   app.delegate.draw  = ed_Draw;
   
+  test_set = a_TilesetCreate( "resources/assets/tilemap.png", 32, 32 );
+
+  world = a_2DWorldCreate( 10, 10, 32, 32 );
+
+  app.g_viewport = (aRectf_t){0};
+
   a_WidgetsInit( "resources/widgets/editor/editor.auf" );
 
   app.active_widget = a_GetWidget( "tab_bar" );
@@ -95,6 +104,9 @@ static void ed_Draw( float dt )
   };
 
   a_DrawText( fps_text, 600, 100, fps_style );
+  //a_Blit(test_set[0].img, 250, 250);
+
+  a_2DWorldDraw( 100, 100, world, test_set );
 
   a_DrawWidgets();
 }
