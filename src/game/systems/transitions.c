@@ -7,8 +7,9 @@
 
 #define OUTRO_NONE  0
 #define OUTRO_FADE  1
-#define OUTRO_JUMP  2   /* bounce up + horizontal squish turn */
+#define OUTRO_JUMP  2   /* bounce up + flip */
 #define OUTRO_DROP  3   /* shrink + move to game viewport spot */
+#define OUTRO_LAND  4   /* landing bounce at target */
 
 static int outro_phase = OUTRO_NONE;
 static int outro_done_flag = 0;
@@ -30,6 +31,19 @@ static void outro_finish( void* data )
   outro_done_flag = 1;
 }
 
+static void outro_start_land( void* data )
+{
+  (void)data;
+  outro_phase = OUTRO_LAND;
+
+  outro_char_oy = -12.0f;
+
+  /* Landing bounce at target position */
+  TweenFloatWithCallback( &outro_tweens, &outro_char_oy, 0.0f,
+                           0.5f, TWEEN_EASE_OUT_BOUNCE,
+                           outro_finish, NULL );
+}
+
 static void outro_start_drop( void* data )
 {
   (void)data;
@@ -37,10 +51,10 @@ static void outro_start_drop( void* data )
 
   outro_drop_t = 0.0f;
 
-  /* Move + shrink into the game viewport spot */
+  /* Move + shrink into the game viewport spot, chain to landing bounce */
   TweenFloatWithCallback( &outro_tweens, &outro_drop_t, 1.0f,
                            0.7f, TWEEN_EASE_IN_OUT_CUBIC,
-                           outro_finish, NULL );
+                           outro_start_land, NULL );
 }
 
 static void outro_start_jump( void* data )

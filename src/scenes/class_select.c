@@ -40,10 +40,10 @@ static void mage_button( void );
 #define MODAL_LINE_MD     26.0f
 #define MODAL_LINE_LG     28.0f
 
-/* Drop target (outro transition) */
-#define DROP_SIZE         28.0f
-#define DROP_X_PCT        0.35f   /* fraction of container width */
-#define DROP_Y_PCT        0.90f   /* fraction of container height */
+/* Drop target (outro transition) — fractions of SCREEN_WIDTH / SCREEN_HEIGHT */
+#define DROP_SIZE         40.0f
+#define DROP_X_PCT        0.37f   /* roughly game viewport center X */
+#define DROP_Y_PCT        0.44f   /* roughly game viewport center Y */
 
 /* Embark button */
 #define EMBARK_W          288.0f
@@ -442,25 +442,31 @@ static void cs_Draw( float dt )
 
       if ( in_outro )
       {
-        /* Interpolate position + size during drop phase */
-        aContainerWidget_t* csc = a_GetContainerFromWidget( "class_select" );
-        float target_x = csc->rect.x + csc->rect.w * DROP_X_PCT - DROP_SIZE / 2.0f;
-        float target_y = csc->rect.y + csc->rect.h * DROP_Y_PCT - DROP_SIZE / 2.0f;
+        /* Drop target = fraction of screen (matches game viewport center) */
+        float target_x = SCREEN_WIDTH  * DROP_X_PCT - DROP_SIZE / 2.0f;
+        float target_y = SCREEN_HEIGHT * DROP_Y_PCT - DROP_SIZE / 2.0f;
 
         float drop_t = TransitionGetOutroDropT();
         float cur_size = portrait_size + ( DROP_SIZE - portrait_size ) * drop_t;
         float cur_x = gx + ( target_x - gx ) * drop_t;
         float cur_y = gy + ( target_y - gy ) * drop_t
-                      + TransitionGetOutroCharOY() * ( 1.0f - drop_t );
+                      + TransitionGetOutroCharOY();
 
-        /* DEBUG: red dot at drop target — remove after tuning */
-        a_DrawFilledRect( (aRectf_t){ target_x, target_y, DROP_SIZE, DROP_SIZE },
-                          (aColor_t){ 255, 0, 0, 255 } );
-
-        DrawImageOrGlyph( g_classes[last_class_idx].image,
-                          g_classes[last_class_idx].glyph,
-                          g_classes[last_class_idx].color,
-                          cur_x, cur_y, cur_size );
+        /* Use flipped blit when sprite has turned */
+        aImage_t* img = g_classes[last_class_idx].image;
+        if ( TransitionGetOutroFlipped() && img && settings.gfx_mode == GFX_IMAGE )
+        {
+          float scale = cur_size / img->rect.w;
+          a_BlitRectFlipped( img, NULL,
+                             &(aRectf_t){ cur_x, cur_y, img->rect.w, img->rect.h },
+                             scale, 'x' );
+        }
+        else
+        {
+          DrawImageOrGlyph( img, g_classes[last_class_idx].glyph,
+                            g_classes[last_class_idx].color,
+                            cur_x, cur_y, cur_size );
+        }
       }
       else
       {

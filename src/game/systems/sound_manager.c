@@ -63,9 +63,9 @@ static void amb_fade_out( void* user_data )
 
 void SoundManagerInit( void )
 {
-  a_AudioLoadMusic( "resources/music/Soliloquy.wav", &music_menu );
-  a_AudioLoadMusic( "resources/music/Desolate.wav", &music_game );
-  a_AudioLoadSound( "resources/ambience/Forgoten_tombs.wav", &ambience_dungeon );
+  a_AudioLoadMusic( "resources/music/Soliloquy.ogg", &music_menu );
+  a_AudioLoadMusic( "resources/music/Desolate.ogg", &music_game );
+  a_AudioLoadSound( "resources/ambience/Forgoten_tombs.ogg", &ambience_dungeon );
 }
 
 void SoundManagerUpdate( float dt )
@@ -77,9 +77,9 @@ void SoundManagerUpdate( float dt )
 void SoundManagerCrossfadeToGame( void )
 {
   if ( game_music_active ) return;
-  /* Just fade in the new track — Mix_FadeInMusic replaces the current one */
+  d_LogInfo( "[sound] crossfade to game music" );
   a_AudioSetMusicVolume( 80 );
-  a_AudioPlayMusic( &music_game, -1, MUSIC_FADE_MS );
+  a_AudioPlayMusic( &music_game, -1, 500 );
   game_music_active = 1;
 }
 
