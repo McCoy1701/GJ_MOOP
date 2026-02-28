@@ -263,6 +263,45 @@ int ItemsBuildFiltered( int class_idx, FilteredItem_t* out, int max_out )
 
 extern Player_t player;
 
+void PlayerInitStats( void )
+{
+  const char* k1 = "damage";
+  const char* k2 = "defense";
+  const void* keys[]   = { &k1, &k2 };
+  int zero = 0;
+  const void* values[] = { &zero, &zero };
+
+  player.stats = d_InitStaticTable(
+    sizeof( const char* ), sizeof( int ),
+    d_HashString, d_CompareString,
+    4, keys, values, 2
+  );
+}
+
+void PlayerRecalcStats( void )
+{
+  int total_dmg = player.class_damage;
+  int total_def = player.class_defense;
+
+  for ( int i = 0; i < EQUIP_SLOTS; i++ )
+  {
+    if ( player.equipment[i] < 0 ) continue;
+    total_dmg += g_equipment[ player.equipment[i] ].damage;
+    total_def += g_equipment[ player.equipment[i] ].defense;
+  }
+
+  const char* k_dmg = "damage";
+  const char* k_def = "defense";
+  d_StaticTableSet( player.stats, &k_dmg, &total_dmg );
+  d_StaticTableSet( player.stats, &k_def, &total_def );
+}
+
+int PlayerStat( const char* key )
+{
+  int* v = (int*)d_StaticTableGet( player.stats, &key );
+  return v ? *v : 0;
+}
+
 int EquipSlotForKind( const char* kind )
 {
   if ( strcmp( kind, "weapon" ) == 0 ) return EQUIP_WEAPON;

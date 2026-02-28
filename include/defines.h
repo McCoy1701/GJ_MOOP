@@ -7,8 +7,8 @@
 #define GFX_IMAGE  0
 #define GFX_ASCII  1
 
-#define WORLD_WIDTH   2000.0f
-#define WORLD_HEIGHT  2000.0f
+#define WORLD_WIDTH   512.0f
+#define WORLD_HEIGHT  512.0f
 
 typedef struct
 {

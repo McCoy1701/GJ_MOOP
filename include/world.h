@@ -3,6 +3,8 @@
 
 #include <Archimedes.h>
 
+#define TILE_EMPTY ((uint32_t)-1)
+
 typedef struct
 {
   uint32_t tile;
@@ -20,7 +22,7 @@ typedef struct
   Tile_t* foreground;
   int tile_count;
   int tile_w, tile_h;
-  int rows, cols;
+  int width, height;
 } World_t;
 
 World_t* WorldCreate( int width, int height, int tile_w, int tile_h );

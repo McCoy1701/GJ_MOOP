@@ -6,6 +6,7 @@
 #include "player.h"
 #include "items.h"
 #include "draw_utils.h"
+#include "context_menu.h"
 #include "game_events.h"
 #include "inventory_ui.h"
 
@@ -41,9 +42,6 @@
 
 /* Equipment action menu */
 #define EQ_ACTION_COUNT   2
-#define EQ_ACTION_W     100.0f
-#define EQ_ACTION_ROW_H  24.0f
-#define EQ_ACTION_PAD     4.0f
 
 static const char* eq_slot_labels[EQUIP_SLOTS] = { "WPN", "ARM", "TRK", "TRK" };
 static const char* eq_action_labels[EQ_ACTION_COUNT] = { "Unequip", "Look" };
@@ -54,7 +52,8 @@ static int eq_action_cursor = 0;
 static int inv_action_open   = 0;
 static int inv_action_cursor = 0;
 
-static int ui_focus = 0;  /* 0 = game viewport, 1 = inventory panels */
+static int ui_focus = 0;        /* 0 = game viewport, 1 = inventory panels */
+static int show_item_hover = 1; /* 0 = suppress cursor highlight + tooltip */
 
 static aSoundEffect_t* sfx_move;
 static aSoundEffect_t* sfx_click;
@@ -88,6 +87,11 @@ int InventoryUICloseMenus( void )
 int InventoryUIFocused( void )
 {
   return ui_focus;
+}
+
+void InventoryUIUnfocus( void )
+{
+  show_item_hover = 0;
 }
 
 void InventoryUISetIntroOffset( float x_offset, float alpha )
@@ -133,13 +137,13 @@ int InventoryUILogic( int mouse_moved )
       float modal_x = kp->rect.x - EQ_MODAL_W - 8;
       float modal_y = kp->rect.y + EQ_TITLE_H + player.equip_cursor * ( EQ_ROW_H + EQ_PAD );
       if ( modal_y + EQ_MODAL_H > kp->rect.y + kp->rect.h ) modal_y = kp->rect.y + kp->rect.h - EQ_MODAL_H;
-      float ax = modal_x - EQ_ACTION_W - 4;
+      float ax = modal_x - CTX_MENU_W - 4;
       if ( ax < 0 ) ax = kp->rect.x + kp->rect.w + 4;
       float ay = modal_y;
       for ( int i = 0; i < EQ_ACTION_COUNT; i++ )
       {
-        float ry = ay + i * ( EQ_ACTION_ROW_H + EQ_ACTION_PAD );
-        if ( PointInRect( mx, my, ax, ry, EQ_ACTION_W, EQ_ACTION_ROW_H ) )
+        float ry = ay + i * ( CTX_MENU_ROW_H + CTX_MENU_PAD );
+        if ( PointInRect( mx, my, ax, ry, CTX_MENU_W, CTX_MENU_ROW_H ) )
         {
           if ( i != eq_action_cursor )
             a_AudioPlaySound( sfx_move, NULL );
@@ -168,12 +172,12 @@ int InventoryUILogic( int mouse_moved )
       float modal_x = kp->rect.x - EQ_MODAL_W - 8;
       float modal_y = kp->rect.y + EQ_TITLE_H + player.equip_cursor * ( EQ_ROW_H + EQ_PAD );
       if ( modal_y + EQ_MODAL_H > kp->rect.y + kp->rect.h ) modal_y = kp->rect.y + kp->rect.h - EQ_MODAL_H;
-      float action_h = EQ_ACTION_COUNT * ( EQ_ACTION_ROW_H + EQ_ACTION_PAD );
-      float ax = modal_x - EQ_ACTION_W - 4;
+      float action_h = EQ_ACTION_COUNT * ( CTX_MENU_ROW_H + CTX_MENU_PAD );
+      float ax = modal_x - CTX_MENU_W - 4;
       if ( ax < 0 ) ax = kp->rect.x + kp->rect.w + 4;
       float ay = modal_y;
 
-      if ( PointInRect( mx, my, ax, ay, EQ_ACTION_W, action_h ) )
+      if ( PointInRect( mx, my, ax, ay, CTX_MENU_W, action_h ) )
       {
         exec = 1;
       }
@@ -199,8 +203,8 @@ int InventoryUILogic( int mouse_moved )
         int inv_slot = InventoryAdd( INV_EQUIPMENT, eq_idx );
         if ( inv_slot >= 0 )
         {
-          GameEvent( EVT_UNEQUIP, eq_idx );
           player.equipment[player.equip_cursor] = -1;
+          GameEvent( EVT_UNEQUIP, eq_idx );
         }
       }
       else if ( eq_action_cursor == 1 ) /* Look */
@@ -271,14 +275,14 @@ int InventoryUILogic( int mouse_moved )
         modal_y = ip->rect.y + ip->rect.h - EQ_MODAL_H;
 
       float modal_x = ip->rect.x - EQ_MODAL_W - 8;
-      float amx = modal_x - EQ_ACTION_W - 4;
+      float amx = modal_x - CTX_MENU_W - 4;
       if ( amx < 0 ) amx = ip->rect.x + ip->rect.w + 4;
       float amy = modal_y;
 
       for ( int i = 0; i < EQ_ACTION_COUNT; i++ )
       {
-        float ry = amy + i * ( EQ_ACTION_ROW_H + EQ_ACTION_PAD );
-        if ( PointInRect( mx, my, amx, ry, EQ_ACTION_W, EQ_ACTION_ROW_H ) )
+        float ry = amy + i * ( CTX_MENU_ROW_H + CTX_MENU_PAD );
+        if ( PointInRect( mx, my, amx, ry, CTX_MENU_W, CTX_MENU_ROW_H ) )
         {
           if ( i != inv_action_cursor )
             a_AudioPlaySound( sfx_move, NULL );
@@ -320,12 +324,12 @@ int InventoryUILogic( int mouse_moved )
         modal_y = ip->rect.y + ip->rect.h - EQ_MODAL_H;
 
       float modal_x = ip->rect.x - EQ_MODAL_W - 8;
-      float amx = modal_x - EQ_ACTION_W - 4;
+      float amx = modal_x - CTX_MENU_W - 4;
       if ( amx < 0 ) amx = ip->rect.x + ip->rect.w + 4;
       float amy = modal_y;
-      float action_h = EQ_ACTION_COUNT * ( EQ_ACTION_ROW_H + EQ_ACTION_PAD );
+      float action_h = EQ_ACTION_COUNT * ( CTX_MENU_ROW_H + CTX_MENU_PAD );
 
-      if ( PointInRect( mx, my, amx, amy, EQ_ACTION_W, action_h ) )
+      if ( PointInRect( mx, my, amx, amy, CTX_MENU_W, action_h ) )
       {
         exec = 1;
       }
@@ -359,17 +363,18 @@ int InventoryUILogic( int mouse_moved )
             if ( player.equipment[eq_slot] >= 0 )
             {
               int old = player.equipment[eq_slot];
-              GameEventSwap( slot->index, old );
-              player.equipment[eq_slot] = slot->index;
+              int new_idx = slot->index;
+              player.equipment[eq_slot] = new_idx;
               slot->type = INV_EQUIPMENT;
               slot->index = old;
+              GameEventSwap( new_idx, old );
             }
             else
             {
-              GameEvent( EVT_EQUIP, slot->index );
               player.equipment[eq_slot] = slot->index;
               slot->type = INV_EMPTY;
               slot->index = 0;
+              GameEvent( EVT_EQUIP, player.equipment[eq_slot] );
             }
           }
         }
@@ -410,7 +415,7 @@ int InventoryUILogic( int mouse_moved )
   {
     app.keyboard[SDL_SCANCODE_TAB] = 0;
     ui_focus = !ui_focus;
-    if ( ui_focus == 1 ) player.inv_focused = 1;
+    if ( ui_focus == 1 ) { player.inv_focused = 1; show_item_hover = 1; }
     a_AudioPlaySound( sfx_move, NULL );
   }
 
@@ -549,6 +554,7 @@ int InventoryUILogic( int mouse_moved )
           player.equip_cursor = i;
           player.inv_focused = 0;
           ui_focus = 1;
+          show_item_hover = 1;
         }
 
         /* Click opens action menu */
@@ -598,6 +604,7 @@ int InventoryUILogic( int mouse_moved )
             player.inv_cursor = idx;
             player.inv_focused = 1;
             ui_focus = 1;
+            show_item_hover = 1;
           }
 
           /* Click opens action menu */
@@ -685,7 +692,7 @@ static void DrawInventoryGrid( void )
       }
 
       /* Cursor highlight */
-      if ( ui_focus == 1 && player.inv_focused && idx == player.inv_cursor )
+      if ( ui_focus == 1 && show_item_hover && player.inv_focused && idx == player.inv_cursor )
         a_DrawRect( cr, inv_action_open ? GOLD : white );
     }
   }
@@ -733,7 +740,7 @@ static void DrawEquipmentRows( void )
     }
 
     /* Cursor highlight */
-    if ( ui_focus == 1 && !player.inv_focused && i == player.equip_cursor )
+    if ( ui_focus == 1 && show_item_hover && !player.inv_focused && i == player.equip_cursor )
       a_DrawRect( row_rect, eq_action_open ? GOLD : white );
   }
 }
@@ -790,7 +797,7 @@ void InventoryUIDraw( void )
   DrawEquipmentRows();
 
   /* Equipment tooltip */
-  if ( ui_focus == 1 && !player.inv_focused &&
+  if ( ui_focus == 1 && show_item_hover && !player.inv_focused &&
        player.equip_cursor >= 0 && player.equip_cursor < EQUIP_SLOTS &&
        player.equipment[player.equip_cursor] >= 0 &&
        player.equipment[player.equip_cursor] < g_num_equipment )
@@ -851,44 +858,20 @@ void InventoryUIDraw( void )
     /* Equipment action menu */
     if ( eq_action_open )
     {
-      float ah = EQ_ACTION_COUNT * ( EQ_ACTION_ROW_H + EQ_ACTION_PAD ) - EQ_ACTION_PAD;
-      float ax = mx - EQ_ACTION_W - 4;
+      float ax = mx - CTX_MENU_W - 4;
       float ay = my;
 
       if ( ax < 0 )
         ax = kp->rect.x + kp->rect.w + 4;
 
-      a_DrawFilledRect( (aRectf_t){ ax, ay, EQ_ACTION_W, ah }, (aColor_t){ 20, 20, 20, 255 } );
-      a_DrawRect( (aRectf_t){ ax, ay, EQ_ACTION_W, ah }, CELL_FG );
-
-      aTextStyle_t ats = a_default_text_style;
-      ats.bg = (aColor_t){ 0, 0, 0, 0 };
-      ats.scale = EQ_MODAL_TEXT_S;
-      ats.align = TEXT_ALIGN_LEFT;
-
-      for ( int i = 0; i < EQ_ACTION_COUNT; i++ )
-      {
-        float ry = ay + i * ( EQ_ACTION_ROW_H + EQ_ACTION_PAD );
-        aRectf_t row = { ax + 2, ry, EQ_ACTION_W - 4, EQ_ACTION_ROW_H };
-
-        if ( i == eq_action_cursor )
-        {
-          a_DrawFilledRect( row, (aColor_t){ 40, 40, 40, 255 } );
-          a_DrawRect( row, GOLD );
-          ats.fg = GOLD;
-        }
-        else
-        {
-          ats.fg = white;
-        }
-
-        a_DrawText( eq_action_labels[i], (int)( row.x + 8 ), (int)( ry + 5 ), ats );
-      }
+      DrawContextMenu( ax, ay,
+                       eq_action_labels, EQ_ACTION_COUNT,
+                       eq_action_cursor );
     }
   }
 
   /* Inventory tooltip */
-  if ( ui_focus == 1 && player.inv_focused &&
+  if ( ui_focus == 1 && show_item_hover && player.inv_focused &&
        player.inv_cursor >= 0 && player.inv_cursor < MAX_INVENTORY &&
        player.inventory[player.inv_cursor].type != INV_EMPTY )
   {
@@ -1011,41 +994,17 @@ void InventoryUIDraw( void )
     /* Inventory action menu */
     if ( inv_action_open && item_name )
     {
-      float ah = EQ_ACTION_COUNT * ( EQ_ACTION_ROW_H + EQ_ACTION_PAD ) - EQ_ACTION_PAD;
-      float ax = mx - EQ_ACTION_W - 4;
+      float ax = mx - CTX_MENU_W - 4;
       if ( ax < 0 ) ax = ip->rect.x + ip->rect.w + 4;
       float ay = my;
-
-      a_DrawFilledRect( (aRectf_t){ ax, ay, EQ_ACTION_W, ah }, (aColor_t){ 20, 20, 20, 255 } );
-      a_DrawRect( (aRectf_t){ ax, ay, EQ_ACTION_W, ah }, CELL_FG );
-
-      aTextStyle_t ats = a_default_text_style;
-      ats.bg = (aColor_t){ 0, 0, 0, 0 };
-      ats.scale = EQ_MODAL_TEXT_S;
-      ats.align = TEXT_ALIGN_LEFT;
 
       const char* inv_labels[EQ_ACTION_COUNT];
       inv_labels[0] = ( slot->type == INV_EQUIPMENT ) ? "Equip" : "Use";
       inv_labels[1] = "Look";
 
-      for ( int i = 0; i < EQ_ACTION_COUNT; i++ )
-      {
-        float ry = ay + i * ( EQ_ACTION_ROW_H + EQ_ACTION_PAD );
-        aRectf_t row = { ax + 2, ry, EQ_ACTION_W - 4, EQ_ACTION_ROW_H };
-
-        if ( i == inv_action_cursor )
-        {
-          a_DrawFilledRect( row, (aColor_t){ 40, 40, 40, 255 } );
-          a_DrawRect( row, GOLD );
-          ats.fg = GOLD;
-        }
-        else
-        {
-          ats.fg = white;
-        }
-
-        a_DrawText( inv_labels[i], (int)( row.x + 8 ), (int)( ry + 5 ), ats );
-      }
+      DrawContextMenu( ax, ay,
+                       inv_labels, EQ_ACTION_COUNT,
+                       inv_action_cursor );
     }
   }
 }

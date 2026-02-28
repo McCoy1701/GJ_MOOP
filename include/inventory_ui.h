@@ -8,6 +8,7 @@ int  InventoryUICloseMenus( void );
 int  InventoryUILogic( int mouse_moved );
 void InventoryUIDraw( void );
 int  InventoryUIFocused( void );
+void InventoryUIUnfocus( void );
 void InventoryUISetIntroOffset( float x_offset, float alpha );
 
 #endif

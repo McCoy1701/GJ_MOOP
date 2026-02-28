@@ -11,6 +11,7 @@ int   TransitionOutroDone( void );        /* 1 once outro finishes (read-once) *
 
 /* Class select reads these during outro */
 float TransitionGetOutroAlpha( void );    /* UI fade: 1 → 0 */
+float TransitionGetOutroVPAlpha( void );  /* game viewport box: 0 → 1 */
 float TransitionGetOutroCharOY( void );   /* character bounce offset */
 float TransitionGetOutroDropT( void );    /* drop interpolation: 0 → 1 */
 int   TransitionGetOutroFlipped( void );  /* 1 after the "turn" */
@@ -23,6 +24,7 @@ void  TransitionIntroSkip( void );
 int   TransitionIntroActive( void );
 
 /* Game scene reads these during intro */
+float TransitionGetViewportAlpha( void );
 float TransitionGetViewportH( void );
 float TransitionGetTopBarOY( void );
 float TransitionGetRightOX( void );

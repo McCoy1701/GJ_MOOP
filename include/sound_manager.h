@@ -10,6 +10,7 @@ void SoundManagerUpdate( float dt );
 void SoundManagerCrossfadeToGame( void );
 void SoundManagerPlayMenu( void );
 void SoundManagerPlayGame( void );
+void SoundManagerPlayFootstep( void );
 void SoundManagerStop( void );
 
 #endif

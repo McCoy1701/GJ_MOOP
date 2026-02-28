@@ -8,6 +8,11 @@
 static aMusic_t music_menu;
 static aMusic_t music_game;
 static int game_music_active = 0;
+static int menu_music_active = 0;
+
+/* Footsteps — pick a random one each move */
+#define FOOTSTEP_COUNT 10
+static aSoundEffect_t footsteps[FOOTSTEP_COUNT];
 
 /* Dungeon ambience — loops on AUDIO_CHANNEL_WEATHER with random volume drift */
 static aSoundEffect_t ambience_dungeon;
@@ -66,6 +71,13 @@ void SoundManagerInit( void )
   a_AudioLoadMusic( "resources/music/Soliloquy.ogg", &music_menu );
   a_AudioLoadMusic( "resources/music/Desolate.ogg", &music_game );
   a_AudioLoadSound( "resources/ambience/Forgoten_tombs.ogg", &ambience_dungeon );
+
+  char path[64];
+  for ( int i = 0; i < FOOTSTEP_COUNT; i++ )
+  {
+    snprintf( path, sizeof( path ), "resources/soundeffects/Footstep_Dirt_%02d.wav", i );
+    a_AudioLoadSound( path, &footsteps[i] );
+  }
 }
 
 void SoundManagerUpdate( float dt )
@@ -81,13 +93,18 @@ void SoundManagerCrossfadeToGame( void )
   a_AudioSetMusicVolume( 80 );
   a_AudioPlayMusic( &music_game, -1, 500 );
   game_music_active = 1;
+  menu_music_active = 0;
 }
 
 void SoundManagerPlayMenu( void )
 {
-  a_AudioStopMusic( MUSIC_FADE_MS );
-  a_AudioSetMusicVolume( AUDIO_MAX_VOLUME );
-  a_AudioPlayMusic( &music_menu, -1, MUSIC_FADE_MS );
+  if ( !menu_music_active )
+  {
+    a_AudioStopMusic( MUSIC_FADE_MS );
+    a_AudioSetMusicVolume( AUDIO_MAX_VOLUME );
+    a_AudioPlayMusic( &music_menu, -1, MUSIC_FADE_MS );
+    menu_music_active = 1;
+  }
   game_music_active = 0;
 
   /* Stop dungeon ambience */
@@ -118,6 +135,13 @@ void SoundManagerPlayGame( void )
   StopAllTweens( &amb_tweens );
   amb_volume = 0;
   amb_start_cycle( NULL );
+}
+
+void SoundManagerPlayFootstep( void )
+{
+  aAudioOptions_t opts = a_AudioDefaultOptions();
+  opts.volume = (int)( AUDIO_MAX_VOLUME * 0.7f );
+  a_AudioPlaySound( &footsteps[ rand() % FOOTSTEP_COUNT ], &opts );
 }
 
 void SoundManagerStop( void )

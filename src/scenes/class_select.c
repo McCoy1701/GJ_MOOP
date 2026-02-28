@@ -40,10 +40,10 @@ static void mage_button( void );
 #define MODAL_LINE_MD     26.0f
 #define MODAL_LINE_LG     28.0f
 
-/* Drop target (outro transition) — fractions of SCREEN_WIDTH / SCREEN_HEIGHT */
-#define DROP_SIZE         40.0f
-#define DROP_X_PCT        0.37f   /* roughly game viewport center X */
-#define DROP_Y_PCT        0.44f   /* roughly game viewport center Y */
+/* Drop target — center of game viewport widget on screen */
+#define DROP_SIZE         64.0f
+#define DROP_TARGET_X     ( 8.0f + ( SCREEN_WIDTH * 0.72f ) / 2.0f )
+#define DROP_TARGET_Y     ( 66.0f + ( SCREEN_HEIGHT - 216.0f ) / 2.0f )
 
 /* Embark button */
 #define EMBARK_W          288.0f
@@ -80,13 +80,13 @@ static void cs_SelectClass( int index )
   strncpy( player.name, g_classes[index].name, MAX_NAME_LENGTH - 1 );
   player.hp = g_classes[index].hp;
   player.max_hp = g_classes[index].hp;
-  player.base_damage = g_classes[index].base_damage;
-  player.defense = g_classes[index].defense;
+  player.class_damage = g_classes[index].base_damage;
+  player.class_defense = g_classes[index].defense;
   strncpy( player.consumable_type, g_classes[index].consumable_type, MAX_NAME_LENGTH - 1 );
   strncpy( player.description, g_classes[index].description, 255 );
   player.image = g_classes[index].image;
-  player.world_x = WORLD_WIDTH / 2.0f;
-  player.world_y = WORLD_HEIGHT / 2.0f;
+  player.world_x = 64.0f;
+  player.world_y = 64.0f;
   memset( player.inventory, 0, sizeof( player.inventory ) );
   player.inv_cursor = 0;
   player.selected_consumable = 0;
@@ -95,6 +95,8 @@ static void cs_SelectClass( int index )
   for ( int i = 0; i < EQUIP_SLOTS; i++ )
     player.equipment[i] = -1;
   EquipStarterGear( g_class_keys[index] );
+  PlayerInitStats();
+  PlayerRecalcStats();
 
   a_WidgetCacheFree();
   GameSceneInit();
@@ -153,6 +155,11 @@ static void cs_Logic( float dt )
       app.keyboard[SDL_SCANCODE_ESCAPE] = 0;
       TransitionOutroSkip();
     }
+    /* Eat keys so a_DoWidget doesn't re-trigger button actions */
+    app.keyboard[SDL_SCANCODE_RETURN] = 0;
+    app.keyboard[SDL_SCANCODE_SPACE]  = 0;
+    app.mouse.pressed = 0;
+
     TransitionOutroUpdate( dt );
 
     /* Outro just finished — do the actual scene switch */
@@ -365,18 +372,18 @@ static void cs_Logic( float dt )
 
 static void cs_Draw( float dt )
 {
-  float outro_a = TransitionGetOutroAlpha();
   int in_outro = TransitionOutroActive();
+  float panel_a = in_outro ? TransitionGetOutroAlpha() : 1.0f;
 
   /* Draw item panel backgrounds at correct auto-sized height (AUF boxed:0) */
-  if ( last_class_idx >= 0 && num_filtered > 0 && outro_a > 0.01f )
+  if ( last_class_idx >= 0 && num_filtered > 0 && panel_a > 0.01f )
   {
     int nc = 0, no = 0;
     for ( int i = 0; i < num_filtered; i++ )
       if ( filtered[i].type == FILTERED_CONSUMABLE ) nc++; else no++;
 
-    aColor_t panel_bg = (aColor_t){ 0, 0, 0, (int)( 200 * outro_a ) };
-    aColor_t panel_fg = (aColor_t){ 255, 255, 255, (int)( 255 * outro_a ) };
+    aColor_t panel_bg = (aColor_t){ 0, 0, 0, (int)( 200 * panel_a ) };
+    aColor_t panel_fg = (aColor_t){ 255, 255, 255, (int)( 255 * panel_a ) };
 
     aContainerWidget_t* cp = a_GetContainerFromWidget( "consumables_panel" );
     float cp_th = 0;
@@ -391,6 +398,23 @@ static void cs_Draw( float dt )
     float dp_h = dp_th + LIST_PAD_Y + no * ( LIST_ITEM_SIZE + LIST_ROW_SPACING ) + LIST_PAD_Y;
     a_DrawFilledRect( (aRectf_t){ dp->rect.x, dp->rect.y, dp->rect.w, dp_h }, panel_bg );
     a_DrawRect( (aRectf_t){ dp->rect.x, dp->rect.y, dp->rect.w, dp_h }, panel_fg );
+  }
+
+  /* Game viewport box — fades in during outro before the character drops */
+  if ( in_outro )
+  {
+    float vp_a = TransitionGetOutroVPAlpha();
+    if ( vp_a > 0.01f )
+    {
+      float vp_x = 8.0f;
+      float vp_y = 66.0f;   /* 8 + 50 topbar + 8 gap */
+      float vp_w = SCREEN_WIDTH * 0.72f - 1.0f;
+      float vp_h = SCREEN_HEIGHT - 216.0f;
+      a_DrawFilledRect( (aRectf_t){ vp_x, vp_y, vp_w, vp_h },
+                        (aColor_t){ 0, 0, 0, (int)( 255 * vp_a ) } );
+      a_DrawRect( (aRectf_t){ vp_x, vp_y, vp_w, vp_h },
+                  (aColor_t){ 255, 255, 255, (int)( 255 * vp_a ) } );
+    }
   }
 
   /* Widget labels — skip once fade is underway (can't modulate widget alpha) */
@@ -442,9 +466,9 @@ static void cs_Draw( float dt )
 
       if ( in_outro )
       {
-        /* Drop target = fraction of screen (matches game viewport center) */
-        float target_x = SCREEN_WIDTH  * DROP_X_PCT - DROP_SIZE / 2.0f;
-        float target_y = SCREEN_HEIGHT * DROP_Y_PCT - DROP_SIZE / 2.0f;
+        /* Drop target = center of game viewport widget */
+        float target_x = DROP_TARGET_X - DROP_SIZE / 2.0f;
+        float target_y = DROP_TARGET_Y - DROP_SIZE / 2.0f;
 
         float drop_t = TransitionGetOutroDropT();
         float cur_size = portrait_size + ( DROP_SIZE - portrait_size ) * drop_t;
@@ -477,9 +501,11 @@ static void cs_Draw( float dt )
       }
     }
 
-    /* Item lists + modal + buttons — skip during outro */
-    if ( !in_outro )
+    /* Item lists + modal + buttons — fade with panels during outro */
+    if ( panel_a > 0.01f )
     {
+      aColor_t fade_white = { 255, 255, 255, (int)( 255 * panel_a ) };
+
       /* Draw consumables for the hovered class (left panel) */
       {
         aContainerWidget_t* cpanel = a_GetContainerFromWidget( "consumables_panel" );
@@ -496,21 +522,23 @@ static void cs_Draw( float dt )
           if ( filtered[fi].type != FILTERED_CONSUMABLE ) continue;
           int ci = filtered[fi].index;
           float row_h = LIST_ITEM_SIZE + LIST_HIT_MARGIN * 2;
+          aColor_t ic = g_consumables[ci].color;
+          aColor_t ic_a = { ic.r, ic.g, ic.b, (int)( ic.a * panel_a ) };
 
           /* Highlight selected row — full width */
           if ( fi == selected_item && browsing_items )
           {
             a_DrawFilledRect( (aRectf_t){ cr.x + LIST_HIT_MARGIN, cy - LIST_HIT_MARGIN, cr.w - LIST_HIT_MARGIN * 2, row_h },
-                              (aColor_t){ 255, 255, 255, 40 } );
+                              (aColor_t){ 255, 255, 255, (int)( 40 * panel_a ) } );
             a_DrawRect( (aRectf_t){ cr.x + LIST_HIT_MARGIN, cy - LIST_HIT_MARGIN, cr.w - LIST_HIT_MARGIN * 2, row_h },
-                        g_consumables[ci].color );
+                        ic_a );
           }
 
-          DrawImageOrGlyph( g_consumables[ci].image, g_consumables[ci].glyph, g_consumables[ci].color,
+          DrawImageOrGlyph( g_consumables[ci].image, g_consumables[ci].glyph, ic_a,
                                cx, cy, LIST_ITEM_SIZE );
 
           aTextStyle_t ns = a_default_text_style;
-          ns.fg = ( fi == selected_item && browsing_items ) ? g_consumables[ci].color : white;
+          ns.fg = ( fi == selected_item && browsing_items ) ? ic_a : fade_white;
           ns.bg = (aColor_t){ 0, 0, 0, 0 };
           ns.scale = 1.0f;
           a_DrawText( g_consumables[ci].name, (int)( cx + LIST_ITEM_SIZE + LIST_TEXT_GAP ), (int)( cy + LIST_ITEM_SIZE * 0.25f ), ns );
@@ -535,21 +563,23 @@ static void cs_Draw( float dt )
           if ( filtered[fi].type != FILTERED_OPENABLE ) continue;
           int oi = filtered[fi].index;
           float row_h = LIST_ITEM_SIZE + LIST_HIT_MARGIN * 2;
+          aColor_t oc = g_openables[oi].color;
+          aColor_t oc_a = { oc.r, oc.g, oc.b, (int)( oc.a * panel_a ) };
 
           /* Highlight selected row */
           if ( fi == selected_item && browsing_items )
           {
             a_DrawFilledRect( (aRectf_t){ dr.x + LIST_HIT_MARGIN, dy - LIST_HIT_MARGIN, dr.w - LIST_HIT_MARGIN * 2, row_h },
-                              (aColor_t){ 255, 255, 255, 40 } );
+                              (aColor_t){ 255, 255, 255, (int)( 40 * panel_a ) } );
             a_DrawRect( (aRectf_t){ dr.x + LIST_HIT_MARGIN, dy - LIST_HIT_MARGIN, dr.w - LIST_HIT_MARGIN * 2, row_h },
-                        g_openables[oi].color );
+                        oc_a );
           }
 
-          DrawImageOrGlyph( g_openables[oi].image, g_openables[oi].glyph, g_openables[oi].color,
+          DrawImageOrGlyph( g_openables[oi].image, g_openables[oi].glyph, oc_a,
                                dx, dy, LIST_ITEM_SIZE );
 
           aTextStyle_t ns = a_default_text_style;
-          ns.fg = ( fi == selected_item && browsing_items ) ? g_openables[oi].color : white;
+          ns.fg = ( fi == selected_item && browsing_items ) ? oc_a : fade_white;
           ns.bg = (aColor_t){ 0, 0, 0, 0 };
           ns.scale = 1.0f;
           a_DrawText( g_openables[oi].name, (int)( dx + LIST_ITEM_SIZE + LIST_TEXT_GAP ), (int)( dy + LIST_ITEM_SIZE * 0.25f ), ns );
@@ -576,9 +606,10 @@ static void cs_Draw( float dt )
         if ( sel->type == FILTERED_CONSUMABLE )
         {
           ConsumableInfo_t* c = &g_consumables[sel->index];
+          aColor_t cc_a = { c->color.r, c->color.g, c->color.b, (int)( c->color.a * panel_a ) };
 
-          a_DrawFilledRect( (aRectf_t){ mx, my, MODAL_W, MODAL_H }, (aColor_t){ 0, 0, 0, 255 } );
-          a_DrawRect( (aRectf_t){ mx, my, MODAL_W, MODAL_H }, c->color );
+          a_DrawFilledRect( (aRectf_t){ mx, my, MODAL_W, MODAL_H }, (aColor_t){ 0, 0, 0, (int)( 255 * panel_a ) } );
+          a_DrawRect( (aRectf_t){ mx, my, MODAL_W, MODAL_H }, cc_a );
 
           float ty = my + MODAL_PAD_Y;
           float tx = mx + MODAL_PAD_X;
@@ -587,14 +618,14 @@ static void cs_Draw( float dt )
           ts.bg = (aColor_t){ 0, 0, 0, 0 };
 
           /* Name */
-          ts.fg = c->color;
+          ts.fg = cc_a;
           ts.scale = MODAL_NAME_SCALE;
           a_DrawText( c->name, (int)tx, (int)ty, ts );
           ty += MODAL_LINE_LG;
 
           /* Effect */
           char buf[128];
-          ts.fg = white;
+          ts.fg = fade_white;
           ts.scale = MODAL_TEXT_SCALE;
           snprintf( buf, sizeof( buf ), "Effect: %s", c->effect );
           a_DrawText( buf, (int)tx, (int)ty, ts );
@@ -602,12 +633,12 @@ static void cs_Draw( float dt )
 
           /* Bonus damage */
           snprintf( buf, sizeof( buf ), "+%d Bonus Damage", c->bonus_damage );
-          ts.fg = yellow;
+          ts.fg = (aColor_t){ yellow.r, yellow.g, yellow.b, (int)( yellow.a * panel_a ) };
           a_DrawText( buf, (int)tx, (int)ty, ts );
           ty += MODAL_LINE_MD;
 
           /* Description */
-          ts.fg = (aColor_t){ 180, 180, 180, 255 };
+          ts.fg = (aColor_t){ 180, 180, 180, (int)( 255 * panel_a ) };
           ts.scale = MODAL_DESC_SCALE;
           ts.wrap_width = (int)( MODAL_W - MODAL_PAD_X * 2 );
           a_DrawText( c->description, (int)tx, (int)ty, ts );
@@ -615,9 +646,10 @@ static void cs_Draw( float dt )
         else /* FILTERED_OPENABLE */
         {
           OpenableInfo_t* o = &g_openables[sel->index];
+          aColor_t oc_a = { o->color.r, o->color.g, o->color.b, (int)( o->color.a * panel_a ) };
 
-          a_DrawFilledRect( (aRectf_t){ mx, my, MODAL_W, MODAL_H }, (aColor_t){ 0, 0, 0, 255 } );
-          a_DrawRect( (aRectf_t){ mx, my, MODAL_W, MODAL_H }, o->color );
+          a_DrawFilledRect( (aRectf_t){ mx, my, MODAL_W, MODAL_H }, (aColor_t){ 0, 0, 0, (int)( 255 * panel_a ) } );
+          a_DrawRect( (aRectf_t){ mx, my, MODAL_W, MODAL_H }, oc_a );
 
           float ty = my + MODAL_PAD_Y;
           float tx = mx + MODAL_PAD_X;
@@ -626,21 +658,21 @@ static void cs_Draw( float dt )
           ts.bg = (aColor_t){ 0, 0, 0, 0 };
 
           /* Name */
-          ts.fg = o->color;
+          ts.fg = oc_a;
           ts.scale = MODAL_NAME_SCALE;
           a_DrawText( o->name, (int)tx, (int)ty, ts );
           ty += MODAL_LINE_LG;
 
           /* Kind */
           char buf[128];
-          ts.fg = white;
+          ts.fg = fade_white;
           ts.scale = MODAL_TEXT_SCALE;
           snprintf( buf, sizeof( buf ), "Type: %s", o->kind );
           a_DrawText( buf, (int)tx, (int)ty, ts );
           ty += MODAL_LINE_MD;
 
           /* Description */
-          ts.fg = (aColor_t){ 180, 180, 180, 255 };
+          ts.fg = (aColor_t){ 180, 180, 180, (int)( 255 * panel_a ) };
           ts.scale = MODAL_DESC_SCALE;
           ts.wrap_width = (int)( MODAL_W - MODAL_PAD_X * 2 );
           a_DrawText( o->description, (int)tx, (int)ty, ts );
@@ -664,8 +696,8 @@ static void cs_Draw( float dt )
         float ey = btn_panel_bot + 30.0f;
 
         DrawButton( ex, ey, EMBARK_W, EMBARK_H, "Embark [Enter]", 2.0f, embark_hovered,
-                    (aColor_t){ 0, 0, 0, 255 }, (aColor_t){ 60, 60, 60, 255 },
-                    (aColor_t){ 222, 222, 222, 255 }, (aColor_t){ 255, 255, 255, 255 } );
+                    (aColor_t){ 0, 0, 0, (int)( 255 * panel_a ) }, (aColor_t){ 60, 60, 60, (int)( 255 * panel_a ) },
+                    (aColor_t){ 222, 222, 222, (int)( 255 * panel_a ) }, (aColor_t){ 255, 255, 255, (int)( 255 * panel_a ) } );
       }
 
       /* Draw back button — below embark */
@@ -675,10 +707,23 @@ static void cs_Draw( float dt )
         float by = btn_panel_bot + 30.0f + EMBARK_H + 30.0f;
 
         DrawButton( bx, by, BACK_W, BACK_H, "Back [ESC]", 1.0f, back_hovered,
-                    (aColor_t){ 0, 0, 0, 255 }, (aColor_t){ 60, 60, 60, 255 },
-                    (aColor_t){ 150, 150, 150, 255 }, white );
+                    (aColor_t){ 0, 0, 0, (int)( 255 * panel_a ) }, (aColor_t){ 60, 60, 60, (int)( 255 * panel_a ) },
+                    (aColor_t){ 150, 150, 150, (int)( 255 * panel_a ) }, fade_white );
       }
-    } /* end !in_outro */
+    } /* end panel fade */
+  }
+
+  /* "Press ESC to skip" hint — centered at top during outro */
+  if ( in_outro )
+  {
+    aTextStyle_t ts = a_default_text_style;
+    ts.fg = (aColor_t){ 180, 180, 180, 180 };
+    ts.bg = (aColor_t){ 0, 0, 0, 0 };
+    ts.scale = 1.0f;
+    const char* hint = "Press ESC to skip";
+    float tw, th;
+    a_CalcTextDimensions( hint, app.font_type, &tw, &th );
+    a_DrawText( hint, (int)( SCREEN_WIDTH / 2 - tw / 2 ), 4, ts );
   }
 }
 

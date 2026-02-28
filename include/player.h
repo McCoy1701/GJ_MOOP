@@ -2,6 +2,7 @@
 #define __PLAYER_H__
 
 #include <Archimedes.h>
+#include <Daedalus.h>
 
 #define INV_COLS         4
 #define INV_ROWS         5
@@ -24,8 +25,9 @@ typedef struct
   char name[MAX_NAME_LENGTH];
   int hp;
   int max_hp;
-  int base_damage;
-  int defense;
+  int class_damage;                     /* immutable base from class */
+  int class_defense;                    /* immutable base from class */
+  dStaticTable_t* stats;                /* computed stats: "damage", "defense" */
   char consumable_type[MAX_NAME_LENGTH];
   char description[256];
   aImage_t* image;
@@ -41,5 +43,9 @@ typedef struct
   int equip_cursor;
   int inv_focused;                      /* 1 = inventory panel, 0 = equipment panel */
 } Player_t;
+
+void PlayerInitStats( void );
+void PlayerRecalcStats( void );
+int  PlayerStat( const char* key );
 
 #endif

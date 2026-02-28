@@ -2,6 +2,7 @@
 #include <Archimedes.h>
 
 #include "defines.h"
+#include "player.h"
 #include "items.h"
 #include "console.h"
 #include "game_events.h"
@@ -43,6 +44,7 @@ static void evt_Equip( int index )
 {
   EquipmentInfo_t* e = &g_equipment[index];
   ConsolePushF( con, e->color, "%s equipped %s", player.name, e->name );
+  PlayerRecalcStats();
 }
 
 static void evt_Unequip( int index )
@@ -50,6 +52,7 @@ static void evt_Unequip( int index )
   EquipmentInfo_t* e = &g_equipment[index];
   ConsolePushF( con, (aColor_t){ 160, 160, 160, 255 }, "%s unequipped %s",
                 player.name, e->name );
+  PlayerRecalcStats();
 }
 
 static void evt_SwapEquip( int new_idx, int old_idx )
@@ -58,6 +61,7 @@ static void evt_SwapEquip( int new_idx, int old_idx )
   EquipmentInfo_t* old_e = &g_equipment[old_idx];
   ConsolePushF( con, new_e->color, "%s swapped %s for %s",
                 player.name, old_e->name, new_e->name );
+  PlayerRecalcStats();
 }
 
 static void evt_UseConsumable( int index )

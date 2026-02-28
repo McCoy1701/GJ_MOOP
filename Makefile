@@ -55,7 +55,8 @@ SCENES_SRCS = main_menu.c \
 GJ_MOOP_SRCS = console.c\
 
 UI_SRCS     = inventory_ui.c
-UTILS_SRCS  = draw_utils.c
+UTILS_SRCS  = draw_utils.c \
+							context_menu.c
 PLAYER_SRCS = items.c
 
 SYS_SRCS = tween.c \
@@ -63,7 +64,8 @@ SYS_SRCS = tween.c \
 					 transitions.c \
 					 sound_manager.c
 
-WORLD_SRCS = world.c\
+WORLD_SRCS = world.c \
+						 game_viewport.c\
 
 NATIVE_LIB_OBJS = $(patsubst %.c, $(OBJ_DIR_NATIVE)/%.o, $(GJ_MOOP_SRCS))
 SCENES_LIB_OBJS = $(patsubst %.c, $(OBJ_DIR_SCENES)/%.o, $(SCENES_SRCS))
