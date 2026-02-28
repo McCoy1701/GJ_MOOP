@@ -62,12 +62,12 @@ World_t* WorldCreate( int width, int height, int tile_w, int tile_h )
     new_world->background[i].glyph = "@";
     
     new_world->midground[i].solid = 0;
-    new_world->midground[i].tile  = 48; //nothing
-    new_world->midground[i].glyph = " ";
+    new_world->midground[i].tile  = 47; //nothing
+    new_world->midground[i].glyph = "";
     
     new_world->foreground[i].solid = 0;
-    new_world->foreground[i].tile  = 48; //nothing
-    new_world->foreground[i].glyph = " ";
+    new_world->foreground[i].tile  = 47; //nothing
+    new_world->foreground[i].glyph = "";
   }
 
   return new_world;
