@@ -29,7 +29,8 @@ typedef struct
 typedef struct
 {
   uint16_t id;
-  uint8_t visitor_mask;
+  uint8_t visitor_mask; //keeps track if mage/rouge/mercenary has been here
+  uint32_t flags; 
   ActiveObject_t* room_obj;
   int num_obj;
 } Room_t;
