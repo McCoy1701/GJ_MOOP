@@ -11,6 +11,29 @@
 
 #include <Archimedes.h>
 
+typedef enum
+{
+  OBJ_DOOR,
+  OBJ_CHEST,
+  OBJ_TRAP
+} ObjectType_t;
+
+typedef struct
+{
+  ObjectType_t type;
+  int x, y;
+  int state;
+  uint8_t key_id;
+} ActiveObject_t;
+
+typedef struct
+{
+  uint16_t id;
+  uint8_t visitor_mask;
+  ActiveObject_t* room_obj;
+  int num_obj;
+} Room_t;
+
 typedef struct
 {
   SDL_Rect rects[MAX_GLYPHS];
@@ -38,11 +61,13 @@ typedef struct
   Tile_t* background;
   Tile_t* midground;
   Tile_t* foreground;
+
+  uint16_t* room_ids;
+
   int tile_count;
   int tile_w, tile_h;
   int rows, cols;
 } World_t;
-
 
 enum
 {
