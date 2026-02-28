@@ -4,7 +4,7 @@
  * This file defines the functions used to create, display, and manipulate
  * worlds.
  *
- * Copyright (c) 2025 Jacob Kellum <jkellum819@gmail.com>
+ * Copyright (c) 2026 Jacob Kellum <jkellum819@gmail.com>
  *                    Mathew Storm <smattymat@gmail.com>
  */
 
