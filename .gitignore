@@ -10,6 +10,8 @@ obj/
 tech_demo/bin/
 tech_demo/obj/
 
+saves/
+
 # Python
 __pycache__/
 *.pyc
