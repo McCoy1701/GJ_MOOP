@@ -1,8 +1,8 @@
-# Consumable items — picked up in the dungeon, used for special attacks
+# Consumable items - picked up in the dungeon, used for special attacks
 # type determines which character class can use them
 # bonus_damage = extra damage on top of base attack
 # ==============================
-# FOOD (Mercenary) — modifies your MELEE attack
+# FOOD (Mercenary) - modifies your MELEE attack
 # ==============================
 @bread {
     name: "Stale Bread"
@@ -12,7 +12,7 @@
     effect: "cleave"
     range: 1
     image_path: "resources/assets/consumables/stale_bread.png"
-    description: "Swing wide — cleaves all adjacent enemies at once."
+    description: "Cleaves all adjacent enemies at once."
     color: [200, 170, 80, 255]
 }
 @chicken_leg {
@@ -31,24 +31,64 @@
     type: "food"
     glyph: "%"
     bonus_damage: 1
-    effect: "lifesteal"
+    effect: "stew_throw"
+    range: 3
+    requires_los: 1
     heal: 2
     image_path: "resources/assets/consumables/hearty_stew.png"
-    description: "Your next attack restores 2 HP on hit."
+    description: "Heals 2 HP, then hurl the bowl up to 3 tiles at the first enemy in line."
     color: [210, 140, 50, 255]
+}
+@iron_loaf {
+    name: "Iron Loaf"
+    type: "food"
+    glyph: "%"
+    bonus_damage: 3
+    effect: "cleave"
+    range: 1
+    image_path: ""
+    description: "Cleaves all adjacent enemies at once. Rock-hard and twice as mean."
+    color: [180, 150, 60, 255]
+}
+@mutton_leg {
+    name: "Mutton Leg"
+    type: "food"
+    glyph: "%"
+    bonus_damage: 3
+    effect: "reach"
+    range: 2
+    image_path: ""
+    description: "Thrust 2 tiles deep in a straight line. Bigger bone, bigger swing."
+    color: [190, 140, 80, 255]
+}
+@spiced_stew {
+    name: "Spiced Stew"
+    type: "food"
+    glyph: "%"
+    bonus_damage: 2
+    effect: "stew_throw"
+    range: 3
+    requires_los: 1
+    heal: 3
+    image_path: ""
+    description: "Heals 3 HP, then hurl the scalding bowl up to 3 tiles."
+    color: [230, 120, 30, 255]
 }
 @dragon_pepper {
     name: "Dragon Pepper"
     type: "food"
     glyph: "%"
-    bonus_damage: 3
-    effect: "none"
+    bonus_damage: 1
+    effect: "fire_cone"
+    range: 3
+    ticks: 2
+    tick_damage: 1
     image_path: ""
-    description: "Your next attack deals 3 bonus damage. Pure brute force."
+    description: "Breathe fire in a wide cone. Burns enemies for 1 damage over 2 turns."
     color: [255, 60, 30, 255]
 }
 # ==============================
-# GADGETS (Rogue) — precision tools, placement matters
+# GADGETS (Rogue) - precision tools, placement matters
 # ==============================
 @flint_arrow {
     name: "Flint Arrow"
@@ -87,6 +127,43 @@
     description: "Place on adjacent tile. Enemy that steps on it takes 2 damage and loses a turn."
     color: [160, 160, 160, 255]
 }
+@steel_arrow {
+    name: "Steel Arrow"
+    type: "gadget"
+    glyph: ")"
+    bonus_damage: 2
+    effect: "shoot"
+    range: 4
+    requires_los: 1
+    image_path: ""
+    description: "Shoot in a straight line up to 4 tiles. Hits harder than flint."
+    color: [200, 200, 210, 255]
+}
+@venom_arrow {
+    name: "Venom Arrow"
+    type: "gadget"
+    glyph: ")"
+    bonus_damage: 1
+    effect: "poison"
+    range: 3
+    requires_los: 1
+    ticks: 3
+    tick_damage: 2
+    image_path: ""
+    description: "Poisons target for 2 damage per turn for 3 turns. Nastier venom."
+    color: [60, 180, 60, 255]
+}
+@serrated_trap {
+    name: "Serrated Trap"
+    type: "gadget"
+    glyph: "^"
+    bonus_damage: 3
+    effect: "trap_stun"
+    place_range: 1
+    image_path: ""
+    description: "Place on adjacent tile. Jagged teeth deal 3 damage and stun."
+    color: [140, 140, 150, 255]
+}
 @smoke_bomb {
     name: "Smoke Bomb"
     type: "gadget"
@@ -100,7 +177,7 @@
     color: [120, 120, 120, 255]
 }
 # ==============================
-# SCROLLS (Mage) — rule-breaking, area effects
+# SCROLLS (Mage) - rule-breaking, area effects
 # ==============================
 @scroll_spark {
     name: "Scroll of Spark"
@@ -140,6 +217,44 @@
     description: "Fireball hits target and all enemies within 1 tile of it."
     color: [255, 100, 30, 255]
 }
+@scroll_lightning {
+    name: "Scroll of Lightning"
+    type: "scroll"
+    glyph: "?"
+    bonus_damage: 2
+    effect: "magic_bolt"
+    range: 4
+    requires_los: 0
+    image_path: ""
+    description: "Zap any enemy within 4 tiles. A fiercer bolt that ignores walls."
+    color: [255, 255, 100, 255]
+}
+@scroll_blizzard {
+    name: "Scroll of Blizzard"
+    type: "scroll"
+    glyph: "?"
+    bonus_damage: 2
+    effect: "freeze"
+    range: 3
+    requires_los: 0
+    duration: 2
+    image_path: ""
+    description: "Deals 2 bonus damage and freezes target for 2 turns."
+    color: [80, 160, 255, 255]
+}
+@scroll_inferno {
+    name: "Scroll of Inferno"
+    type: "scroll"
+    glyph: "?"
+    bonus_damage: 3
+    effect: "aoe"
+    range: 3
+    requires_los: 1
+    aoe_radius: 1
+    image_path: ""
+    description: "A fiercer fireball. Hits target and all enemies within 1 tile."
+    color: [255, 70, 20, 255]
+}
 @scroll_teleport {
     name: "Scroll of Teleport"
     type: "scroll"
@@ -153,7 +268,7 @@
     color: [180, 80, 255, 255]
 }
 # ==============================
-# POTIONS (Any class) — instant use, no attack required
+# POTIONS (Any class) - instant use, no attack required
 # ==============================
 @small_health_potion {
     name: "Small Health Potion"
@@ -167,7 +282,7 @@
     color: [220, 60, 80, 255]
 }
 # ==============================
-# QUEST ITEMS — carried, not class-locked
+# QUEST ITEMS - carried, not class-locked
 # ==============================
 @mayors_note {
     name: "Mayor's Note"
@@ -203,4 +318,25 @@
     image_path: ""
     description: "Pungent beyond belief. Something in the walls might find this irresistible."
     color: [200, 200, 80, 255]
+}
+@cave_mushroom {
+    name: "Cave Mushroom"
+    type: "quest"
+    glyph: "%"
+    bonus_damage: 0
+    effect: "none"
+    image_path: ""
+    description: "A plump cave mushroom. Nettle could brew something with this."
+    color: [140, 120, 80, 255]
+}
+@mushroom_mint_tea {
+    name: "Mushroom Mint Tea"
+    type: "potion"
+    glyph: "!"
+    bonus_damage: 0
+    effect: "heal"
+    heal: 99
+    image_path: ""
+    description: "Nettle's specialty. Earthy, sharp, and surprisingly restorative. Heals to full HP."
+    color: [120, 160, 90, 255]
 }

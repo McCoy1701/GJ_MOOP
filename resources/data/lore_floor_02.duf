@@ -1,0 +1,46 @@
+# ==============================
+# FLOOR 2 LORE ENTRIES
+# Discovered through NPC dialogue on Floor 2.
+# ==============================
+
+# ==============================
+# PEOPLE
+# ==============================
+@peace_tribe {
+    title: "The Peace Tribe"
+    category: "People"
+    description: "Goblins who chose stillness. When the hum grew loud and their kin began to rage, they sat down, breathed, and refused to become what the dungeon wanted. Led by Peacelord Thistlewick the Still. Blue chalk on their faces, western corridors. They say hello by standing perfectly still and staring at you."
+}
+@war_tribe {
+    title: "The War Tribe"
+    category: "People"
+    description: "Red clay on their faces, axes in their hands. Led by a warlord named Kragthar who thinks the answer to every problem is hitting it. Two generations ago they split from the peace goblins and followed Kragthar's grandfather to the eastern caves. The hum gave them rage, purpose, direction - all pointing the wrong way."
+}
+
+# ==============================
+# HISTORY
+# ==============================
+@goblin_refuge {
+    title: "The Goblin Refuge"
+    category: "History"
+    description: "Goblins came underground generations ago, long before the miners or the colored doors. The overworld was cruel - hunted, burned, driven out. The dungeon was supposed to be safe. Then it started changing them. Some grew angry, some grew still. Families broke apart. The elders called it 'The Fracture.' The goblins call it Tuesday."
+}
+@goblin_origins {
+    title: "Before the Miners"
+    category: "History"
+    description: "The goblins were here first. Generations before the miners cracked open the wrong wall, goblin families were already living in the tunnels. The colored doors were already glowing - three colors, pulsing like a heartbeat. The hum was already humming. The goblins didn't build any of it. They just moved in and tried not to touch anything."
+}
+@dungeon_origins {
+    title: "The Doors Were Already Here"
+    category: "History"
+    description: "The colored doors, the hum, the stone table - all of it predates the goblins. When the first goblin families arrived underground, the dungeon was already built. Already waiting. The goblins didn't create the thing that split them apart. They just moved into it."
+}
+
+# ==============================
+# MYSTERIES
+# ==============================
+@the_feast {
+    title: "The Stone Table"
+    category: "Mysteries"
+    description: "Deep below, there is a stone table set for three. Plates, candles, the whole thing. The food was warm when the goblins first found it generations ago. It was still warm forty years ago. Three plates. No chairs. The dungeon has been waiting for its guests for a very long time."
+}

@@ -3,7 +3,7 @@
 #include "transitions.h"
 
 /* ================================================================== */
-/* OUTRO — class_select fade-out, jump+turn, drop into viewport        */
+/* OUTRO - class_select fade-out, jump+turn, drop into viewport        */
 /* ================================================================== */
 
 #define OUTRO_NONE  0
@@ -164,7 +164,7 @@ float TransitionGetOutroDropT( void )    { return outro_drop_t; }
 int   TransitionGetOutroFlipped( void )  { return outro_flipped; }
 
 /* ================================================================== */
-/* INTRO — game_scene zoom + UI slide-in                               */
+/* INTRO - game_scene zoom + UI slide-in                               */
 /* ================================================================== */
 
 #define INTRO_NONE  0

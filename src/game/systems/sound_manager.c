@@ -13,11 +13,11 @@ static int menu_music_active = 0;
 static int g_music_pct = 100;
 static int g_sfx_pct   = 100;
 
-/* Footsteps — pick a random one each move */
+/* Footsteps - pick a random one each move */
 #define FOOTSTEP_COUNT 10
 static aSoundEffect_t footsteps[FOOTSTEP_COUNT];
 
-/* Dungeon ambience — loops on AUDIO_CHANNEL_WEATHER with random volume drift */
+/* Dungeon ambience - loops on AUDIO_CHANNEL_WEATHER with random volume drift */
 static aSoundEffect_t ambience_dungeon;
 static TweenManager_t amb_tweens;
 static float amb_volume;
@@ -25,7 +25,7 @@ static float amb_volume;
 static void amb_fade_out( void* user_data );
 static void amb_wait( void* user_data );
 
-/* Phase 1: silent wait — sit at 0 for a random stretch */
+/* Phase 1: silent wait - sit at 0 for a random stretch */
 static void amb_start_cycle( void* user_data )
 {
   (void)user_data;
@@ -127,7 +127,7 @@ void SoundManagerPlayGame( void )
   }
 
   /* Start dungeon ambience on weather channel, looping forever.
-     Chunk volume stays at max — we control loudness via channel volume. */
+     Chunk volume stays at max - we control loudness via channel volume. */
   aAudioOptions_t opts = a_AudioDefaultOptions();
   opts.channel = AUDIO_CHANNEL_WEATHER;
   opts.loops   = -1;

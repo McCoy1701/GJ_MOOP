@@ -13,7 +13,7 @@
     start: true
     priority: 0
     text: "Hello yes! Welcome to our... MY shop! I am a man who sells things! With my hands!"
-    options: ["opt_who_are_you", "opt_how_shop", "opt_rat_quest", "opt_rat_quest_done", "opt_browse", "opt_leave"]
+    options: ["opt_who_are_you", "opt_how_shop", "opt_rat_quest", "opt_rat_quest_done", "opt_offer_sandwich_human", "opt_browse", "opt_leave"]
 }
 @greeting_merc {
     start: true
@@ -21,7 +21,7 @@
     require_class: "Mercenary"
     require_not_flag: "visited_shop"
     text: "A warrior! Very good! You look like someone who buys things! I also buy things! Like coats! And... food that is not cheese!"
-    options: ["opt_who_are_you", "opt_how_shop", "opt_rat_quest", "opt_rat_quest_done", "opt_browse", "opt_leave"]
+    options: ["opt_who_are_you", "opt_how_shop", "opt_rat_quest", "opt_rat_quest_done", "opt_offer_sandwich_human", "opt_browse", "opt_leave"]
 }
 @greeting_rogue {
     start: true
@@ -29,7 +29,7 @@
     require_class: "Rogue"
     require_not_flag: "visited_shop"
     text: "A customer! Please do not look behind the counter! There is nothing there! Especially not a tail! I mean a... filing cabinet!"
-    options: ["opt_who_are_you", "opt_how_shop", "opt_rat_quest", "opt_rat_quest_done", "opt_browse", "opt_leave"]
+    options: ["opt_who_are_you", "opt_how_shop", "opt_rat_quest", "opt_rat_quest_done", "opt_offer_sandwich_human", "opt_browse", "opt_leave"]
 }
 @greeting_mage {
     start: true
@@ -37,7 +37,7 @@
     require_class: "Mage"
     require_not_flag: "visited_shop"
     text: "A mage! Wonderful! We get... I get so few visitors! Please buy something! *whispered squeaking* ...please buy ANYTHING!"
-    options: ["opt_who_are_you", "opt_how_shop", "opt_rat_quest", "opt_rat_quest_done", "opt_browse", "opt_leave"]
+    options: ["opt_who_are_you", "opt_how_shop", "opt_rat_quest", "opt_rat_quest_done", "opt_offer_sandwich_human", "opt_browse", "opt_leave"]
 }
 @greeting_return {
     start: true
@@ -45,7 +45,7 @@
     require_flag: "visited_shop"
     require_not_flag: "knows_shop_rats"
     text: "You are back! We are... I am pleased! Business is good! I stood on my legs all day waiting!"
-    options: ["opt_who_are_you", "opt_how_shop", "opt_rat_quest", "opt_rat_quest_done", "opt_browse", "opt_leave"]
+    options: ["opt_who_are_you", "opt_how_shop", "opt_rat_quest", "opt_rat_quest_done", "opt_offer_sandwich_human", "opt_browse", "opt_leave"]
 }
 @greeting_knows_rats {
     start: true
@@ -53,7 +53,7 @@
     require_flag: "knows_shop_rats"
     require_not_flag: "rat_king_defeated"
     text: "Oh! Our favourite customer! *muffled squeaking* Pip says you are our ONLY customer! That is basically the same thing!"
-    options: ["opt_three_of_you", "opt_which_rat", "opt_know_jonathon", "opt_know_graf", "opt_how_shop", "opt_browse", "opt_leave"]
+    options: ["opt_three_of_you", "opt_which_rat", "opt_offer_cheese", "opt_offer_sandwich", "opt_know_jonathon", "opt_know_graf", "opt_how_shop", "opt_browse", "opt_leave"]
 }
 @greeting_post_king {
     start: true
@@ -61,7 +61,7 @@
     require_flag: "rat_king_defeated"
     require_flag: "knows_shop_rats"
     text: "The Rat King slayer! *nervous squeaking* We are VERY glad you are our friend! Please continue to be our friend!"
-    options: ["opt_rat_king", "opt_three_of_you", "opt_browse", "opt_how_shop", "opt_leave"]
+    options: ["opt_rat_king", "opt_three_of_you", "opt_offer_cheese", "opt_offer_sandwich", "opt_browse", "opt_how_shop", "opt_leave"]
 }
 @greeting_thief {
     start: true
@@ -111,7 +111,7 @@
 }
 
 # ==============================
-# RAT QUEST — THE REVEAL
+# RAT QUEST - THE REVEAL
 # ==============================
 @opt_rat_quest {
     label: "The guard upstairs wants me to kill rats."
@@ -164,7 +164,7 @@
 }
 
 # ==============================
-# RAT QUEST DONE — ALTERNATE REVEAL
+# RAT QUEST DONE - ALTERNATE REVEAL
 # ==============================
 @opt_rat_quest_done {
     label: "I cleared out a rat problem for the guard upstairs."
@@ -184,7 +184,7 @@
 }
 
 # ==============================
-# POST-DISCOVERY — THE RATS
+# POST-DISCOVERY - THE RATS
 # ==============================
 @opt_three_of_you {
     label: "Tell me about the three of you."
@@ -318,6 +318,63 @@
 @where_stock_reply {
     text: "We find things! In the dungeon! Sometimes adventurers drop things when they... stop moving! We do NOT cause the stopping! We just... collect afterwards! Economically!"
     options: ["opt_browse", "opt_leave"]
+}
+
+# ==============================
+# STINKY CHEESE
+# ==============================
+@opt_offer_cheese {
+    label: "I found this cheese. Want it?"
+    require_item: "Stinky Cheese"
+    require_flag: "knows_shop_rats"
+    goto: "offer_cheese_reply"
+}
+@offer_cheese_reply {
+    text: "*all three rats recoil at once, nearly toppling the coat* STANDARDS! We have STANDARDS! That thing smells like something that crawled out of a sewer and DIED! *muffled gagging* Pip says it smells like the Rat King's throne room. The Rat King is DISGUSTING."
+    set_lore: "rat_society"
+    options: ["opt_rat_king_info", "opt_browse", "opt_leave"]
+}
+@opt_rat_king_info {
+    label: "Tell me about the Rat King."
+    color: "lore"
+    goto: "rat_king_info_reply"
+}
+@rat_king_info_reply {
+    text: "Big. Mean. Lives somewhere to the northwest, in a hole that smells worse than this cheese. Surrounded by filth and loyal rats. Calls himself royalty. Tried to make us pay taxes! IN CHEESE! Gerald said no! Pip did the math and said no! Trevor bit his ambassador!"
+    set_lore: "rat_king"
+    options: ["opt_rat_king_dangerous", "opt_rat_queen_rumor", "opt_browse", "opt_leave"]
+}
+@opt_rat_king_dangerous {
+    label: "Is he dangerous?"
+    goto: "rat_king_dangerous_reply"
+}
+@rat_king_dangerous_reply {
+    text: "He is fat and angry and has rats who do what he says! Not like us! We are FREELANCE! But yes, do not let him sit on you. Trevor saw it happen once. Trevor does not talk about it."
+    options: ["opt_rat_queen_rumor", "opt_browse", "opt_leave"]
+}
+
+# ==============================
+# GRAF'S SANDWICH
+# ==============================
+@opt_offer_sandwich {
+    label: "Want a sandwich?"
+    require_item: "Graf's Sandwich"
+    require_flag: "knows_shop_rats"
+    goto: "offer_sandwich_rats_reply"
+}
+@offer_sandwich_rats_reply {
+    text: "That old fart gave up his sandwich?! He's been guarding that thing like it was made of gold! *sniffing from inside the coat* ...it smells ANCIENT. We don't want it. Why don't you try eating it? Pip says it builds character. Pip does not know what character is."
+    options: ["opt_browse", "opt_leave"]
+}
+@opt_offer_sandwich_human {
+    label: "Want a sandwich?"
+    require_item: "Graf's Sandwich"
+    require_not_flag: "knows_shop_rats"
+    goto: "offer_sandwich_human_reply"
+}
+@offer_sandwich_human_reply {
+    text: "*the entire coat leans forward and sniffs aggressively* ...NO! I do not want your sandwich! I eat normal human food! Like... bread! And... other bread! *frantic squeaking from below* My stomach says no thank you!"
+    options: ["opt_who_are_you", "opt_how_shop", "opt_browse", "opt_rat_quest", "opt_rat_quest_done", "opt_leave"]
 }
 
 # ==============================

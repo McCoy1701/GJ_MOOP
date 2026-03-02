@@ -91,7 +91,7 @@ World_t* WorldCreate( const int width, const int height,
   return new_world;
 }
 
-/* Legacy renderer — used by the editor. Game uses GV_DrawWorld instead. */
+/* Legacy renderer - used by the editor. Game uses GV_DrawWorld instead. */
 void WorldDraw( const int x_off, const int y_off,
                 World_t* world, Tileset_t* tile_set,
                 const uint8_t draw_ascii )

@@ -1,4 +1,4 @@
-# Treasure Maps — dropped by undead miners
+# Treasure Maps - dropped by undead miners
 # Different internal IDs, same display name
 # One per class (Mat=Mercenary, Jake=Rogue, Chris=Mage)
 # target_x/target_y = secret wall location the map reveals

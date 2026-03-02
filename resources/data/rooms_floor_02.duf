@@ -1,0 +1,56 @@
+@entry_room {
+  room_id: "0"
+  name: "Entry Room"
+}
+@west_chamber_1 {
+  room_id: "1"
+  name: "West Chamber"
+}
+@east_chamber_1 {
+  room_id: "2"
+  name: "East Chamber"
+}
+@west_chamber_2 {
+  room_id: "3"
+  name: "West Alcove"
+}
+@east_chamber_2 {
+  room_id: "4"
+  name: "East Alcove"
+}
+@west_chamber_3 {
+  room_id: "5"
+  name: "West Hall"
+}
+@east_chamber_3 {
+  room_id: "6"
+  name: "East Hall"
+}
+@west_chamber_4 {
+  room_id: "7"
+  name: "West Den"
+}
+@east_chamber_4 {
+  room_id: "8"
+  name: "East Den"
+}
+@west_chamber_5 {
+  room_id: "9"
+  name: "West Vault"
+}
+@east_chamber_5 {
+  room_id: "!"
+  name: "East Vault"
+}
+@west_chamber_6 {
+  room_id: "@"
+  name: "West Depths"
+}
+@east_chamber_6 {
+  room_id: "~"
+  name: "East Depths"
+}
+@room_dash {
+  room_id: "-"
+  name: ""
+}

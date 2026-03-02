@@ -1,0 +1,38 @@
+@npc {
+    name: "Stairway"
+    glyph: ">"
+    color: [222, 158, 65, 255]
+    description: "A stone stairway spiraling downward into darkness."
+}
+
+# ==============================
+# ENTRY
+# ==============================
+@start {
+    start: true
+    priority: 0
+    text: "A stone stairway carved into the floor. Cold air drifts up from below."
+    options: ["opt_descend", "opt_back"]
+}
+
+# ==============================
+# DESCEND - next floor (not yet available)
+# ==============================
+@opt_descend {
+    label: "Descend deeper."
+    color: "quest"
+    goto: "descend_reply"
+}
+@descend_reply {
+    text: "The stairs spiral down into a hum so deep you feel it in your ribs. The air thickens. Whatever is below, it's waiting."
+    set_flag: "stair_descend"
+    options: ["opt_back"]
+}
+
+# ==============================
+# BACK
+# ==============================
+@opt_back {
+    label: "[Step away]"
+    goto: "end"
+}

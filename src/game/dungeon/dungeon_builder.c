@@ -1,4 +1,8 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <Archimedes.h>
+#include <Daedalus.h>
 
 #include "dungeon.h"
 #include "doors.h"
@@ -6,7 +10,7 @@
 #include "room_enumerator.h"
 #include "interactive_tile.h"
 
-static int char_to_room_id( char c )
+int DungeonCharToRoomId( char c )
 {
   if ( c >= '0' && c <= '9' ) return c - '0';
   switch ( c )
@@ -21,73 +25,126 @@ static int char_to_room_id( char c )
   }
 }
 
-static const char* dungeon[DUNGEON_H] = {
-  /*         1111111111222222222233333333 */
-  /* 01234567890123456789012345678901234 56 */
-  "#####################################",  /*  0 */
-  "#----#}}#############################",  /*  1  rat hole room + exit chamber */
-  "#----H}}##################.#[[[[[####",  /*  2  rat hole H at (5,2) + merc  */
-  "#----#####################.R[[[[[####",  /*  3  room 24 bottom + R door     */
-  "##.....###############111#.#[[[[[####",  /*  4  corridor (cols 2-6)         */
-  "#####..########~~~~~##111#.###.######",  /*  5  col 5-6 joins corridor     */
-  "######.########~~~~~##111#.###R######",  /*  6  jake's + jonathon + bridge */
-  "#@@@@#........G~~~~~###....W]]]]]####",  /*  7  mat's + jake's + merc lwr  */
-  "#@@@@#.##########G#####.####]]]]]####",  /*  8  mat's + G door + merc lwr  */
-  "#@@@@#.####22222#.#####W####]]]]]####",  /*  9  mat's + north + merc lwr   */
-  "##R###.####22222B.###33333###########",  /* 10  R door + north + gallery   */
-  "#4444#.#######.##...G33333###########",  /* 11  merc room + gallery       */
-  "#4444W.#######.####.#33333B(((((#####",  /* 12  merc room + B to annex     */
-  "#4444#########.###..####.##(((((#####",  /* 13  merc room + rogue annex    */
-  "#W############B####....B.G.(((((#####",  /* 14  G door -> rogue annex      */
-  "#.#########0000000######W##G###W#####",  /* 15  central room + annex corr  */
-  "#.#5555####0000000####66666.###.#####",  /* 16  west + central + G to east */
-  "#.#5555####0000000####66666##))))####",  /* 17  west + central + merc annex */
-  "#.R5555...R0000000W...66666R)))))####",  /* 18  doors + passages + R annex  */
-  "#.#5555####0000000####66666#)))))####",  /* 19  west + central + merc annex */
-  "#.#5555####0000000####66666###W######",  /* 20  west + central + east     */
-  "#.#########0000000####B#######..#####",  /* 21  central + B door + E corr   */
-  "#.##########W#G#####$$$$$######.#####",  /* 22  south doors + chris + corr  */
-  "#............#.#####$$$$$#####..#####",  /* 23  junction + chris + turn     */
-  "#.#######.####.#####$$$$$B.....######",  /* 24  corridor + chris + E corr   */
-  "#.###77777####.#####$$$$$####..######",  /* 25  SW room + chris + E corr    */
-  "#.###77777#8888888###########.#######",  /* 26  SW room + south room      */
-  "#.###77777#8888888#9999999###B#######",  /* 27  SW room + south room      */
-  "#.#########8888888#9999999###.#######",  /* 28  south room                */
-  "#.############G####9999999W.....#####",  /* 29  SE room                   */
-  "#.############.####9999999#####.#####",  /* 30  SE room                   */
-  "#.!!!!!#######.####9999999#####.#####",  /* 31  Room ! (no door) + passage     */
-  "#.!!!!!............9999999......#####",  /* 32  Room ! + open passage + east   */
-  "####.#######R#########B########G#####",  /* 33  White exit + R/B/G spread      */
-  "####.#######.#########.########.#####",  /* 34  four corridors south           */
-  "####....####.#########....#####.#####",  /* 35  White/Blue turn right          */
-  "#######.##...############.###...#####",  /* 36  White/Red/Blue/Green south     */
-  "#######.##.##############.###.#######",  /* 37  all corridors south            */
-  "##......##.#########......###.#######",  /* 38  White/Blue turn left           */
-  "##.#######......####.########......##",  /* 39  Red/Green turn right           */
-  "##.############.####.#############.##",  /* 40  all corridors south            */
-  "##.....{{{{{###.####....##########.##",  /* 41  White/Blue turn right + room   */
-  "#####.#{{{{{#...#######.#######....##",  /* 42  Red/Green turn left + room     */
-  "#####W#######.#########.#######.#####",  /* 43  W door + floor to chambers     */
-  "###*****###%%%%%#####^^^^^####&&&&&##",  /* 44  chambers row 1                 */
-  "###*****###%%%%%#####^^^^^####&&&&&##",  /* 45  chambers row 2                 */
-  "###*****###%%%%%#####^^^^^####&&&&&##",  /* 46  chambers row 3                 */
-  "#####################################",  /* 47  wall                            */
-  "#####################################",  /* 48  wall                            */
-  "#####################################",  /* 49  wall                            */
-};
+char DungeonRoomIdToChar( int id )
+{
+  if ( id >= 0 && id <= 9 ) return '0' + id;
+  static const char lut[] = "!@~$%^&*()[]{}-_+=";
+  if ( id >= 10 && id <= 27 ) return lut[id - 10];
+  return '.';
+}
+
+/* Load a .map file into dString rows. Caller must free with dungeon_free_map(). */
+static dString_t** dungeon_load_map( const char* path )
+{
+  FILE* fp = fopen( path, "r" );
+  if ( !fp )
+  {
+    fprintf( stderr, "dungeon_load_map: failed to open '%s'\n", path );
+    return NULL;
+  }
+
+  dString_t** rows = malloc( sizeof( dString_t* ) * DUNGEON_H );
+  if ( !rows ) { fclose( fp ); return NULL; }
+
+  char buf[256];
+  int y = 0;
+
+  while ( y < DUNGEON_H && fgets( buf, sizeof( buf ), fp ) )
+  {
+    /* Strip trailing newline */
+    size_t len = strlen( buf );
+    while ( len > 0 && ( buf[len-1] == '\n' || buf[len-1] == '\r' ) )
+      buf[--len] = '\0';
+
+    /* Skip comment lines */
+    if ( len >= 2 && buf[0] == '/' && buf[1] == '/' )
+      continue;
+
+    rows[y] = d_StringInit();
+    d_StringAppend( rows[y], buf, 0 );
+
+    /* Pad short rows with walls */
+    if ( (int)len < DUNGEON_W )
+    {
+      fprintf( stderr, "dungeon_load_map: row %d too short (%zu < %d)\n",
+               y, len, DUNGEON_W );
+      char pad[DUNGEON_W + 1];
+      int needed = DUNGEON_W - (int)len;
+      memset( pad, '#', needed );
+      pad[needed] = '\0';
+      d_StringAppend( rows[y], pad, 0 );
+    }
+
+    y++;
+  }
+
+  fclose( fp );
+
+  /* Fill any missing rows with walls */
+  while ( y < DUNGEON_H )
+  {
+    rows[y] = d_StringInit();
+    char wall_row[DUNGEON_W + 1];
+    memset( wall_row, '#', DUNGEON_W );
+    wall_row[DUNGEON_W] = '\0';
+    d_StringAppend( rows[y], wall_row, 0 );
+    y++;
+  }
+
+  return rows;
+}
+
+static void dungeon_free_map( dString_t** rows )
+{
+  if ( !rows ) return;
+  for ( int y = 0; y < DUNGEON_H; y++ )
+    d_StringDestroy( rows[y] );
+  free( rows );
+}
+
+int DungeonSaveMap( const char* path, const char** rows, int width, int height )
+{
+  FILE* fp = fopen( path, "w" );
+  if ( !fp )
+  {
+    fprintf( stderr, "DungeonSaveMap: failed to open '%s'\n", path );
+    return 0;
+  }
+
+  fprintf( fp, "// %d %d\n", width, height );
+
+  for ( int y = 0; y < height; y++ )
+    fprintf( fp, "%s\n", rows[y] );
+
+  fclose( fp );
+  return 1;
+}
+
+int g_current_floor = 1;
 
 void DungeonBuild( World_t* world )
 {
+  const char* map_path = ( g_current_floor == 2 )
+    ? "resources/data/floors/floor_02.map"
+    : "resources/data/floors/floor_01.map";
+  dString_t** floor = dungeon_load_map( map_path );
+  if ( !floor )
+  {
+    fprintf( stderr, "DungeonBuild: could not load floor map!\n" );
+    return;
+  }
+
   RoomEnumeratorInit( DUNGEON_W, DUNGEON_H );
   ITileInit();
 
   /* Parse the character map into tiles */
   for ( int y = 0; y < DUNGEON_H; y++ )
   {
+    const char* row = d_StringPeek( floor[y] );
     for ( int x = 0; x < DUNGEON_W; x++ )
     {
       int  idx = y * DUNGEON_W + x;
-      char c   = dungeon[y][x];
+      char c   = row[x];
 
       if ( c == '#' )
       {
@@ -100,19 +157,24 @@ void DungeonBuild( World_t* world )
       {
         ITilePlace( world, x, y, ITILE_RAT_HOLE );
       }
+      else if ( c == 'S' )
+      {
+        ITilePlace( world, x, y, ITILE_HIDDEN_WALL );
+      }
       else if ( c == 'B' || c == 'G' || c == 'R' || c == 'W' )
       {
         int type = ( c == 'B' ) ? DOOR_BLUE  :
                    ( c == 'G' ) ? DOOR_GREEN :
                    ( c == 'R' ) ? DOOR_RED   : DOOR_WHITE;
         /* Walls above & below = vertical door; walls left & right = horizontal */
-        int vert = ( y > 0 && y < DUNGEON_H - 1
-                     && dungeon[y-1][x] == '#' && dungeon[y+1][x] == '#' );
+        const char* above = ( y > 0 )              ? d_StringPeek( floor[y-1] ) : NULL;
+        const char* below = ( y < DUNGEON_H - 1 )  ? d_StringPeek( floor[y+1] ) : NULL;
+        int vert = ( above && below && above[x] == '#' && below[x] == '#' );
         DoorPlace( world, x, y, type, vert );
       }
       else
       {
-        int room_id = char_to_room_id( c );
+        int room_id = DungeonCharToRoomId( c );
         if ( room_id != ROOM_NONE )
           RoomSetTile( x, y, room_id );
         /* both room chars and '.' keep the WorldCreate default (floor, tile 0) */
@@ -120,14 +182,40 @@ void DungeonBuild( World_t* world )
     }
   }
 
-  RoomLoadData( "resources/data/rooms_floor_01.duf" );
+  dungeon_free_map( floor );
 
-  /* Objects — placed by coordinate, not by map char */
-  ObjectPlace( world, 22, 4, OBJ_EASEL );
+  RoomLoadData( ( g_current_floor == 2 )
+    ? "resources/data/rooms_floor_02.duf"
+    : "resources/data/rooms_floor_01.duf" );
+
+  /* Objects - placed by coordinate, not by map char */
+  if ( g_current_floor == 1 )
+    ObjectPlace( world, 22, 4, OBJ_EASEL );
+  if ( g_current_floor == 2 )
+    ObjectPlace( world, 12, 5, OBJ_CHAIR );
 }
 
 void DungeonPlayerStart( float* wx, float* wy )
 {
-  *wx = 14 * 16 + 8.0f;
-  *wy = 18 * 16 + 8.0f;
+  /* Find center of room 0 */
+  int min_x = DUNGEON_W, max_x = 0;
+  int min_y = DUNGEON_H, max_y = 0;
+  int found = 0;
+
+  for ( int y = 0; y < DUNGEON_H; y++ )
+    for ( int x = 0; x < DUNGEON_W; x++ )
+      if ( RoomAt( x, y ) == 0 )
+      {
+        if ( x < min_x ) min_x = x;
+        if ( x > max_x ) max_x = x;
+        if ( y < min_y ) min_y = y;
+        if ( y > max_y ) max_y = y;
+        found = 1;
+      }
+
+  int cx = found ? ( min_x + max_x ) / 2 : 14;
+  int cy = found ? ( min_y + max_y ) / 2 : 18;
+
+  *wx = cx * 16 + 8.0f;
+  *wy = cy * 16 + 8.0f;
 }

@@ -239,7 +239,7 @@ void SpellVFXUpdate( float dt )
       flashes[i].active = 0;
   }
 
-  /* Deactivate spent projs (safety — callbacks should set active=0) */
+  /* Deactivate spent projs (safety - callbacks should set active=0) */
   for ( int i = 0; i < MAX_PROJS; i++ )
   {
     if ( projs[i].active && projs[i].progress >= 1.0f )
@@ -396,7 +396,7 @@ void SpellVFXDraw( aRectf_t vp_rect, GameCamera_t* cam )
       a_DrawLine( (int)pts_x[j], (int)pts_y[j],
                   (int)pts_x[j + 1], (int)pts_y[j + 1], bolt_color );
 
-    /* Glow pass — slightly offset, half alpha */
+    /* Glow pass - slightly offset, half alpha */
     aColor_t glow_color = { 0xff, 0xff, 0x64, alpha / 2 };
     seed = z->seed + 9999;
     float g_pts_x[ZAP_SEGMENTS + 1];

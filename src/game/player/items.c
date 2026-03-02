@@ -466,7 +466,7 @@ void PlayerFullReset( int class_index )
   player.selected_consumable = 0;
   player.equip_cursor = 0;
   player.inv_focused = 1;
-  player.gold = 3;
+  player.gold = 0;
   player.first_strike_active = 1;
   player.fs_visited = 0;
   player.scroll_echo_counter = 0;

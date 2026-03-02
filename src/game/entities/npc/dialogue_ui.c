@@ -151,7 +151,7 @@ int DialogueUILogic( void )
     }
   }
 
-  /* Enter/Space — confirm */
+  /* Enter/Space - confirm */
   if ( app.keyboard[SDL_SCANCODE_RETURN] == 1 || app.keyboard[SDL_SCANCODE_SPACE] == 1 )
   {
     app.keyboard[SDL_SCANCODE_RETURN] = 0;
@@ -162,7 +162,7 @@ int DialogueUILogic( void )
     return 1;
   }
 
-  /* ESC — close dialogue */
+  /* ESC - close dialogue */
   if ( app.keyboard[SDL_SCANCODE_ESCAPE] == 1 )
   {
     app.keyboard[SDL_SCANCODE_ESCAPE] = 0;
@@ -264,7 +264,7 @@ void DialogueUIDraw( aRectf_t panel_rect )
   y = r.y + SEP_OY;
   a_DrawFilledRect( (aRectf_t){ x, y, text_area_w, 1 }, DLG_FG );
 
-  /* Speech text — wrap to available width */
+  /* Speech text - wrap to available width */
   y = r.y + TEXT_OY;
   {
     aTextStyle_t ts = a_default_text_style;

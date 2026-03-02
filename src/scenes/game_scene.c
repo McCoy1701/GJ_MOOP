@@ -42,11 +42,13 @@
 #include "game_camera.h"
 #include "game_turns.h"
 #include "game_input.h"
+#include "floor_cutscene.h"
+#include "dev_mode.h"
 
 static void gs_Logic( float );
 static void gs_Draw( float );
 
-/* Panel colors — palette */
+/* Panel colors - palette */
 #define PANEL_BG  (aColor_t){ 0x09, 0x0a, 0x14, 200 }
 #define PANEL_FG  (aColor_t){ 0xc7, 0xcf, 0xcc, 255 }
 #define GOLD      (aColor_t){ 0xde, 0x9e, 0x41, 255 }
@@ -139,7 +141,10 @@ void GameSceneInit( void )
   GroundItemsInit( ground_items, &num_ground_items );
 
   /* Shop */
-  ShopLoadPool( "resources/data/shops/floor_01_shop.duf" );
+  if ( g_current_floor == 2 )
+    ShopLoadPool( "resources/data/shops/floor_02_shop.duf" );
+  else
+    ShopLoadPool( "resources/data/shops/floor_01_shop.duf" );
   ShopUIInit( &sfx_move, &sfx_click, &console );
 
   /* Poison pools */
@@ -154,6 +159,7 @@ void GameSceneInit( void )
   /* Spawn all dungeon entities (items, NPCs, enemies) */
   DungeonSpawn( npcs, &num_npcs, enemies, &num_enemies,
                 ground_items, &num_ground_items, world );
+  FloorCutsceneRegister( npcs, num_npcs, enemies, num_enemies );
 
   TileActionsSetNPCs( npcs, &num_npcs );
   TileActionsSetGroundItems( ground_items, &num_ground_items );
@@ -164,6 +170,9 @@ void GameSceneInit( void )
                  npcs, &num_npcs, ground_items, &num_ground_items );
   GameInputInit( world, &camera, &console,
                  enemies, &num_enemies, npcs, &num_npcs );
+  DevModeInit( &console );
+  DevModeSetNPCs( npcs, &num_npcs );
+
   GameOverReset();
   SoundManagerPlayGame();
   TransitionIntroStart();
@@ -185,8 +194,9 @@ static void gs_Logic( float dt )
   }
 
   if ( GameCameraIntro( dt ) )         return;
+  if ( FloorCutsceneUpdate( dt ) )   { GameCameraFollow(); return; }
 
-  /* Game over — takes priority over everything */
+  /* Game over - takes priority over everything */
   GameOverCheck( dt );
   if ( GameOverActive() )
   {
@@ -204,6 +214,26 @@ static void gs_Logic( float dt )
     return;
   }
 
+  /* Stairway exit - check after dialogue closes */
+  if ( !DialogueActive() && FlagGet( "stair_leave" ) )
+  {
+    FlagClear( "stair_leave" );
+    a_WidgetCacheFree();
+    MainMenuInit();
+    return;
+  }
+
+  /* Stairway descend - transition to next floor */
+  if ( !DialogueActive() && FlagGet( "stair_descend" ) )
+  {
+    FlagClear( "stair_descend" );
+    g_current_floor++;
+    a_WidgetCacheFree();
+    GameSceneInit();
+    return;
+  }
+
+  if ( DevModeInput() )                { GameCameraFollow(); return; }
   if ( GameInputOverlays() )          { GameCameraFollow(); return; }
   if ( GameInputEsc() )               return;
 
@@ -229,7 +259,7 @@ static void gs_Draw( float dt )
   if ( HUDDrawTopBar( EnemiesInCombat( enemies, num_enemies ) ) )
     hud_pause_clicked = 1;
 
-  /* Game viewport — shrink 1px on right so it doesn't overlap right panels */
+  /* Game viewport - shrink 1px on right so it doesn't overlap right panels */
   {
     aContainerWidget_t* vp = a_GetContainerFromWidget( "game_viewport" );
     aRectf_t vr = { vp->rect.x, vp->rect.y, vp->rect.w - 1, vp->rect.h };
@@ -269,7 +299,7 @@ static void gs_Draw( float dt )
     ConsoleDraw( &console, cr );
   }
 
-  /* World + Player — clipped to game_viewport panel */
+  /* World + Player - clipped to game_viewport panel */
   {
     aContainerWidget_t* vp = a_GetContainerFromWidget( "game_viewport" );
     aRectf_t clip = { vp->rect.x + 1, vp->rect.y + 1, vp->rect.w - 3, vp->rect.h - 2 };
@@ -310,7 +340,7 @@ static void gs_Draw( float dt )
     NPCsDrawAll( vp_rect, &draw_cam, npcs, num_npcs,
                   world, settings.gfx_mode );
 
-    /* Darkness overlay — covers world + enemies, player drawn on top.
+    /* Darkness overlay - covers world + enemies, player drawn on top.
        fade param: 0 = all black (intro start), 1 = normal visibility. */
     GV_DrawDarkness( vp_rect, &draw_cam, world,
                      TransitionGetViewportAlpha() );
@@ -338,10 +368,10 @@ static void gs_Draw( float dt )
     EnemiesDrawTelegraph( vp_rect, &draw_cam, enemies, num_enemies, world );
     EnemyProjectileDraw( vp_rect, &draw_cam );
 
-    /* Player sprite (drawn after darkness — always visible) */
+    /* Player sprite (drawn after darkness - always visible) */
     PlayerDraw( vp_rect, &draw_cam, settings.gfx_mode );
 
-    /* Health bars — hide after 2 turns without taking damage */
+    /* Health bars - hide after 2 turns without taking damage */
     for ( int i = 0; i < num_enemies; i++ )
     {
       if ( !enemies[i].alive ) continue;
@@ -381,13 +411,13 @@ static void gs_Draw( float dt )
       }
     }
 
-    /* Quest tracker — top-left of viewport */
+    /* Quest tracker - top-left of viewport */
     QuestTrackerDraw( vp_rect );
 
     a_DisableClipRect();
   }
 
-  /* Dialogue UI — drawn on top of viewport */
+  /* Dialogue UI - drawn on top of viewport */
   if ( DialogueActive() )
   {
     aContainerWidget_t* cp = a_GetContainerFromWidget( "console_panel" );
@@ -417,7 +447,7 @@ static void gs_Draw( float dt )
     float ht = GameTurnsHintTimer();
     if ( ht > 0.0f )
     {
-    /* Compute alpha — fade out during last HINT_FADE seconds */
+    /* Compute alpha - fade out during last HINT_FADE seconds */
     float alpha = 1.0f;
     if ( ht < HINT_FADE )
       alpha = ht / HINT_FADE;
@@ -478,9 +508,12 @@ static void gs_Draw( float dt )
     }
   }
 
-  /* Pause menu — drawn on top of everything */
+  /* Pause menu - drawn on top of everything */
   PauseMenuDraw();
 
-  /* Game over — drawn on top of absolutely everything */
+  /* Dev mode overlay (teleport selector) */
+  DevModeDraw();
+
+  /* Game over - drawn on top of absolutely everything */
   GameOverDraw();
 }

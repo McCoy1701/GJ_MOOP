@@ -5,14 +5,15 @@
 #include "movement.h"
 #include "combat_vfx.h"
 #include "game_viewport.h"
+#include "floor_cutscene.h"
 
 extern Player_t player;
 
 void PlayerDraw( aRectf_t vp_rect, GameCamera_t* cam, int gfx_mode )
 {
-  float py = player.world_y + PlayerBounceOY();
+  float py = player.world_y + PlayerBounceOY() + FloorCutscenePlayerOY();
 
-  /* Shadow — pinned to bottom of tile, doesn't bounce with player */
+  /* Shadow - pinned to bottom of tile, doesn't bounce with player */
   float shadow_oy = ( gfx_mode == GFX_IMAGE ) ? 8.0f : 7.0f;
   GV_DrawFilledRect( vp_rect, cam,
                      player.world_x, player.world_y + shadow_oy,

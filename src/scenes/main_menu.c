@@ -73,7 +73,7 @@ static void mm_Logic( float dt )
 {
   a_DoInput();
 
-  /* ESC — quit */
+  /* ESC - quit */
   if ( app.keyboard[SDL_SCANCODE_ESCAPE] == 1 )
   {
     app.keyboard[SDL_SCANCODE_ESCAPE] = 0;
@@ -113,7 +113,7 @@ static void mm_Logic( float dt )
     return;
   }
 
-  /* Mouse — hit test each button rect */
+  /* Mouse - hit test each button rect */
   aContainerWidget_t* bc = a_GetContainerFromWidget( "mm_buttons" );
   aRectf_t r = bc->rect;
   float btn_w = r.w;

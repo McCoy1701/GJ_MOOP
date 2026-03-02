@@ -93,7 +93,9 @@ SYS_SRCS = tween.c \
 					 lore.c \
 					 persist.c \
 					 poison_pool.c \
-					 placed_traps.c
+					 placed_traps.c \
+					 floor_cutscene.c \
+					 dev_mode.c
 
 WORLD_SRCS = world.c \
 						 game_viewport.c \

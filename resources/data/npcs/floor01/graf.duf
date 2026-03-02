@@ -5,7 +5,8 @@
     image_path: "resources/assets/npcs/graf.png"
     description: "A tired-looking guard leaning on a spear."
     idle_bark: "*yawn*"
-    idle_cooldown: 3
+    idle_log: "Graf yawns."
+    idle_cooldown: 5
 }
 
 # ==============================
@@ -249,7 +250,7 @@
 @rats_info {
     text: "Big ones. Like, suspiciously big. I'd deal with them myself but... guard duty. It's been tiring work."
     set_flag: "knows_about_rats"
-    options: ["opt_accept_quest", "opt_already_killed", "opt_about_town", "opt_leave"]
+    options: ["opt_accept_quest", "opt_already_killed", "opt_about_slimes", "opt_about_town", "opt_leave"]
 }
 @opt_about_rats_followup {
     label: "About those rats..."
@@ -261,7 +262,7 @@
 }
 @rats_followup {
     text: "Still big. Still here. Still terrifying. You reconsidering?"
-    options: ["opt_accept_quest", "opt_leave"]
+    options: ["opt_accept_quest", "opt_about_slimes", "opt_leave"]
 }
 @opt_accept_quest {
     label: "I'll handle it."
@@ -315,6 +316,28 @@
     set_flag: "rats_cleared"
     give_item: "Small Health Potion"
     options: ["opt_leave"]
+}
+
+# ==============================
+# SLIMES
+# ==============================
+@opt_about_slimes {
+    label: "What about the slimes?"
+    color: "lore"
+    set_lore: "dungeon_slimes"
+    goto: "slimes_reply"
+}
+@slimes_reply {
+    text: "The slimes? Oh, I don't mind the slimes. They keep to themselves, mostly. Don't smell nearly as bad as the rats. Well, until you kill one. Then they pop and it's this awful vinegar stink that gets in your armor and never comes out."
+    options: ["opt_slimes_dangerous", "opt_about_town", "opt_leave"]
+}
+@opt_slimes_dangerous {
+    label: "Are they dangerous?"
+    goto: "slimes_dangerous_reply"
+}
+@slimes_dangerous_reply {
+    text: "Dangerous? Nah. Annoying? Absolutely. They dissolve anything metal if you leave it lying around. Lost a belt buckle to one. Just sat on it and melted it overnight. Slow little things though. You can outrun them easy."
+    options: ["opt_ask_rats", "opt_about_rats_followup", "opt_about_town", "opt_leave"]
 }
 
 # ==============================
@@ -454,7 +477,7 @@
     priority: 5
     require_flag: "guard_leaving"
     text: "Just let me... recalibrate myself. Haven't walked with purpose in three weeks. My legs forgot how."
-    options: ["opt_offer_help_leave", "opt_ask_rats", "opt_about_rats_followup", "opt_leave"]
+    options: ["opt_offer_help_leave", "opt_claim_reward", "opt_ask_rats", "opt_about_rats_followup", "opt_leave"]
 }
 @opt_offer_help_leave {
     label: "Want me to help you find the way out?"

@@ -1,0 +1,29 @@
+@goblin_grunt {
+    name: "Goblin Grunt"
+    glyph: "g"
+    hp: 12
+    damage: 2
+    defense: 1
+    ai: "basic"
+    gold_drop: 2
+    color: [120, 160, 80, 255]
+    image_path: "resources/assets/enemies/goblin_grunt.png"
+    description: "A squat, mean-looking goblin armed with a crude club."
+}
+
+@red_slime {
+    name: "Red Slime"
+    glyph: "S"
+    hp: 10
+    damage: 2
+    defense: 0
+    ai: "basic"
+    sight_range: 5
+    on_death: "poison_pool"
+    pool_duration: 4
+    pool_damage: 2
+    gold_drop: 2
+    color: [200, 60, 60, 255]
+    image_path: "resources/assets/enemies/red_slime.png"
+    description: "A crimson ooze that burns hotter than its green cousin."
+}

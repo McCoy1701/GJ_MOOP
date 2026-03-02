@@ -78,7 +78,7 @@ World_t* WorldCreate( int width, int height, int tile_w, int tile_h )
   return new_world;
 }
 
-/* Legacy renderer — used by the editor. Game uses GV_DrawWorld instead. */
+/* Legacy renderer - used by the editor. Game uses GV_DrawWorld instead. */
 void WorldDraw( int x_off, int y_off,
                     World_t* world, aTileset_t* tile_set,
                     uint8_t draw_ascii )

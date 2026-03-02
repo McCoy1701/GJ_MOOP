@@ -36,7 +36,7 @@ static int tile_action_cursor  = 0;
 static int tile_action_row, tile_action_col;
 static int tile_action_on_self = 0;
 
-/* Check if midground has a door at (r,c) — delegates to doors.c */
+/* Check if midground has a door at (r,c) - delegates to doors.c */
 static int tile_has_door( int r, int c )
 {
   int idx = c * world->width + r;
@@ -159,7 +159,7 @@ int TileActionsLogic( int mouse_moved, Enemy_t* enemies, int num_enemies )
     return 1;
   }
 
-  /* W/S or Up/Down — navigate */
+  /* W/S or Up/Down - navigate */
   if ( app.keyboard[SDL_SCANCODE_W] == 1 || app.keyboard[SDL_SCANCODE_UP] == 1 )
   {
     app.keyboard[SDL_SCANCODE_W] = 0;
@@ -217,7 +217,7 @@ int TileActionsLogic( int mouse_moved, Enemy_t* enemies, int num_enemies )
     }
   }
 
-  /* Space/Enter or click — execute action */
+  /* Space/Enter or click - execute action */
   int exec = 0;
   if ( app.keyboard[SDL_SCANCODE_SPACE] == 1 || app.keyboard[SDL_SCANCODE_RETURN] == 1 )
   {
@@ -323,9 +323,10 @@ int TileActionsLogic( int mouse_moved, Enemy_t* enemies, int num_enemies )
         {
           NPCType_t* nt = &g_npc_types[tn->type_idx];
           CombatVFXSpawnText( tn->world_x, tn->world_y,
-                              nt->combat_bark, nt->color );
+                              d_StringPeek( nt->combat_bark ), nt->color );
           ConsolePushF( console, nt->color,
-                        "%s yells \"%s\"", nt->name, nt->combat_bark );
+                        "%s yells \"%s\"", d_StringPeek( nt->name ),
+                        d_StringPeek( nt->combat_bark ) );
         }
         else
         {
@@ -367,7 +368,7 @@ int TileActionsLogic( int mouse_moved, Enemy_t* enemies, int num_enemies )
         {
           NPCType_t* lnt = &g_npc_types[ln->type_idx];
           char desc[256];
-          strncpy( desc, lnt->description, 255 ); desc[255] = '\0';
+          strncpy( desc, d_StringPeek( lnt->description ), 255 ); desc[255] = '\0';
           desc[0] = (char)tolower( (unsigned char)desc[0] );
           int dlen = (int)strlen( desc );
           int has_period = ( dlen > 0 && desc[dlen - 1] == '.' );
@@ -451,8 +452,17 @@ int TileActionsLogic( int mouse_moved, Enemy_t* enemies, int num_enemies )
               int idx = tile_action_col * world->width + tile_action_row;
               Tile_t* t = &world->background[idx];
               if ( itile )
-                ConsolePushF( console, (aColor_t){ 0x81, 0x97, 0x96, 255 },
-                              "%s", ITileDescription( itile->type ) );
+              {
+                if ( itile->type == ITILE_HIDDEN_WALL && !itile->revealed )
+                  ConsolePushF( console, (aColor_t){ 0x81, 0x97, 0x96, 255 },
+                                "You see a stone wall." );
+                else if ( itile->type == ITILE_HIDDEN_WALL && itile->revealed )
+                  ConsolePushF( console, (aColor_t){ 0xc0, 0x94, 0x73, 255 },
+                                "A cracked wall. It looks like you could push through." );
+                else
+                  ConsolePushF( console, (aColor_t){ 0x81, 0x97, 0x96, 255 },
+                                "%s", ITileDescription( itile->type ) );
+              }
               else if ( ObjectIsObject( tile_action_row, tile_action_col ) )
                 ObjectDescribe( tile_action_row, tile_action_col );
               else if ( t->solid )

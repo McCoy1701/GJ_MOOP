@@ -1,0 +1,262 @@
+@npc {
+    name: "Glorbnax the Serene"
+    glyph: "P"
+    color: [100, 140, 180, 255]
+    image_path: "resources/assets/npcs/glorbnax_the_serene.png"
+    description: "A goblin in dark robes with blue chalk on his face. He is standing perfectly still."
+    idle_bark: "*breathes deeply*"
+    idle_cooldown: 5
+}
+
+# ==============================
+# GREETINGS (priority-based)
+# ==============================
+@greeting {
+    start: true
+    priority: 0
+    text: "Be still. You are safe here. Well, not safe. But still."
+    options: ["opt_who_are_you", "opt_why_standing", "opt_peace_tribe", "opt_about_laura", "opt_leave"]
+}
+@greeting_merc {
+    start: true
+    priority: 1
+    require_class: "Mercenary"
+    text: "A warrior. I sense great violence in you. I do not judge. I observe. ...please do not hit me."
+    options: ["opt_who_are_you", "opt_why_standing", "opt_peace_tribe", "opt_about_laura", "opt_leave"]
+}
+@greeting_rogue {
+    start: true
+    priority: 1
+    require_class: "Rogue"
+    text: "I saw you arrive. I also saw you steal a glance at my pockets. I have nothing worth taking. Only wisdom. And a small rock I find calming."
+    options: ["opt_who_are_you", "opt_why_standing", "opt_peace_tribe", "opt_about_laura", "opt_leave"]
+}
+@greeting_mage {
+    start: true
+    priority: 1
+    require_class: "Mage"
+    text: "A mage. You hear the hum too, don't you? We hear it always. We have learned to listen without answering."
+    options: ["opt_who_are_you", "opt_the_hum", "opt_peace_tribe", "opt_about_laura", "opt_leave"]
+}
+@greeting_post_combat {
+    start: true
+    priority: 2
+    require_flag: "quest_relic"
+    text: "You have chosen to help Laura. I do not agree with her methods. But I respect your path."
+    options: ["opt_directions", "opt_why_standing", "opt_peace_tribe", "opt_about_laura", "opt_leave"]
+}
+@greeting_has_relic {
+    start: true
+    priority: 3
+    require_flag: "has_relic"
+    require_not_flag: "relic_returned"
+    text: "The Hearthstone. You recovered it. Thistlewick will want to see you. Follow the western corridor. He will be... still."
+    options: ["opt_directions", "opt_thistlewick_expect", "opt_leave"]
+}
+@greeting_warning_done {
+    start: true
+    priority: 4
+    require_flag: "warning_delivered"
+    text: "Thistlewick has heard the warning. He meditates on it. This is the appropriate response."
+    options: ["opt_appropriate", "opt_the_hum", "opt_leave"]
+}
+
+# ==============================
+# WHO ARE YOU
+# ==============================
+@opt_who_are_you {
+    label: "Who are you?"
+    color: "lore"
+    goto: "who_reply"
+}
+@who_reply {
+    text: "I am Glorbnax the Serene. Monk of the peace tribe. Keeper of stillness. I have not moved from this spot in four days. It is a personal best."
+    options: ["opt_four_days", "opt_peace_tribe", "opt_about_laura", "opt_leave"]
+}
+@opt_four_days {
+    label: "Four days?!"
+    goto: "four_days_reply"
+}
+@four_days_reply {
+    text: "Thistlewick once stood still for eleven days. He is an inspiration. I passed out on day three and woke up standing. The body adapts. The mind transcends."
+    options: ["opt_why_standing", "opt_peace_tribe", "opt_leave"]
+}
+
+# ==============================
+# WHY STANDING STILL
+# ==============================
+@opt_why_standing {
+    label: "You watched us fight and did nothing."
+    goto: "why_standing_reply"
+}
+@why_standing_reply {
+    text: "Correct. Violence is a cycle. To act within it is to perpetuate it. I chose to observe. To witness. To hold space."
+    options: ["opt_hold_space", "opt_could_have_died", "opt_leave"]
+}
+@opt_hold_space {
+    label: "What does 'hold space' mean?"
+    goto: "hold_space_reply"
+}
+@hold_space_reply {
+    text: "It means I was here. Fully present. Aware of your struggle. Deeply empathetic. From a safe distance."
+    options: ["opt_could_have_died", "opt_peace_tribe", "opt_leave"]
+}
+@opt_could_have_died {
+    label: "We could have died."
+    goto: "could_have_died_reply"
+}
+@could_have_died_reply {
+    text: "Yes. And I would have mourned. Peacefully. With great stillness. ...I understand this is frustrating. Many people find it frustrating. Laura finds it especially frustrating. She has told me. Loudly. Several times."
+    options: ["opt_about_laura", "opt_peace_tribe", "opt_leave"]
+}
+
+# ==============================
+# ABOUT LAURA
+# ==============================
+@opt_about_laura {
+    label: "What do you think of Laura?"
+    goto: "about_laura_reply"
+}
+@about_laura_reply {
+    text: "Laura is... complicated. She was one of us. Bright. Kind. Then she picked up a blade and something in her changed. She chose violence. We could not keep her."
+    options: ["opt_laura_defend", "opt_laura_exile", "opt_leave"]
+}
+@opt_laura_defend {
+    label: "She was defending people."
+    goto: "laura_defend_reply"
+}
+@laura_defend_reply {
+    text: "Yes. And that is how it always begins. 'I am defending.' Then 'I am preventing.' Then 'I am attacking before they can.' The blade does not care about your reasons. It only cuts."
+    options: ["opt_laura_exile", "opt_peace_tribe", "opt_leave"]
+}
+@opt_laura_exile {
+    label: "She says you exiled her."
+    goto: "laura_exile_reply"
+}
+@laura_exile_reply {
+    text: "Laura chose to leave when she chose the weapon. We did not exile her. We acknowledged her departure. ...she disagrees with this framing. Strongly."
+    options: ["opt_peace_tribe", "opt_leave"]
+}
+
+# ==============================
+# PEACE TRIBE INFO
+# ==============================
+@opt_peace_tribe {
+    label: "Tell me about the peace tribe."
+    color: "lore"
+    goto: "peace_tribe_reply"
+}
+@peace_tribe_reply {
+    text: "We are the goblins who chose stillness. When the hum grew loud and our kin began to rage, we sat down. We breathed. We refused to become what the dungeon wanted us to be."
+    set_lore: "peace_tribe"
+    options: ["opt_how_long_here", "opt_the_hum", "opt_war_split", "opt_directions", "opt_leave"]
+}
+@opt_how_long_here {
+    label: "How long have goblins lived down here?"
+    color: "lore"
+    goto: "how_long_reply"
+}
+@how_long_reply {
+    text: "Generations. Long before the miners. Long before the colored doors had names. The overworld was cruel to our kind. Hunted. Burned. Driven out. We came underground because there was nowhere else. This was supposed to be safe."
+    set_lore: "goblin_refuge"
+    options: ["opt_supposed_to", "opt_the_hum", "opt_directions", "opt_leave"]
+}
+@opt_supposed_to {
+    label: "'Supposed to be?'"
+    goto: "supposed_to_reply"
+}
+@supposed_to_reply {
+    text: "The dungeon changed. Or perhaps it was always changing and we only noticed when our people began to split. Some grew angry. Some grew still. Families broke apart. Friends stopped recognizing each other. The elders called it 'The Fracture.' We call it Tuesday."
+    options: ["opt_war_split", "opt_the_hum", "opt_leave"]
+}
+@opt_war_split {
+    label: "When did the tribes split?"
+    color: "lore"
+    goto: "war_split_reply"
+}
+@war_split_reply {
+    text: "Two generations ago. Goblin generations are short. The angry ones followed Kragthar's grandfather to the eastern caves. We stayed west. Built a place of quiet. They built a place of noise. We've been shouting across the gap ever since. Well. They shout. We observe the shouting."
+    set_lore: "war_tribe"
+    options: ["opt_the_hum", "opt_directions", "opt_leave"]
+}
+
+# ==============================
+# THE HUM
+# ==============================
+@opt_the_hum {
+    label: "The hum... what do you know about it?"
+    color: "lore"
+    goto: "the_hum_reply"
+}
+@the_hum_reply {
+    text: "It is the voice of the dungeon. Or its heartbeat. We do not know. The elders taught us that if you listen without resisting, it passes through you like wind. If you fight it, it finds something to grab."
+    options: ["opt_hum_goblins", "opt_hum_peace", "opt_leave"]
+}
+@opt_hum_goblins {
+    label: "Is that what happened to the war goblins?"
+    goto: "hum_goblins_reply"
+}
+@hum_goblins_reply {
+    text: "They fought it. Clenched their fists and pushed back. And the hum... it grabbed. Gave them rage. Purpose. Direction. All pointing the wrong way. They think they are strong. They are being used."
+    options: ["opt_hum_peace", "opt_directions", "opt_leave"]
+}
+@opt_hum_peace {
+    label: "And the peace goblins? Are you sure you're not being used too?"
+    goto: "hum_peace_reply"
+}
+@hum_peace_reply {
+    text: "...that is a deeply unpleasant question. I will meditate on it. For a long time. Possibly forever."
+    options: ["opt_directions", "opt_about_laura", "opt_leave"]
+}
+
+# ==============================
+# DIRECTIONS
+# ==============================
+@opt_directions {
+    label: "How do I reach the peace tribe?"
+    goto: "directions_reply"
+}
+@directions_reply {
+    text: "Follow the western corridor. You will know you are close when it becomes very quiet and several goblins are standing perfectly still and staring at you. Do not be alarmed. That is how we say hello."
+    options: ["opt_war_directions", "opt_leave"]
+}
+@opt_war_directions {
+    label: "And the war goblins?"
+    goto: "war_directions_reply"
+}
+@war_directions_reply {
+    text: "East. You will know you are close when something hits you. That is how they say hello."
+    options: ["opt_leave"]
+}
+
+# ==============================
+# THISTLEWICK PREP
+# ==============================
+@opt_thistlewick_expect {
+    label: "What should I expect from Thistlewick?"
+    goto: "thistlewick_expect_reply"
+}
+@thistlewick_expect_reply {
+    text: "He will be still. He will listen. He will thank you. He will then do nothing for a very long time and call it wisdom. I say this with love. He is a great leader. He is also the most stubborn goblin alive."
+    options: ["opt_directions", "opt_leave"]
+}
+
+# ==============================
+# POST-WARNING
+# ==============================
+@opt_appropriate {
+    label: "Meditating? Something is coming to KILL everyone."
+    goto: "appropriate_reply"
+}
+@appropriate_reply {
+    text: "And panic would help? Thistlewick processes. He considers. He weighs all paths. ...he also once considered whether to eat a mushroom for six hours and it rotted in his hand. But the principle is sound."
+    options: ["opt_the_hum", "opt_leave"]
+}
+
+# ==============================
+# LEAVE
+# ==============================
+@opt_leave {
+    label: "[Leave]"
+    goto: "end"
+}

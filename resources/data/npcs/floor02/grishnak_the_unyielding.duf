@@ -1,0 +1,246 @@
+@npc {
+    name: "Grishnak the Unyielding"
+    glyph: "U"
+    color: [60, 85, 110, 255]
+    image_path: "resources/assets/npcs/grishnak_the_unyielding.png"
+    description: "A very large goblin with smudged blue face paint, gripping a beer mug."
+}
+
+# ==============================
+# GREETINGS
+# ==============================
+@greeting {
+    start: true
+    priority: 0
+    text: "No."
+    options: ["opt_no_what", "opt_who_are_you", "opt_what_drinking", "opt_leave"]
+}
+@greeting_merc {
+    start: true
+    priority: 1
+    require_class: "Mercenary"
+    text: "A mercenary. I have twelve opinions about mercenaries. None of them are positive. Sit down if you want. Or don't. I'm not moving either way."
+    options: ["opt_twelve_opinions", "opt_who_are_you", "opt_what_drinking", "opt_leave"]
+}
+@greeting_rogue {
+    start: true
+    priority: 1
+    require_class: "Rogue"
+    text: "I see you looking at my mug. It's not for sale. It's not for trade. It's not for borrowing. It is mine."
+    options: ["opt_who_are_you", "opt_what_drinking", "opt_peace_tribe", "opt_leave"]
+}
+@greeting_mage {
+    start: true
+    priority: 1
+    require_class: "Mage"
+    text: "A mage. I have opinions about magic. Several. I will share them whether you ask or not."
+    options: ["opt_opinions_magic", "opt_who_are_you", "opt_what_drinking", "opt_leave"]
+}
+
+# ==============================
+# NO WHAT
+# ==============================
+@opt_no_what {
+    label: "'No' what?"
+    goto: "no_what_reply"
+}
+@no_what_reply {
+    text: "Just establishing my position. On everything. In advance. Saves time."
+    options: ["opt_who_are_you", "opt_what_drinking", "opt_peace_tribe", "opt_leave"]
+}
+
+# ==============================
+# WHO ARE YOU
+# ==============================
+@opt_who_are_you {
+    label: "Who are you?"
+    color: "lore"
+    goto: "who_reply"
+}
+@who_reply {
+    text: "Grishnak. The Unyielding."
+    options: ["opt_unyielding", "opt_what_drinking", "opt_leave"]
+}
+@opt_unyielding {
+    label: "What exactly are you unyielding about?"
+    goto: "unyielding_reply"
+}
+@unyielding_reply {
+    text: "Everything. My seat. My opinions. My beer. My belief that mushroom stew should be served hot. My conviction that Thistlewick stands still too much. My position that mornings are a mistake. My certainty that the color blue is the best color. All of these are facts and I will not be moved."
+    options: ["opt_mornings", "opt_peace_tribe", "opt_laura_said", "opt_leave"]
+}
+
+# ==============================
+# MORNINGS
+# ==============================
+@opt_mornings {
+    label: "You're underground. There are no mornings."
+    goto: "mornings_reply"
+}
+@mornings_reply {
+    text: "And yet I am still against them. That is how unyielding I am."
+    options: ["opt_peace_tribe", "opt_what_drinking", "opt_laura_said", "opt_leave"]
+}
+
+# ==============================
+# WHAT ARE YOU DRINKING
+# ==============================
+@opt_what_drinking {
+    label: "What are you drinking?"
+    goto: "drinking_reply"
+}
+@drinking_reply {
+    text: "Cave ale. Brewed it myself. From mushrooms, mostly. And spite. The spite is what gives it body."
+    options: ["opt_any_good", "opt_who_are_you", "opt_peace_tribe", "opt_leave"]
+}
+@opt_any_good {
+    label: "Is it any good?"
+    goto: "any_good_reply"
+}
+@any_good_reply {
+    text: "It is the best ale in this dungeon. This is not a matter of opinion. This is a fact I have decided, and I will not be argued with."
+    options: ["opt_who_are_you", "opt_peace_tribe", "opt_leave"]
+}
+
+# ==============================
+# MERC - TWELVE OPINIONS
+# ==============================
+@opt_twelve_opinions {
+    label: "Twelve opinions? Really?"
+    goto: "twelve_opinions_reply"
+}
+@twelve_opinions_reply {
+    text: "I had eleven, but then you walked in and I formed a twelfth. It is: you look tired. Sit down. Have some ale. Stop hitting things for five minutes."
+    options: ["opt_who_are_you", "opt_what_drinking", "opt_peace_tribe", "opt_leave"]
+}
+
+# ==============================
+# MAGE - OPINIONS ON MAGIC
+# ==============================
+@opt_opinions_magic {
+    label: "Let's hear them."
+    goto: "opinions_magic_reply"
+}
+@opinions_magic_reply {
+    text: "One: magic is just violence that went to school. Two: anyone who shoots fire from their hands and calls it 'scholarship' is lying to themselves. Three: the glowy ones are the worst."
+    options: ["opt_who_are_you", "opt_what_drinking", "opt_peace_tribe", "opt_leave"]
+}
+
+# ==============================
+# PEACE TRIBE
+# ==============================
+@opt_peace_tribe {
+    label: "Tell me about the peace tribe."
+    color: "lore"
+    goto: "peace_tribe_reply"
+}
+@peace_tribe_reply {
+    text: "Best tribe. Only tribe worth being in. We don't fight, we don't raid, we don't yell. Well. I yell sometimes. But I yell peacefully. There's a difference. Thistlewick disagrees. He's wrong. I've told him. He stood there and said nothing for three hours. I took that as agreement."
+    set_lore: "peace_tribe"
+    options: ["opt_thistlewick", "opt_how_long_here", "opt_war_goblins", "opt_laura_said", "opt_leave"]
+}
+@opt_thistlewick {
+    label: "What do you think of Thistlewick?"
+    goto: "thistlewick_reply"
+}
+@thistlewick_reply {
+    text: "Good leader. Stands a little too still. Terrible at making decisions in under a week. I once asked him where we should dig a new latrine. He meditated on it for four days. I dug it myself on day two. He hasn't forgiven me. I haven't apologized. We are at peace about it."
+    options: ["opt_war_goblins", "opt_laura_said", "opt_leave"]
+}
+
+# ==============================
+# WAR GOBLINS
+# ==============================
+@opt_war_goblins {
+    label: "What about the war goblins?"
+    goto: "war_goblins_reply"
+}
+@war_goblins_reply {
+    text: "Idiots. Loud idiots. They hit things because they don't know how to sit with a thought for more than two seconds. Kragthar once challenged me to a fight. I said no. He said I was a coward. I said no to that too. He got confused and left. Best fight I ever won."
+    options: ["opt_peace_tribe", "opt_laura_said", "opt_leave"]
+}
+
+# ==============================
+# HOW LONG - DEEP LORE CHAIN
+# ==============================
+@opt_how_long_here {
+    label: "How long have goblins lived down here?"
+    color: "lore"
+    goto: "how_long_reply"
+}
+@how_long_reply {
+    text: "Long time. My grandmother's grandmother came down here. She said the doors were already glowing when they arrived. Three colors, pulsing like a heartbeat. She thought they were pretty. Tried to paint one of them yellow. Didn't take. Anyway, the ale was better back then."
+    set_lore: "goblin_origins"
+    options: ["opt_doors_glowing", "opt_what_drinking", "opt_leave"]
+}
+@opt_doors_glowing {
+    label: "Wait - the doors were already here?"
+    goto: "doors_glowing_reply"
+}
+@doors_glowing_reply {
+    text: "Obviously. You think goblins built magic color-coded doors? We can barely build a latrine. The doors were here. The hum was here. The table was here. We just moved in and tried not to touch anything. Most of us succeeded. Some didn't. Those ones are the war tribe now."
+    set_lore: "dungeon_origins"
+    options: ["opt_table", "opt_peace_tribe", "opt_leave"]
+}
+@opt_table {
+    label: "What table?"
+    goto: "table_reply"
+}
+@table_reply {
+    text: "Big stone thing, way down deep. Set for three. Plates, candles, the whole thing. My grandmother said the food was warm when they found it. Still warm when I saw it forty years ago. Probably still warm now. Terrible table manners though. Who sets three plates and no chairs? I have opinions about this."
+    set_lore: "the_feast"
+    options: ["opt_opinions_table", "opt_leave"]
+}
+@opt_opinions_table {
+    label: "What opinions?"
+    goto: "opinions_table_reply"
+}
+@opinions_table_reply {
+    text: "One: three plates means three guests. Two: no one has ever sat down. Three: the dungeon has been waiting for a very long time and it is very patient. Four: patience is a virtue I respect. Five: I still think it needs chairs. This is the hill I will die on. Peacefully."
+    options: ["opt_leave"]
+}
+
+# ==============================
+# LAURA SAID (flag-gated)
+# ==============================
+@opt_laura_said {
+    label: "Laura says you're exhausting."
+    require_flag: "knows_grishnak"
+    goto: "laura_said_reply"
+}
+@laura_said_reply {
+    text: "Laura says a lot of things. Loudly. While holding a blade. You know what's exhausting? Picking up a weapon and calling it 'necessary.' I've been sitting in this spot for six years and I haven't needed a weapon once."
+    options: ["opt_laura_wrong", "opt_laura_point", "opt_leave"]
+}
+@opt_laura_wrong {
+    label: "She was defending people."
+    goto: "laura_wrong_reply"
+}
+@laura_wrong_reply {
+    text: "And now she's standing alone in a hallway. Defended her way right out of a community. I'm not saying she's wrong. I'm saying I'm not saying she's right either. That's my position, and I'm not moving from it. Like this chair."
+    options: ["opt_miss_her", "opt_leave"]
+}
+@opt_laura_point {
+    label: "She might have a point."
+    goto: "laura_point_reply"
+}
+@laura_point_reply {
+    text: "She has several points. All of them sharp. That's the problem."
+    options: ["opt_miss_her", "opt_leave"]
+}
+@opt_miss_her {
+    label: "Do you miss her?"
+    goto: "miss_her_reply"
+}
+@miss_her_reply {
+    text: "...I'm not answering that. Not because I don't have an answer. I have several answers. I'm just choosing not to yield any of them."
+    options: ["opt_leave"]
+}
+
+# ==============================
+# LEAVE
+# ==============================
+@opt_leave {
+    label: "[Leave]"
+    goto: "end"
+}

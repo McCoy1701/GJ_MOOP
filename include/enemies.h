@@ -17,6 +17,7 @@ typedef struct
   char     ai[MAX_NAME_LENGTH];
   char     description[256];
   int      range;
+  int      sight_range;                 /* aggro range (Manhattan), default 6 */
   char     drop_item[MAX_NAME_LENGTH];  /* DUF key of consumable to drop on death */
   int      gold_drop;                  /* gold dropped on death (0 = none) */
   char     on_death[MAX_NAME_LENGTH];  /* death hazard, e.g. "poison_pool" */
@@ -26,7 +27,7 @@ typedef struct
   aImage_t* image;
 } EnemyType_t;
 
-typedef struct
+typedef struct Enemy_t
 {
   int   type_idx;
   int   row, col;
@@ -44,6 +45,8 @@ typedef struct
   /* Status effects */
   int   poison_ticks;
   int   poison_dmg;
+  int   burn_ticks;
+  int   burn_dmg;
   int   stun_turns;
 } Enemy_t;
 
@@ -67,7 +70,7 @@ void EnemySkeletonTick( Enemy_t* e, int player_row, int player_col,
                         int (*walkable)(int,int),
                         Enemy_t* all, int count );
 
-/* enemies.c — enemy turn management (owns its own tween manager) */
+/* enemies.c - enemy turn management (owns its own tween manager) */
 #include "world.h"
 
 void EnemiesSetWorld( World_t* w );
@@ -81,7 +84,7 @@ void EnemiesStartTurn( Enemy_t* list, int count,
                        int player_row, int player_col,
                        int (*walkable)(int,int) );
 
-/* rendering.c — draw all alive enemies */
+/* rendering.c - draw all alive enemies */
 #include "game_viewport.h"
 
 void EnemiesDrawAll( aRectf_t vp_rect, GameCamera_t* cam,

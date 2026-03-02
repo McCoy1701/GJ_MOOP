@@ -19,6 +19,7 @@
 #include "visibility.h"
 #include "pause_menu.h"
 #include "dungeon.h"
+#include "interactive_tile.h"
 
 extern Player_t player;
 
@@ -205,9 +206,10 @@ void GameInputMovement( void )
     {
       NPCType_t* nt = &g_npc_types[bump_npc->type_idx];
       CombatVFXSpawnText( bump_npc->world_x, bump_npc->world_y,
-                          nt->combat_bark, nt->color );
+                          d_StringPeek( nt->combat_bark ), nt->color );
       ConsolePushF( gi_console, nt->color,
-                    "%s yells \"%s\"", nt->name, nt->combat_bark );
+                    "%s yells \"%s\"", d_StringPeek( nt->name ),
+                    d_StringPeek( nt->combat_bark ) );
     }
     else
     {
@@ -222,6 +224,11 @@ void GameInputMovement( void )
       PlayerStartMove( tr, tc );
     else
       PlayerShake( dr, dc );
+  }
+  else if ( ITileIsRevealedHiddenWall( tr, tc ) )
+  {
+    ITileOpenHiddenWall( gi_world, tr, tc );
+    PlayerStartMove( tr, tc );
   }
   else
     PlayerWallBump( dr, dc );

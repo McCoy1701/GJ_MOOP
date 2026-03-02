@@ -1,0 +1,326 @@
+@npc {
+    name: "Laura"
+    glyph: "L"
+    color: [160, 120, 180, 255]
+    image_path: "resources/assets/npcs/laura.png"
+    description: "A goblin girl with messy face paint. She's holding a weapon."
+    idle_bark: "*sharpens blade*"
+    idle_cooldown: 5
+    combat: true
+    damage: 2
+}
+
+# ==============================
+# GREETINGS (priority-based)
+# ==============================
+@greeting_merc {
+    start: true
+    priority: 1
+    require_class: "Mercenary"
+    text: "A mercenary! Great. The war goblins are going to love you. Try not to encourage them."
+    options: ["opt_who_are_you", "opt_need_help", "opt_why_fighting", "opt_leave"]
+}
+@greeting_rogue {
+    start: true
+    priority: 1
+    require_class: "Rogue"
+    text: "You're quiet. Good. My advice? Don't let either tribe see you first."
+    options: ["opt_who_are_you", "opt_need_help", "opt_why_fighting", "opt_leave"]
+}
+@greeting_mage {
+    start: true
+    priority: 1
+    require_class: "Mage"
+    text: "A mage. Last one of those came through here and... never mind. Just don't point anything glowy at the peace goblins. They'll think it's a sign."
+    options: ["opt_who_are_you", "opt_need_help", "opt_why_fighting", "opt_leave"]
+}
+@greeting_quest_active {
+    start: true
+    priority: 2
+    require_flag: "quest_relic"
+    require_not_flag: "has_relic"
+    text: "Still looking for the Hearthstone? Kragthar's camp is to the east. Big goblin, red paint. You can't miss him."
+    options: ["opt_where_relic", "opt_who_are_you", "opt_why_fighting", "opt_leave"]
+}
+@greeting_has_relic {
+    start: true
+    priority: 3
+    require_flag: "has_relic"
+    require_not_flag: "relic_returned"
+    text: "You got it! You actually got the relic back! Take it to the peace tribe. Their leader, Thistlewick, is to the west. He'll listen now. He has to."
+    options: ["opt_what_say", "opt_who_are_you", "opt_why_fighting", "opt_leave"]
+}
+@greeting_relic_returned {
+    start: true
+    priority: 4
+    require_flag: "relic_returned"
+    require_not_flag: "warning_delivered"
+    text: "Did Thistlewick listen? Did you tell him what's coming?"
+    options: ["opt_told_him", "opt_not_yet_warn", "opt_who_are_you", "opt_why_fighting", "opt_leave"]
+}
+@greeting_warning_done {
+    start: true
+    priority: 5
+    require_flag: "warning_delivered"
+    text: "So now they know. And they're still just sitting there, aren't they? ...yeah. That sounds right."
+    options: ["opt_what_now", "opt_who_are_you", "opt_why_fighting", "opt_leave"]
+}
+
+# ==============================
+# NEED HELP - MAIN QUEST SPINE
+# ==============================
+@opt_need_help {
+    label: "Need any help?"
+    color: "quest"
+    goto: "need_help_reply"
+}
+@need_help_reply {
+    text: "Actually, yes. I've been trying to warn the peace goblins that something terrible is coming from below. But they exiled me. Kicked me out for picking up a weapon. So I can't get anywhere near their leader."
+    options: ["opt_what_coming", "opt_why_exiled", "opt_how_help", "opt_leave"]
+}
+@opt_what_coming {
+    label: "What's coming from below?"
+    goto: "about_below_reply"
+}
+@opt_why_exiled {
+    label: "They exiled you?"
+    goto: "exiled_explain"
+}
+@exiled_explain {
+    text: "Peace goblins don't fight. That's their whole thing. I used to be one of them. Then when the war goblins raided us, I picked up a blade, and told everyone we needed to defend ourselves. They called it 'choosing violence.' I called it 'not wanting to die.'"
+    set_flag: "knows_laura_exile"
+    options: ["opt_how_help", "opt_leave"]
+}
+@opt_how_help {
+    label: "How can I help?"
+    color: "quest"
+    goto: "how_help_reply"
+}
+@how_help_reply {
+    text: "The war goblins raided the peace tribe last week. Stole their sacred relic - the Goblin Hearthstone. If you get it back and return it, their leader Thistlewick will owe you. He'll have to listen. And maybe then I can warn them before it's too late."
+    options: ["opt_where_relic", "opt_what_hearthstone", "opt_accept_relic", "opt_leave"]
+}
+@opt_what_hearthstone {
+    label: "What's the Hearthstone?"
+    goto: "hearthstone_reply"
+}
+@hearthstone_reply {
+    text: "Small carved rock, been passed down since we first came underground. Represents the promise we made - that we'd survive together. Kragthar took it because he knew it would hurt."
+    options: ["opt_where_relic", "opt_accept_relic", "opt_leave"]
+}
+@opt_where_relic {
+    label: "Where are the war goblins keeping it?"
+    goto: "where_relic_reply"
+}
+@where_relic_reply {
+    text: "Kragthar's camp, to the east. Big goblin, red paint. He's probably sitting on the Hearthstone right now. The war goblins don't negotiate. Be ready for a fight."
+    set_lore: "war_tribe"
+    options: ["opt_accept_relic", "opt_leave"]
+}
+@opt_accept_relic {
+    label: "I'll get it back."
+    color: "quest"
+    set_flag: "quest_relic"
+    goto: "relic_accepted"
+}
+@relic_accepted {
+    text: "Thank you. Really. I've been standing in this hallway for days with no one willing to help, after I came back up. Come back with the Hearthstone and we can fix this. Maybe."
+    options: ["opt_about_below", "opt_who_are_you", "opt_leave"]
+}
+
+# ==============================
+# WHO ARE YOU (color, not required)
+# ==============================
+@opt_who_are_you {
+    label: "Who are you?"
+    color: "lore"
+    goto: "who_reply"
+}
+@who_reply {
+    text: "Laura."
+    options: ["opt_just_laura", "opt_need_help", "opt_leave"]
+}
+@opt_just_laura {
+    label: "Just... Laura?"
+    goto: "just_laura_reply"
+}
+@just_laura_reply {
+    text: "What's wrong with Laura? Perfectly good name. Better than 'Grishnak the Unyielding.' You know what Grishnak is unyielding about? EVERYTHING. Very exhausting goblin."
+    set_flag: "knows_grishnak"
+    options: ["opt_which_tribe", "opt_need_help", "opt_leave"]
+}
+@opt_which_tribe {
+    label: "Which tribe are you from?"
+    goto: "tribe_reply"
+}
+@tribe_reply {
+    text: "Good question. Used to be peace tribe. Blue paint, calm thoughts, watch your friends get eaten and feel enlightened about it. Then I picked up a weapon and they kicked me out. Now I'm... this."
+    options: ["opt_why_exiled", "opt_need_help", "opt_whats_going_on", "opt_leave"]
+}
+
+# ==============================
+# WHAT'S GOING ON (lore branch, hangs off spine)
+# ==============================
+@opt_whats_going_on {
+    label: "What's the situation down here?"
+    goto: "situation_reply"
+}
+@situation_reply {
+    text: "Two tribes. War goblins to the east - red paint, big weapons, small thoughts. Peace goblins to the west - blue paint, no weapons, big thoughts, equally useless. They've been screaming at each other for months."
+    options: ["opt_why_here", "opt_need_help", "opt_leave"]
+}
+@opt_why_here {
+    label: "Why are goblins living in a dungeon?"
+    color: "lore"
+    goto: "why_here_reply"
+}
+@why_here_reply {
+    text: "Overworld's not safe for goblins anymore. Humans hunt us for sport. This cave was supposed to be a refuge. We were here before the miners, before the doors, before any of you lot showed up. Then the dungeon started... changing things."
+    set_lore: "goblin_refuge"
+    options: ["opt_changing", "opt_need_help", "opt_leave"]
+}
+@opt_changing {
+    label: "Changing things how?"
+    goto: "changing_reply"
+}
+@changing_reply {
+    text: "The hum. You've heard it, right? It's louder down here. Some goblins got angry. Couldn't stop fighting. Others went the other way - stopped reacting to anything. Stood still while the world burned around them. Two tribes. Two symptoms."
+    options: ["opt_and_you", "opt_need_help", "opt_leave"]
+}
+@opt_and_you {
+    label: "And you?"
+    goto: "and_you_reply"
+}
+@and_you_reply {
+    text: "I don't know. I fight when I have to. I stop when I can. Maybe that means I'm resisting it. Maybe it means I just haven't picked a symptom yet."
+    options: ["opt_need_help", "opt_leave"]
+}
+
+# ==============================
+# WHAT'S BELOW - Laura's fear
+# ==============================
+@opt_about_below {
+    label: "What did you see down there?"
+    goto: "about_below_reply"
+}
+@about_below_reply {
+    text: "I went deeper. One floor. Just to scout. The hum was so loud I could feel it in my teeth. And there were... people. Or things that used to be people. Kneeling. Chanting. Facing something I couldn't see."
+    options: ["opt_below_more", "opt_below_come_back", "opt_leave"]
+}
+@opt_below_more {
+    label: "What were they chanting?"
+    goto: "below_more_reply"
+}
+@below_more_reply {
+    text: "I don't know. It wasn't words. It was the hum, but shaped. Like the dungeon was speaking through them. I ran. First time I've ever run from anything."
+    options: ["opt_below_come_back", "opt_leave"]
+}
+@opt_below_come_back {
+    label: "And you came back up to warn everyone."
+    goto: "below_come_back_reply"
+}
+@below_come_back_reply {
+    text: "Came back. Tried to warn the peace tribe. They won't listen. Tried to warn the war tribe. Got attacked. So now I'm standing in a hallway between both of them, waiting for something horrible to prove me right. Fun."
+    options: ["opt_need_help", "opt_leave"]
+}
+
+# ==============================
+# WHY ARE YOU FIGHTING
+# ==============================
+@opt_why_fighting {
+    label: "You actually fought with me. No one else does that."
+    goto: "why_fighting_reply"
+}
+@why_fighting_reply {
+    text: "Yeah, well. Someone has to. The peace goblins won't. The war goblins only fight for themselves. Everyone else in this dungeon just watches. I'm tired of watching."
+    options: ["opt_not_afraid", "opt_need_help", "opt_leave"]
+}
+@opt_not_afraid {
+    label: "Aren't you afraid?"
+    goto: "not_afraid_reply"
+}
+@not_afraid_reply {
+    text: "Terrified. Every fight. But I'd rather be scared and doing something than calm and doing nothing. Don't tell Glorbnax I said that. He'll give me a lecture about 'inner stillness.'"
+    options: ["opt_need_help", "opt_leave"]
+}
+
+# ==============================
+# RELIC RETRIEVED
+# ==============================
+@opt_what_say {
+    label: "What should I tell Thistlewick?"
+    require_flag: "has_relic"
+    goto: "what_say_reply"
+}
+@what_say_reply {
+    text: "Tell him Laura sent you. Tell him the Hearthstone is returned. And then tell him what I couldn't - that something is coming up from below and standing still won't save anyone. He won't like it. Say it anyway."
+    options: ["opt_about_below", "opt_leave"]
+}
+
+# ==============================
+# WARNING DELIVERED
+# ==============================
+@opt_told_him {
+    label: "He listened. I don't think he believed me."
+    require_flag: "relic_returned"
+    color: "quest"
+    set_flag: "warning_delivered"
+    goto: "told_him_reply"
+}
+@told_him_reply {
+    text: "That sounds like Thistlewick. 'Thank you for the information, we will meditate on it.' While something crawls up the stairs. At least he knows now. That's more than he knew yesterday."
+    options: ["opt_what_now", "opt_leave"]
+}
+@opt_not_yet_warn {
+    label: "Not yet."
+    goto: "not_yet_warn_reply"
+}
+@not_yet_warn_reply {
+    text: "Please. Whatever's down there isn't waiting for us to sort out our politics."
+    options: ["opt_leave"]
+}
+
+# ==============================
+# WHAT NOW - POST WARNING
+# ==============================
+@opt_what_now {
+    label: "So what do we do now?"
+    require_flag: "warning_delivered"
+    goto: "what_now_reply"
+}
+@what_now_reply {
+    text: "I don't know. The war goblins won't stop fighting long enough to prepare. The peace goblins won't start fighting to defend themselves. And I'm one goblin with a blade standing in a hallway."
+    options: ["opt_suggest_war", "opt_suggest_peace", "opt_suggest_both", "opt_leave"]
+}
+@opt_suggest_war {
+    label: "Rally the war goblins. They'll fight."
+    goto: "suggest_war_reply"
+}
+@suggest_war_reply {
+    text: "Fight what? Each other? That's all Kragthar knows. Point him at the thing below and he'll charge right in and get everyone killed. Bravely. Stupidly. ...but at least they'd fight."
+    options: ["opt_suggest_peace", "opt_suggest_both", "opt_leave"]
+}
+@opt_suggest_peace {
+    label: "The peace goblins are smart. They'll find another way."
+    goto: "suggest_peace_reply"
+}
+@suggest_peace_reply {
+    text: "They'll find another way to stand still, maybe. Thistlewick's people are thinkers. Good ones. But you can't think your way out of something that doesn't care about your thoughts. I've seen it."
+    options: ["opt_suggest_war", "opt_suggest_both", "opt_leave"]
+}
+@opt_suggest_both {
+    label: "What if both tribes worked together?"
+    goto: "suggest_both_reply"
+}
+@suggest_both_reply {
+    text: "You've met them, right? Kragthar thinks peace is weakness. Thistlewick thinks war is barbarism. Getting them in the same room would be harder than whatever's lurking below. ...but it's the only thing that might actually work."
+    options: ["opt_leave"]
+}
+
+# ==============================
+# LEAVE
+# ==============================
+@opt_leave {
+    label: "[Leave]"
+    goto: "end"
+}

@@ -17,6 +17,10 @@ static const struct {
     10, "O", { 0x09, 0x0a, 0x14, 255 },
     "A dark hole gnawed through the wall. Something is scratching inside.", 1
   },
+  [ITILE_HIDDEN_WALL] = {
+    1, "#", { 0x81, 0x97, 0x96, 255 },
+    "You see a stone wall.", 1
+  },
 };
 
 void ITileInit( void )
@@ -71,4 +75,37 @@ void ITileBreak( World_t* world, int row, int col )
 const char* ITileDescription( int type )
 {
   return itile_types[type].description;
+}
+
+void ITileReveal( World_t* world, int row, int col )
+{
+  ITile_t* t = ITileAt( row, col );
+  if ( !t || t->type != ITILE_HIDDEN_WALL || t->revealed ) return;
+
+  t->revealed = 1;
+
+  int idx = t->col * world->width + t->row;
+  world->midground[idx].glyph    = "#";
+  world->midground[idx].glyph_fg = (aColor_t){ 0xc0, 0x94, 0x73, 255 };
+}
+
+int ITileIsRevealedHiddenWall( int row, int col )
+{
+  ITile_t* t = ITileAt( row, col );
+  return ( t && t->type == ITILE_HIDDEN_WALL && t->revealed );
+}
+
+void ITileOpenHiddenWall( World_t* world, int row, int col )
+{
+  ITile_t* t = ITileAt( row, col );
+  if ( !t || t->type != ITILE_HIDDEN_WALL ) return;
+
+  int idx = t->col * world->width + t->row;
+
+  world->midground[idx].tile     = TILE_EMPTY;
+  world->midground[idx].glyph    = "";
+  world->midground[idx].glyph_fg = (aColor_t){ 0, 0, 0, 0 };
+  world->midground[idx].solid    = 0;
+
+  t->active = 0;
 }

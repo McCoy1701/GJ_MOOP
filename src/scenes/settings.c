@@ -132,7 +132,7 @@ static void st_DoDelete( void )
 
 static void st_ConfirmLogic( void )
 {
-  /* ESC — cancel */
+  /* ESC - cancel */
   if ( app.keyboard[SDL_SCANCODE_ESCAPE] == 1 )
   {
     app.keyboard[SDL_SCANCODE_ESCAPE] = 0;
@@ -141,7 +141,7 @@ static void st_ConfirmLogic( void )
     return;
   }
 
-  /* Left / Right — switch Yes/No */
+  /* Left / Right - switch Yes/No */
   if ( app.keyboard[A_A] == 1 || app.keyboard[A_LEFT] == 1 )
   {
     app.keyboard[A_A] = 0;
@@ -211,7 +211,7 @@ static void st_ConfirmLogic( void )
     confirm_state = ST_CONFIRM_2;
     confirm_cursor = 1; /* default No again */
   }
-  else /* ST_CONFIRM_2 — actually delete */
+  else /* ST_CONFIRM_2 - actually delete */
   {
     st_DoDelete();
     confirm_state = ST_NORMAL;
@@ -231,7 +231,7 @@ static void st_Logic( float dt )
     return;
   }
 
-  /* ESC — save and leave */
+  /* ESC - save and leave */
   if ( app.keyboard[SDL_SCANCODE_ESCAPE] == 1 )
   {
     app.keyboard[SDL_SCANCODE_ESCAPE] = 0;
@@ -247,7 +247,7 @@ static void st_Logic( float dt )
     a_WidgetsInit( "resources/widgets/settings.auf" );
   }
 
-  /* Up / Down — move cursor */
+  /* Up / Down - move cursor */
   if ( app.keyboard[A_W] == 1 || app.keyboard[A_UP] == 1 )
   {
     app.keyboard[A_W] = 0;
@@ -264,7 +264,7 @@ static void st_Logic( float dt )
     a_AudioPlaySound( &sfx_move, NULL );
   }
 
-  /* Left / Right — adjust value (skip delete row) */
+  /* Left / Right - adjust value (skip delete row) */
   if ( cursor != SET_DELETE )
   {
     if ( app.keyboard[A_A] == 1 || app.keyboard[A_LEFT] == 1 )
@@ -284,7 +284,7 @@ static void st_Logic( float dt )
     }
   }
 
-  /* Enter / Space — toggle/activate */
+  /* Enter / Space - toggle/activate */
   if ( app.keyboard[SDL_SCANCODE_RETURN] == 1 ||
        app.keyboard[SDL_SCANCODE_SPACE] == 1 )
   {
@@ -420,25 +420,25 @@ static void st_Draw( float dt )
 
       if ( i == SET_DELETE )
       {
-        /* Delete row — red label, centered, no value arrows */
+        /* Delete row - red label, centered, no value arrows */
         aColor_t red = { 0xa5, 0x30, 0x30, 255 };
         aColor_t red_bright = { 0xcf, 0x57, 0x3c, 255 };
         ts.fg    = sel ? red_bright : red;
         ts.align = TEXT_ALIGN_CENTER;
         a_DrawText( setting_labels[i],
                     (int)( bx + bw / 2 ),
-                    (int)( byi + ITEM_H / 2.0f ), ts );
+                    (int)( byi + ITEM_H / 2.0f - 6 ), ts );
       }
       else
       {
-        /* Label — left aligned */
+        /* Label - left aligned */
         ts.fg    = sel ? fg_hover : fg_norm;
         ts.align = TEXT_ALIGN_LEFT;
         a_DrawText( setting_labels[i],
                     (int)( bx + 8 ),
-                    (int)( byi + ITEM_H / 2.0f ), ts );
+                    (int)( byi + ITEM_H / 2.0f - 6 ), ts );
 
-        /* Value — centered in right half with arrows */
+        /* Value - centered in right half with arrows */
         char vbuf[16];
         const char* val = st_GetValueStr( i, vbuf, sizeof( vbuf ) );
         char display[32];
@@ -447,8 +447,8 @@ static void st_Draw( float dt )
         ts.fg    = sel ? gold : dim;
         ts.align = TEXT_ALIGN_CENTER;
         a_DrawText( display,
-                    (int)( bx + bw * 5 / 8 ),
-                    (int)( byi + ITEM_H / 2.0f ), ts );
+                    (int)( bx + bw * 5 / 8 - 76 ),
+                    (int)( byi + ITEM_H / 2.0f - 6 ), ts );
       }
     }
 

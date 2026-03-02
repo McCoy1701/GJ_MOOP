@@ -250,7 +250,7 @@ int ShopUILogic( void )
     return 1;
   }
 
-  /* Y key — buy shortcut */
+  /* Y key - buy shortcut */
   if ( app.keyboard[SDL_SCANCODE_Y] == 1 )
   {
     app.keyboard[SDL_SCANCODE_Y] = 0;
@@ -261,7 +261,7 @@ int ShopUILogic( void )
     return 1;
   }
 
-  /* N key — leave shortcut */
+  /* N key - leave shortcut */
   if ( app.keyboard[SDL_SCANCODE_N] == 1 )
   {
     app.keyboard[SDL_SCANCODE_N] = 0;
@@ -269,7 +269,7 @@ int ShopUILogic( void )
     return 1;
   }
 
-  /* Enter/Space — confirm */
+  /* Enter/Space - confirm */
   if ( app.keyboard[SDL_SCANCODE_RETURN] == 1 || app.keyboard[SDL_SCANCODE_SPACE] == 1 )
   {
     app.keyboard[SDL_SCANCODE_RETURN] = 0;
@@ -281,7 +281,7 @@ int ShopUILogic( void )
     return 1;
   }
 
-  /* ESC — close */
+  /* ESC - close */
   if ( app.keyboard[SDL_SCANCODE_ESCAPE] == 1 )
   {
     app.keyboard[SDL_SCANCODE_ESCAPE] = 0;
@@ -382,7 +382,7 @@ void ShopUIDraw( aRectf_t panel_rect )
   y = r.y + SEP_OY;
   a_DrawFilledRect( (aRectf_t){ x, y, text_area_w, 1 }, SHOP_FG );
 
-  /* Description — wrapped */
+  /* Description - wrapped */
   y = r.y + TEXT_OY;
   {
     aTextStyle_t ts = a_default_text_style;

@@ -90,7 +90,7 @@ static void tick_and_move( int i )
     EnemySkeletonTick( &turn_list[i], turn_pr, turn_pc,
                        turn_walkable, turn_list, turn_count );
 
-  /* Skeleton just fired — spawn arrow projectile */
+  /* Skeleton just fired - spawn arrow projectile */
   if ( old_ai == 1 && turn_list[i].ai_state == 3 )
   {
     float tw = world->tile_w, th = world->tile_h;
@@ -160,7 +160,7 @@ static void start_next_move( void )
       tick_and_move( move_idx );
       if ( did_move[move_idx] )
       {
-        /* Tween started — wait for it to finish */
+        /* Tween started - wait for it to finish */
         turn_state = TURN_MOVING;
         move_idx++;
         return;
@@ -169,7 +169,7 @@ static void start_next_move( void )
     move_idx++;
   }
 
-  /* All enemies processed — begin attack phase */
+  /* All enemies processed - begin attack phase */
   move_idx = 0;
   start_next_attack();
 }
@@ -211,7 +211,7 @@ static void start_next_attack( void )
          && turn_list[move_idx].stun_turns <= 0 )
     {
       EnemyType_t* at = &g_enemy_types[turn_list[move_idx].type_idx];
-      if ( at->range > 0 ) { move_idx++; continue; } /* ranged — no melee */
+      if ( at->range > 0 ) { move_idx++; continue; } /* ranged - no melee */
       int dr = abs( turn_pr - turn_list[move_idx].row );
       int dc = abs( turn_pc - turn_list[move_idx].col );
       if ( dr + dc == 1 )
@@ -225,7 +225,7 @@ static void start_next_attack( void )
     move_idx++;
   }
 
-  /* No more attackers — decrement stun at end of turn */
+  /* No more attackers - decrement stun at end of turn */
   for ( int i = 0; i < turn_count; i++ )
   {
     if ( turn_list[i].alive && turn_list[i].stun_turns > 0 )
@@ -276,7 +276,23 @@ void EnemiesStartTurn( Enemy_t* list, int count,
       }
     }
 
-    /* Stun/freeze — show VFX (decrement happens at end of turn) */
+    /* Burn DOT */
+    if ( list[i].alive && list[i].burn_ticks > 0 )
+    {
+      list[i].hp -= list[i].burn_dmg;
+      list[i].burn_ticks--;
+      CombatVFXSpawnNumber( list[i].world_x, list[i].world_y,
+                            list[i].burn_dmg,
+                            (aColor_t){ 0xff, 0x64, 0x1e, 255 } );
+      if ( list[i].hp <= 0 )
+      {
+        CombatVFXSpawnText( list[i].world_x, list[i].world_y,
+                            "Burned!", (aColor_t){ 0xff, 0x64, 0x1e, 255 } );
+        CombatHandleEnemyDeath( &list[i] );
+      }
+    }
+
+    /* Stun/freeze - show VFX (decrement happens at end of turn) */
     if ( list[i].alive && list[i].stun_turns > 0 )
     {
       CombatVFXSpawnText( list[i].world_x, list[i].world_y,

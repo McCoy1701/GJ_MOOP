@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <string.h>
+#include <dirent.h>
+#include <sys/stat.h>
 #include <Archimedes.h>
 #include <Daedalus.h>
 
@@ -21,13 +23,10 @@ static aColor_t ParseDUFColor( dDUFValue_t* color_node )
   return c;
 }
 
-void EnemiesLoadTypes( void )
+static void EnemiesLoadFile( const char* path )
 {
-  memset( g_enemy_types, 0, sizeof( g_enemy_types ) );
-  g_num_enemy_types = 0;
-
   dDUFValue_t* root = NULL;
-  dDUFError_t* err = d_DUFParseFile( "resources/data/enemies_floor_01.duf", &root );
+  dDUFError_t* err = d_DUFParseFile( path, &root );
 
   if ( err != NULL )
   {
@@ -44,7 +43,6 @@ void EnemiesLoadTypes( void )
     EnemyType_t* t = &g_enemy_types[g_num_enemy_types];
     memset( t, 0, sizeof( EnemyType_t ) );
 
-    /* Store the DUF key (e.g. "rat", "skeleton") */
     if ( entry->key )
       strncpy( t->key, entry->key, MAX_NAME_LENGTH - 1 );
 
@@ -69,6 +67,9 @@ void EnemiesLoadTypes( void )
     if ( ai )        strncpy( t->ai, ai->value_string, MAX_NAME_LENGTH - 1 );
     if ( desc )      strncpy( t->description, desc->value_string, 255 );
     if ( range )     t->range = (int)range->value_int;
+
+    dDUFValue_t* sight = d_DUFGetObjectItem( entry, "sight_range" );
+    t->sight_range = sight ? (int)sight->value_int : 6;
     if ( drop_item )
       strncpy( t->drop_item, drop_item->value_string, MAX_NAME_LENGTH - 1 );
     if ( gold_drop ) t->gold_drop = (int)gold_drop->value_int;
@@ -89,6 +90,44 @@ void EnemiesLoadTypes( void )
   }
 
   d_DUFFree( root );
+}
+
+static void enemies_scan_dir( const char* dirpath )
+{
+  DIR* dir = opendir( dirpath );
+  if ( !dir ) return;
+
+  struct dirent* ent;
+  while ( ( ent = readdir( dir ) ) != NULL )
+  {
+    const char* name = ent->d_name;
+    if ( name[0] == '.' ) continue;
+
+    char path[512];
+    snprintf( path, sizeof( path ), "%s/%s", dirpath, name );
+
+    struct stat st;
+    if ( stat( path, &st ) == 0 && S_ISDIR( st.st_mode ) )
+    {
+      enemies_scan_dir( path );
+      continue;
+    }
+
+    int len = (int)strlen( name );
+    if ( len < 5 || strcmp( name + len - 4, ".duf" ) != 0 ) continue;
+
+    EnemiesLoadFile( path );
+  }
+
+  closedir( dir );
+}
+
+void EnemiesLoadTypes( void )
+{
+  memset( g_enemy_types, 0, sizeof( g_enemy_types ) );
+  g_num_enemy_types = 0;
+  enemies_scan_dir( "resources/data/enemies" );
+  printf( "Loaded %d enemy types.\n", g_num_enemy_types );
 }
 
 int EnemyTypeByKey( const char* key )

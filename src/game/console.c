@@ -137,7 +137,7 @@ void ConsoleDraw( Console_t* c, aRectf_t rect )
     a_DrawFilledRect( (aRectf_t){ track_x, track_y, CON_SB_W, track_h },
                       (aColor_t){ 0x10, 0x14, 0x1f, 200 } );
 
-    /* Thumb — size proportional to visible/total, position from scroll */
+    /* Thumb - size proportional to visible/total, position from scroll */
     float thumb_h = ( (float)CONSOLE_VISIBLE / total ) * track_h;
     if ( thumb_h < 12.0f ) thumb_h = 12.0f;
 

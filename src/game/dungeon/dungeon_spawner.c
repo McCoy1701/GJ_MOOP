@@ -60,11 +60,140 @@ static void spawn_class_elite( Enemy_t* enemies, int* num_enemies,
 
 
 
+/* Spawn a random tier-2 class-appropriate consumable at (x, y) */
+static void spawn_t2_consumable( GroundItem_t* items, int* num_items,
+                                 int x, int y, int tw, int th )
+{
+  const char* cls = PlayerClassKey();
+  const char* keys[3];
+
+  if ( strcmp( cls, "mercenary" ) == 0 )
+  {
+    keys[0] = "iron_loaf";  keys[1] = "mutton_leg";  keys[2] = "spiced_stew";
+  }
+  else if ( strcmp( cls, "rogue" ) == 0 )
+  {
+    keys[0] = "steel_arrow"; keys[1] = "venom_arrow"; keys[2] = "serrated_trap";
+  }
+  else
+  {
+    keys[0] = "scroll_lightning"; keys[1] = "scroll_blizzard"; keys[2] = "scroll_inferno";
+  }
+
+  int idx = ConsumableByKey( keys[rand() % 3] );
+  if ( idx >= 0 )
+    GroundItemSpawn( items, num_items, idx, x, y, tw, th );
+}
+
+/* ====== Floor 2 spawner ====== */
+static void spawn_floor_2( NPC_t* npcs, int* num_npcs,
+                            Enemy_t* enemies, int* num_enemies,
+                            GroundItem_t* items, int* num_items,
+                            World_t* world )
+{
+  int tw = world->tile_w, th = world->tile_h;
+  (void)0;
+
+  /* Room 0 (entry room, x=47..53, y=4..8):
+     4 corner-not-corner positions, shuffled among:
+     Laura (fighting NPC), Glorbnax (NPC), rat, goblin grunt */
+  {
+    int corners[4][2] = { {48,5}, {52,5}, {48,7}, {52,7} };
+
+    /* Fisher-Yates shuffle */
+    for ( int i = 3; i > 0; i-- )
+    {
+      int j = rand() % ( i + 1 );
+      int tr = corners[i][0], tc = corners[i][1];
+      corners[i][0] = corners[j][0]; corners[i][1] = corners[j][1];
+      corners[j][0] = tr;            corners[j][1] = tc;
+    }
+
+    NPCSpawn( npcs, num_npcs, NPCTypeByKey( "laura" ),
+              corners[0][0], corners[0][1], tw, th );
+    NPCSpawn( npcs, num_npcs, NPCTypeByKey( "glorbnax_the_serene" ),
+              corners[1][0], corners[1][1], tw, th );
+    EnemySpawn( enemies, num_enemies, EnemyTypeByKey( "rat" ),
+                corners[2][0], corners[2][1], tw, th );
+    EnemySpawn( enemies, num_enemies, EnemyTypeByKey( "goblin_grunt" ),
+                corners[3][0], corners[3][1], tw, th );
+  }
+
+  /* Burble - gate guard, beside the W door into the peace tribe town */
+  NPCSpawn( npcs, num_npcs, NPCTypeByKey( "burble_the_observant" ),
+            20, 6, tw, th );
+
+  /* Grishnak - peace goblin in town square, just south of the shop */
+  NPCSpawn( npcs, num_npcs, NPCTypeByKey( "grishnak_the_unyielding" ),
+            13, 5, tw, th );
+
+  /* Nettle - tea shop / reluctant shopkeeper in ) room */
+  NPCSpawn( npcs, num_npcs, NPCTypeByKey( "nettle_the_brewer" ),
+            10, 3, tw, th );
+  ShopSpawn( world );
+
+  /* Red slimes - scattered across the bottom half + the --- room */
+  int rs = EnemyTypeByKey( "red_slime" );
+
+  /* --- room (top, cols 20-24) */
+  EnemySpawn( enemies, num_enemies, rs, 22, 1, tw, th );
+
+  /* Bottom rooms */
+  EnemySpawn( enemies, num_enemies, rs, 24, 25, tw, th );  /* room 6 */
+  EnemySpawn( enemies, num_enemies, rs, 54, 25, tw, th );  /* room ~ */
+  EnemySpawn( enemies, num_enemies, rs, 76, 19, tw, th );  /* room 9 */
+
+  /* Bottom corridors */
+  EnemySpawn( enemies, num_enemies, rs, 28, 15, tw, th );  /* left vertical */
+  EnemySpawn( enemies, num_enemies, rs, 42, 21, tw, th );  /* center vertical */
+  EnemySpawn( enemies, num_enemies, rs, 58, 17, tw, th );  /* right vertical */
+
+  /* Tier 2 consumables — scattered in bottom rooms and corridors */
+  spawn_t2_consumable( items, num_items, 23, 20, tw, th );  /* room 5 */
+  spawn_t2_consumable( items, num_items, 37, 20, tw, th );  /* room 7 */
+  spawn_t2_consumable( items, num_items, 62, 20, tw, th );  /* room 8 */
+  spawn_t2_consumable( items, num_items, 46, 26, tw, th );  /* room @ */
+  spawn_t2_consumable( items, num_items, 53, 26, tw, th );  /* room ~ */
+  spawn_t2_consumable( items, num_items, 76, 26, tw, th );  /* room ! */
+  spawn_t2_consumable( items, num_items, 35, 22, tw, th );  /* bottom corridor left */
+  spawn_t2_consumable( items, num_items, 65, 22, tw, th );  /* bottom corridor right */
+
+  /* Health potions - hidden in bottom corridors (reachable by all classes) */
+  {
+    int hp = ConsumableByKey( "small_health_potion" );
+    if ( hp >= 0 )
+    {
+      GroundItemSpawn( items, num_items, hp, 28, 20, tw, th );  /* left corridor */
+      GroundItemSpawn( items, num_items, hp, 50, 22, tw, th );  /* center corridor */
+      GroundItemSpawn( items, num_items, hp, 72, 20, tw, th );  /* right corridor */
+    }
+  }
+
+  /* Cave mushrooms for Nettle's quest - one per W-accessible path */
+  {
+    int cm = ConsumableByKey( "cave_mushroom" );
+    if ( cm >= 0 )
+    {
+      GroundItemSpawn( items, num_items, cm, 30, 23, tw, th );  /* left W path */
+      GroundItemSpawn( items, num_items, cm, 50, 27, tw, th );  /* center W path */
+      GroundItemSpawn( items, num_items, cm, 74, 26, tw, th );  /* right W path */
+    }
+  }
+}
+
 void DungeonSpawn( NPC_t* npcs, int* num_npcs,
                    Enemy_t* enemies, int* num_enemies,
                    GroundItem_t* items, int* num_items,
                    World_t* world )
 {
+  extern int g_current_floor;
+  if ( g_current_floor == 2 )
+  {
+    spawn_floor_2( npcs, num_npcs, enemies, num_enemies,
+                   items, num_items, world );
+    return;
+  }
+
   /* Randomized central room layout:
      4 near-corner positions -> shuffle -> 3 get consumables, 1 gets NPC */
   {
@@ -292,7 +421,15 @@ void DungeonSpawn( NPC_t* npcs, int* num_npcs,
   spawn_random_enemy( enemies, num_enemies,
                       9, 42, world->tile_w, world->tile_h );
 
-  /* Class elite — guards elite room, drops class weapon */
+  /* Class elite - guards elite room, drops class weapon */
   spawn_class_elite( enemies, num_enemies,
                      4, 44, world->tile_w, world->tile_h );
+
+  /* Fallen adventurer's journal in elite room */
+  NPCSpawn( npcs, num_npcs, NPCTypeByKey( "journal" ),
+            3, 44, world->tile_w, world->tile_h );
+
+  /* Stairway in exit chamber (past rat hole room) */
+  NPCSpawn( npcs, num_npcs, NPCTypeByKey( "stairway" ),
+            10, 1, world->tile_w, world->tile_h );
 }

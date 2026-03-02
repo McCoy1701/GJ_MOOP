@@ -9,23 +9,21 @@
 static LoreEntry_t g_lore[MAX_LORE_ENTRIES];
 static int         g_num_lore = 0;
 
-/* ---- Load definitions from lore.duf ---- */
+/* ---- Load one floor's lore file ---- */
 
-void LoreLoadDefinitions( void )
+static void lore_load_file( const char* path, int floor )
 {
-  g_num_lore = 0;
-  memset( g_lore, 0, sizeof( g_lore ) );
-
   dDUFValue_t* root = NULL;
-  dDUFError_t* err = d_DUFParseFile( LORE_DATA_PATH, &root );
+  dDUFError_t* err = d_DUFParseFile( path, &root );
   if ( err )
   {
-    printf( "LORE: parse error in %s - %s\n", LORE_DATA_PATH,
+    printf( "LORE: parse error in %s - %s\n", path,
             d_StringPeek( err->message ) );
     d_DUFErrorFree( err );
     return;
   }
 
+  int loaded = 0;
   for ( dDUFValue_t* entry = root->child; entry; entry = entry->next )
   {
     if ( !entry->key || g_num_lore >= MAX_LORE_ENTRIES ) continue;
@@ -46,11 +44,24 @@ void LoreLoadDefinitions( void )
       strncpy( le->description, desc->value_string, 511 );
 
     le->discovered = 0;
+    le->floor = floor;
     g_num_lore++;
+    loaded++;
   }
 
   d_DUFFree( root );
-  printf( "LORE: loaded %d definitions.\n", g_num_lore );
+  printf( "LORE: loaded %d definitions from %s\n", loaded, path );
+}
+
+void LoreLoadDefinitions( void )
+{
+  g_num_lore = 0;
+  memset( g_lore, 0, sizeof( g_lore ) );
+
+  lore_load_file( "resources/data/lore_floor_01.duf", 1 );
+  lore_load_file( "resources/data/lore_floor_02.duf", 2 );
+
+  printf( "LORE: %d total definitions.\n", g_num_lore );
 }
 
 /* ---- Save / Load discovered state ---- */
@@ -161,4 +172,43 @@ int LoreGetCategories( char out[][32], int max )
       strncpy( out[count++], g_lore[i].category, 31 );
   }
   return count;
+}
+
+int LoreGetFloors( int out[], int max )
+{
+  int count = 0;
+  for ( int i = 0; i < g_num_lore && count < max; i++ )
+  {
+    int dup = 0;
+    for ( int j = 0; j < count; j++ )
+      if ( out[j] == g_lore[i].floor ) { dup = 1; break; }
+    if ( !dup )
+      out[count++] = g_lore[i].floor;
+  }
+  return count;
+}
+
+int LoreGetFloorCategories( int floor, char out[][32], int max )
+{
+  int count = 0;
+  for ( int i = 0; i < g_num_lore && count < max; i++ )
+  {
+    if ( g_lore[i].floor != floor ) continue;
+    int dup = 0;
+    for ( int j = 0; j < count; j++ )
+      if ( strcmp( out[j], g_lore[i].category ) == 0 ) { dup = 1; break; }
+    if ( !dup )
+      strncpy( out[count++], g_lore[i].category, 31 );
+  }
+  return count;
+}
+
+int LoreCountInFloorCategory( int floor, const char* category )
+{
+  int n = 0;
+  for ( int i = 0; i < g_num_lore; i++ )
+    if ( g_lore[i].discovered && g_lore[i].floor == floor &&
+         strcmp( g_lore[i].category, category ) == 0 )
+      n++;
+  return n;
 }

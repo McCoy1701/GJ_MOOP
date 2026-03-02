@@ -4,7 +4,6 @@
 #include "combat.h"
 #include "visibility.h"
 
-#define SKEL_SIGHT_RANGE 8
 #define SKEL_CHASE_TURNS 4
 
 /* AI states */
@@ -24,7 +23,7 @@ static int has_clear_shot( Enemy_t* e, int pr, int pc, int range,
 {
   if ( e->row == pr && e->col != pc )
   {
-    /* Same row — shot along col axis */
+    /* Same row - shot along col axis */
     int dc = ( pc > e->col ) ? 1 : -1;
     int dist = abs( pc - e->col );
     if ( dist > range ) return 0;
@@ -41,7 +40,7 @@ static int has_clear_shot( Enemy_t* e, int pr, int pc, int range,
   }
   else if ( e->col == pc && e->row != pr )
   {
-    /* Same col — shot along row axis */
+    /* Same col - shot along row axis */
     int dr = ( pr > e->row ) ? 1 : -1;
     int dist = abs( pr - e->row );
     if ( dist > range ) return 0;
@@ -211,7 +210,7 @@ void EnemySkeletonTick( Enemy_t* e, int player_row, int player_col,
   int dc = player_col - e->col;
   int dist = abs( dr ) + abs( dc );
 
-  int can_see = ( dist <= SKEL_SIGHT_RANGE
+  int can_see = ( dist <= t->sight_range
                   && los_clear( e->row, e->col, player_row, player_col ) );
 
   /* Update chase memory */
@@ -238,7 +237,7 @@ void EnemySkeletonTick( Enemy_t* e, int player_row, int player_col,
         return;
       }
 
-      /* No shot — move toward player to get into position */
+      /* No shot - move toward player to get into position */
       if ( can_see )
         move_toward( e, player_row, player_col, walkable, all, count );
       else
@@ -248,7 +247,7 @@ void EnemySkeletonTick( Enemy_t* e, int player_row, int player_col,
 
     case ST_TELEGRAPH:
     {
-      /* Committed — fire along the locked direction */
+      /* Committed - fire along the locked direction */
       int cr = e->row;
       int cc = e->col;
 

@@ -1,0 +1,152 @@
+@npc {
+    name: "Burble the Observant"
+    glyph: "G"
+    color: [100, 140, 180, 255]
+    image_path: "resources/assets/npcs/burble_the_observant.png"
+    description: "A goblin in guard armor, standing beside an open gate."
+    idle_bark: "*observes*"
+    idle_cooldown: 5
+}
+
+# ==============================
+# GREETINGS
+# ==============================
+@greeting {
+    start: true
+    priority: 0
+    text: "Halt! Or don't. I'm not going to do anything either way."
+    options: ["opt_guard", "opt_stop_me", "opt_peace_tribe", "opt_about_raid", "opt_leave"]
+}
+@greeting_has_relic {
+    start: true
+    priority: 2
+    require_flag: "has_relic"
+    require_not_flag: "relic_returned"
+    text: "Is that... the Hearthstone?! Thistlewick will want to see you! I would escort you but that feels too aggressive. He's inside. Just... walk in. Like everyone does."
+    options: ["opt_thistlewick_where", "opt_leave"]
+}
+
+# ==============================
+# ARE YOU A GUARD
+# ==============================
+@opt_guard {
+    label: "Are you a guard?"
+    goto: "guard_reply"
+}
+@guard_reply {
+    text: "Officially? Yes. Burble the Observant, Gate Watcher of the western passage. Practically? I observe. I note. I do not intervene. Intervention is violence adjacent."
+    options: ["opt_stop_me", "opt_what_observe", "opt_about_raid", "opt_leave"]
+}
+@opt_what_observe {
+    label: "What have you observed?"
+    goto: "what_observe_reply"
+}
+@what_observe_reply {
+    text: "Today? One rat. Two war goblins. A spider I am choosing not to think about. And now you. I have noted all of these things. I have done nothing about any of them. A perfect record."
+    options: ["opt_stop_me", "opt_about_raid", "opt_leave"]
+}
+
+# ==============================
+# AREN'T YOU GOING TO STOP ME
+# ==============================
+@opt_stop_me {
+    label: "Aren't you going to stop me?"
+    goto: "stop_me_reply"
+}
+@stop_me_reply {
+    text: "Stop you? With what? Force? That's a war goblin word. I am here to provide a presence. A deterrent. A... suggestion that maybe you should think about whether you really want to go in there."
+    options: ["opt_deterrent", "opt_going_in", "opt_leave"]
+}
+@opt_deterrent {
+    label: "You're not very deterring."
+    goto: "deterrent_reply"
+}
+@deterrent_reply {
+    text: "That is the nicest thing anyone has ever said to me. Truly. The last war goblin who came through said I was 'offensively unthreatening.'"
+    options: ["opt_about_raid", "opt_going_in", "opt_leave"]
+}
+@opt_going_in {
+    label: "I'm going in."
+    goto: "going_in_reply"
+}
+@going_in_reply {
+    text: "I acknowledge your decision. I have observed it. It has been noted. ...please don't break anything."
+    options: ["opt_leave"]
+}
+
+# ==============================
+# THE RAID
+# ==============================
+@opt_about_raid {
+    label: "I heard the war goblins raided this place."
+    require_flag: "quest_relic"
+    goto: "raid_reply"
+}
+@raid_reply {
+    text: "Yes. They walked right past me. I observed them very thoroughly. Counted every one. Twelve. I reported this to Thistlewick immediately afterwards. He said 'thank you, Burble.' Very affirming."
+    options: ["opt_raid_stop", "opt_raid_stole", "opt_leave"]
+}
+@opt_raid_stop {
+    label: "You just... let twelve war goblins walk past you?"
+    goto: "raid_stop_reply"
+}
+@raid_stop_reply {
+    text: "I said 'halt!' Very firmly. They did not halt. I then said 'please halt.' They also did not halt. I was already out of options at that point."
+    options: ["opt_raid_stole", "opt_leave"]
+}
+@opt_raid_stole {
+    label: "They stole the Hearthstone."
+    goto: "raid_stole_reply"
+}
+@raid_stole_reply {
+    text: "I know. I observed them stealing it. It was very upsetting. I filed a detailed mental report. Twelve goblins, one stone, four minutes. Very efficient raid. I almost admired it. Don't tell Thistlewick I said that."
+    options: ["opt_laura_mention", "opt_leave"]
+}
+@opt_laura_mention {
+    label: "Laura said she tried to stop it."
+    require_flag: "quest_relic"
+    goto: "laura_mention_reply"
+}
+@laura_mention_reply {
+    text: "She did. She was the only one who fought back. Took down three of them before the rest got through. And she was exiled for it. I observed that too. It was the worst thing I've ever observed. And I've observed a lot."
+    options: ["opt_burble_agree", "opt_leave"]
+}
+@opt_burble_agree {
+    label: "Do you think she was wrong?"
+    goto: "burble_agree_reply"
+}
+@burble_agree_reply {
+    text: "...I think she was the only one who did anything. And I think about that a lot. While I'm standing here. Observing. Doing nothing."
+    options: ["opt_leave"]
+}
+
+# ==============================
+# THISTLEWICK DIRECTIONS
+# ==============================
+@opt_thistlewick_where {
+    label: "Where's Thistlewick?"
+    require_flag: "quest_relic"
+    goto: "thistlewick_where_reply"
+}
+@thistlewick_where_reply {
+    text: "Straight ahead. He'll be the very still one. ...they're all very still. He'll be the MOST still one. You'll know because he won't even blink when you walk up. It's a bit unsettling honestly."
+    options: ["opt_leave"]
+}
+@opt_peace_tribe {
+    label: "Tell me about the peace tribe."
+    color: "lore"
+    goto: "peace_tribe_reply"
+}
+@peace_tribe_reply {
+    text: "We are goblins of stillness. Of thought. Of deeply held convictions that sometimes get us robbed. Thistlewick leads us. Glorbnax teaches us. I guard the gate."
+    set_lore: "peace_tribe"
+    options: ["opt_thistlewick_where", "opt_guard", "opt_about_raid", "opt_leave"]
+}
+
+# ==============================
+# LEAVE
+# ==============================
+@opt_leave {
+    label: "[Leave]"
+    goto: "end"
+}

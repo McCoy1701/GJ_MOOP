@@ -18,13 +18,10 @@ static int             pool_count = 0;
 static int             spawn_min  = 4;
 static int             spawn_max  = 6;
 
-/* Rug tile positions — 3x2 grid in room 9 */
-static const int rug_tiles[6][2] = {
-  {21, 29}, {22, 29}, {23, 29},
-  {21, 30}, {22, 30}, {23, 30}
-};
-static const int rug_tile_ids[6] = { 6, 7, 8, 15, 16, 17 };
+/* Rug tile positions - set per floor in ShopSpawn */
 #define NUM_RUG_TILES 6
+static int rug[NUM_RUG_TILES][2];
+static const int rug_tile_ids[NUM_RUG_TILES] = { 6, 7, 8, 15, 16, 17 };
 
 #define RUG_COLOR (aColor_t){ 0x60, 0x2c, 0x2c, 255 }
 
@@ -84,11 +81,30 @@ void ShopLoadPool( const char* path )
 
 void ShopSpawn( World_t* world )
 {
+  /* Set rug positions for current floor */
+  extern int g_current_floor;
+  if ( g_current_floor == 2 )
+  {
+    static const int f2[6][2] = {
+      {11,2}, {12,2}, {13,2},
+      {11,3}, {12,3}, {13,3}
+    };
+    memcpy( rug, f2, sizeof(rug) );
+  }
+  else
+  {
+    static const int f1[6][2] = {
+      {21,29}, {22,29}, {23,29},
+      {21,30}, {22,30}, {23,30}
+    };
+    memcpy( rug, f1, sizeof(rug) );
+  }
+
   /* Stamp carpet tiles onto the background layer */
   for ( int i = 0; i < NUM_RUG_TILES; i++ )
   {
-    int r = rug_tiles[i][0];
-    int c = rug_tiles[i][1];
+    int r = rug[i][0];
+    int c = rug[i][1];
     int idx = c * world->width + r;
     world->background[idx].tile = rug_tile_ids[i];
   }
@@ -99,8 +115,8 @@ void ShopSpawn( World_t* world )
   int tiles[NUM_RUG_TILES][2];
   for ( int i = 0; i < NUM_RUG_TILES; i++ )
   {
-    tiles[i][0] = rug_tiles[i][0];
-    tiles[i][1] = rug_tiles[i][1];
+    tiles[i][0] = rug[i][0];
+    tiles[i][1] = rug[i][1];
   }
   for ( int i = NUM_RUG_TILES - 1; i > 0; i-- )
   {
@@ -224,7 +240,7 @@ int ShopIsRugTile( int row, int col )
 {
   for ( int i = 0; i < NUM_RUG_TILES; i++ )
   {
-    if ( rug_tiles[i][0] == row && rug_tiles[i][1] == col )
+    if ( rug[i][0] == row && rug[i][1] == col )
       return 1;
   }
   return 0;
@@ -239,8 +255,8 @@ void ShopDrawRug( aRectf_t vp_rect, GameCamera_t* cam,
   /* ASCII mode: draw colored rectangles as fallback */
   for ( int i = 0; i < NUM_RUG_TILES; i++ )
   {
-    int r = rug_tiles[i][0];
-    int c = rug_tiles[i][1];
+    int r = rug[i][0];
+    int c = rug[i][1];
     if ( VisibilityGet( r, c ) < 0.01f ) continue;
 
     float wx = r * world->tile_w + world->tile_w / 2.0f;
@@ -301,7 +317,7 @@ void ShopDrawItems( aRectf_t vp_rect, GameCamera_t* cam,
                    color, (aColor_t){ 0, 0, 0, 0 }, FONT_CODE_PAGE_437 );
     }
 
-    /* Price tag — top center of tile, black bg */
+    /* Price tag - top center of tile, black bg */
     {
       float sx, sy;
       GV_WorldToScreen( vp_rect, cam,

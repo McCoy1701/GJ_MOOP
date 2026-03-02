@@ -13,6 +13,7 @@
 #include "target_mode.h"
 #include "ground_items.h"
 #include "movement.h"
+#include "shop.h"
 
 /* Panel colors */
 #define PANEL_FG  (aColor_t){ 0xc7, 0xcf, 0xcc, 255 }
@@ -147,7 +148,7 @@ int InventoryUILogic( int mouse_moved )
     int eq_idx = player.equipment[player.equip_cursor];
     EquipmentInfo_t* e = ( eq_idx >= 0 && eq_idx < g_num_equipment ) ? &g_equipment[eq_idx] : NULL;
 
-    /* W/S/arrows — navigate action menu */
+    /* W/S/arrows - navigate action menu */
     if ( app.keyboard[SDL_SCANCODE_W] == 1 || app.keyboard[SDL_SCANCODE_UP] == 1 )
     {
       app.keyboard[SDL_SCANCODE_W] = 0;
@@ -165,7 +166,7 @@ int InventoryUILogic( int mouse_moved )
       a_AudioPlaySound( sfx_move, NULL );
     }
 
-    /* Scroll wheel — navigate action menu */
+    /* Scroll wheel - navigate action menu */
     if ( app.mouse.wheel != 0 )
     {
       eq_action_cursor += ( app.mouse.wheel < 0 ) ? 1 : -1;
@@ -201,7 +202,7 @@ int InventoryUILogic( int mouse_moved )
       }
     }
 
-    /* Space/Enter or left-click — execute action */
+    /* Space/Enter or left-click - execute action */
     int exec = 0;
     if ( app.keyboard[SDL_SCANCODE_SPACE] == 1 || app.keyboard[SDL_SCANCODE_RETURN] == 1 )
     {
@@ -287,7 +288,7 @@ int InventoryUILogic( int mouse_moved )
   {
     InvSlot_t* slot = &player.inventory[player.inv_cursor];
 
-    /* W/S/arrows — navigate action menu */
+    /* W/S/arrows - navigate action menu */
     if ( app.keyboard[SDL_SCANCODE_W] == 1 || app.keyboard[SDL_SCANCODE_UP] == 1 )
     {
       app.keyboard[SDL_SCANCODE_W] = 0;
@@ -305,7 +306,7 @@ int InventoryUILogic( int mouse_moved )
       a_AudioPlaySound( sfx_move, NULL );
     }
 
-    /* Scroll wheel — navigate action menu */
+    /* Scroll wheel - navigate action menu */
     if ( app.mouse.wheel != 0 )
     {
       inv_action_cursor += ( app.mouse.wheel < 0 ) ? 1 : -1;
@@ -356,7 +357,7 @@ int InventoryUILogic( int mouse_moved )
       }
     }
 
-    /* Space/Enter or left-click — execute action */
+    /* Space/Enter or left-click - execute action */
     int exec = 0;
     if ( app.keyboard[SDL_SCANCODE_SPACE] == 1 || app.keyboard[SDL_SCANCODE_RETURN] == 1 )
     {
@@ -487,10 +488,10 @@ int InventoryUILogic( int mouse_moved )
       }
       else if ( inv_action_cursor == 1 ) /* Drop */
       {
-        if ( inv_ground_items && inv_ground_count )
+        int pr, pc;
+        PlayerGetTile( &pr, &pc );
+        if ( inv_ground_items && inv_ground_count && !ShopIsRugTile( pr, pc ) )
         {
-          int pr, pc;
-          PlayerGetTile( &pr, &pc );
           GroundItem_t* spawned = NULL;
           if ( slot->type == INV_EQUIPMENT )
             spawned = GroundItemSpawnEquipment( inv_ground_items, inv_ground_count,
@@ -535,7 +536,7 @@ int InventoryUILogic( int mouse_moved )
     return 1;
   }
 
-  /* --- Tab — toggle game viewport / inventory panels --- */
+  /* --- Tab - toggle game viewport / inventory panels --- */
   if ( app.keyboard[SDL_SCANCODE_TAB] == 1 )
   {
     app.keyboard[SDL_SCANCODE_TAB] = 0;
@@ -598,7 +599,7 @@ int InventoryUILogic( int mouse_moved )
       a_AudioPlaySound( sfx_move, NULL );
     }
 
-    /* Space/Enter — open action menu on inventory item */
+    /* Space/Enter - open action menu on inventory item */
     if ( app.keyboard[SDL_SCANCODE_SPACE] == 1 || app.keyboard[SDL_SCANCODE_RETURN] == 1 )
     {
       app.keyboard[SDL_SCANCODE_SPACE] = 0;
@@ -645,7 +646,7 @@ int InventoryUILogic( int mouse_moved )
       a_AudioPlaySound( sfx_move, NULL );
     }
 
-    /* Space/Enter — open action menu on equipped item */
+    /* Space/Enter - open action menu on equipped item */
     if ( app.keyboard[SDL_SCANCODE_SPACE] == 1 || app.keyboard[SDL_SCANCODE_RETURN] == 1 )
     {
       app.keyboard[SDL_SCANCODE_SPACE] = 0;
@@ -659,7 +660,7 @@ int InventoryUILogic( int mouse_moved )
     }
   }
 
-  /* --- Mouse hover + click — equipment rows --- */
+  /* --- Mouse hover + click - equipment rows --- */
   {
     int mx = app.mouse.x;
     int my = app.mouse.y;
@@ -695,7 +696,7 @@ int InventoryUILogic( int mouse_moved )
     }
   }
 
-  /* --- Mouse hover — inventory cells --- */
+  /* --- Mouse hover - inventory cells --- */
   {
     int mx = app.mouse.x;
     int my = app.mouse.y;
@@ -748,7 +749,7 @@ int InventoryUILogic( int mouse_moved )
     hover_done:;
   }
 
-  /* --- Click outside inventory/equipment panels — switch focus back to game --- */
+  /* --- Click outside inventory/equipment panels - switch focus back to game --- */
   if ( app.mouse.pressed && app.mouse.button == SDL_BUTTON_LEFT && ui_focus == 1 )
   {
     aContainerWidget_t* ip = a_GetContainerFromWidget( "inv_panel" );
@@ -944,10 +945,24 @@ void InventoryUIDraw( void )
     float mw = CalcModalW( INV_EQUIPMENT, eq_draw_idx );
     float mx = kp->rect.x - mw - 8;
     float my = kp->rect.y + EQ_TITLE_H + player.equip_cursor * ( EQ_ROW_H + EQ_PAD );
-    if ( my + EQ_MODAL_H > kp->rect.y + kp->rect.h ) my = kp->rect.y + kp->rect.h - EQ_MODAL_H;
 
-    a_DrawFilledRect( (aRectf_t){ mx, my, mw, EQ_MODAL_H }, (aColor_t){ 0x09, 0x0a, 0x14, 255 } );
-    a_DrawRect( (aRectf_t){ mx, my, mw, EQ_MODAL_H }, e->color );
+    float header_h = EQ_MODAL_PAD_Y + EQ_MODAL_LINE_LG;
+    if ( e->damage > 0 )  header_h += EQ_MODAL_LINE_SM;
+    if ( e->defense > 0 ) header_h += EQ_MODAL_LINE_SM;
+    if ( strcmp( e->effect, "none" ) != 0 )
+      header_h += EQ_MODAL_LINE_MD;
+    else
+      header_h += EQ_MODAL_LINE_SM;
+    int eq_wrap_w = (int)( mw - EQ_MODAL_PAD_X * 2 );
+    int eq_desc_h = a_GetWrappedTextHeight( e->description,
+                                             a_default_text_style.type, eq_wrap_w );
+    float mh = header_h + eq_desc_h + EQ_MODAL_PAD_Y;
+    if ( mh < EQ_MODAL_H ) mh = EQ_MODAL_H;
+
+    if ( my + mh > kp->rect.y + kp->rect.h ) my = kp->rect.y + kp->rect.h - mh;
+
+    a_DrawFilledRect( (aRectf_t){ mx, my, mw, mh }, (aColor_t){ 0x09, 0x0a, 0x14, 255 } );
+    a_DrawRect( (aRectf_t){ mx, my, mw, mh }, e->color );
 
     float ty = my + EQ_MODAL_PAD_Y;
     float tx = mx + EQ_MODAL_PAD_X;
@@ -1040,8 +1055,24 @@ void InventoryUIDraw( void )
       EquipmentInfo_t* e = &g_equipment[slot->index];
       item_name = e->name;
 
-      a_DrawFilledRect( (aRectf_t){ mx, my, mw, EQ_MODAL_H }, (aColor_t){ 0x09, 0x0a, 0x14, 255 } );
-      a_DrawRect( (aRectf_t){ mx, my, mw, EQ_MODAL_H }, e->color );
+      float header_h = EQ_MODAL_PAD_Y + EQ_MODAL_LINE_LG;
+      if ( e->damage > 0 )  header_h += EQ_MODAL_LINE_SM;
+      if ( e->defense > 0 ) header_h += EQ_MODAL_LINE_SM;
+      if ( strcmp( e->effect, "none" ) != 0 )
+        header_h += EQ_MODAL_LINE_MD;
+      else
+        header_h += EQ_MODAL_LINE_SM;
+      int wrap_w = (int)( mw - EQ_MODAL_PAD_X * 2 );
+      int desc_h = a_GetWrappedTextHeight( e->description,
+                                            a_default_text_style.type, wrap_w );
+      float mh = header_h + desc_h + EQ_MODAL_PAD_Y;
+      if ( mh < EQ_MODAL_H ) mh = EQ_MODAL_H;
+
+      if ( my + mh > ip->rect.y + ip->rect.h )
+        my = ip->rect.y + ip->rect.h - mh;
+
+      a_DrawFilledRect( (aRectf_t){ mx, my, mw, mh }, (aColor_t){ 0x09, 0x0a, 0x14, 255 } );
+      a_DrawRect( (aRectf_t){ mx, my, mw, mh }, e->color );
 
       float ty = my + EQ_MODAL_PAD_Y;
       float tx = mx + EQ_MODAL_PAD_X;
@@ -1104,6 +1135,9 @@ void InventoryUIDraw( void )
       float mh = header_h + desc_h + EQ_MODAL_PAD_Y;
       if ( mh < EQ_MODAL_H ) mh = EQ_MODAL_H;
 
+      if ( my + mh > ip->rect.y + ip->rect.h )
+        my = ip->rect.y + ip->rect.h - mh;
+
       a_DrawFilledRect( (aRectf_t){ mx, my, mw, mh }, (aColor_t){ 0x09, 0x0a, 0x14, 255 } );
       a_DrawRect( (aRectf_t){ mx, my, mw, mh }, c->color );
 
@@ -1147,8 +1181,18 @@ void InventoryUIDraw( void )
       MapInfo_t* m = &g_maps[slot->index];
       item_name = m->name;
 
-      a_DrawFilledRect( (aRectf_t){ mx, my, mw, EQ_MODAL_H }, (aColor_t){ 0x09, 0x0a, 0x14, 255 } );
-      a_DrawRect( (aRectf_t){ mx, my, mw, EQ_MODAL_H }, m->color );
+      float header_h = EQ_MODAL_PAD_Y + EQ_MODAL_LINE_LG + EQ_MODAL_LINE_MD;
+      int wrap_w = (int)( mw - EQ_MODAL_PAD_X * 2 );
+      int desc_h = a_GetWrappedTextHeight( m->description,
+                                            a_default_text_style.type, wrap_w );
+      float mh = header_h + desc_h + EQ_MODAL_PAD_Y;
+      if ( mh < EQ_MODAL_H ) mh = EQ_MODAL_H;
+
+      if ( my + mh > ip->rect.y + ip->rect.h )
+        my = ip->rect.y + ip->rect.h - mh;
+
+      a_DrawFilledRect( (aRectf_t){ mx, my, mw, mh }, (aColor_t){ 0x09, 0x0a, 0x14, 255 } );
+      a_DrawRect( (aRectf_t){ mx, my, mw, mh }, m->color );
 
       float ty = my + EQ_MODAL_PAD_Y;
       float tx = mx + EQ_MODAL_PAD_X;

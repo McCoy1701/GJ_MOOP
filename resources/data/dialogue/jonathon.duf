@@ -41,7 +41,7 @@
     priority: 2
     require_flag: "quest_skeletons"
     text: "How's the skeleton situation? And yes, I'm aware of the irony."
-    options: ["opt_claim_note", "opt_skeletons_not_yet", "opt_why_skeleton", "opt_painting", "opt_leave"]
+    options: ["opt_claim_note", "opt_skeletons_not_yet", "opt_painting", "opt_leave"]
 }
 @greeting_post_quest {
     start: true
@@ -56,7 +56,6 @@
 # ==============================
 @opt_why_skeleton {
     label: "Why are you... a skeleton?"
-    color: "quest"
     goto: "why_skeleton_reply"
 }
 @why_skeleton_reply {
@@ -105,11 +104,10 @@
 # ==============================
 @opt_other_dead {
     label: "Are there other... friendly skeletons?"
-    color: "lore"
     goto: "other_dead_reply"
 }
 @other_dead_reply {
-    text: "There were. A few of us in the early days. We'd chat, share stories. But one by one they stopped talking. Started attacking anything that moved. I'm the last one still... me."
+    text: "There were. A few of us in the early days. We'd chat, share stories. But one by one they stopped talking. Stopped painting. Started attacking anything that moved. I'm the last one still... me."
     set_lore: "the_turning"
     options: ["opt_turning_why", "opt_how_long", "opt_leave"]
 }
@@ -135,7 +133,6 @@
 # ==============================
 @opt_the_bottom {
     label: "What's at the bottom of the dungeon?"
-    color: "lore"
     goto: "the_bottom_reply"
 }
 @the_bottom_reply {
@@ -157,7 +154,6 @@
 # ==============================
 @opt_who_built {
     label: "Do you know who built this dungeon?"
-    color: "lore"
     goto: "who_built_reply"
 }
 @who_built_reply {
@@ -179,7 +175,6 @@
 # ==============================
 @opt_feast_rumor {
     label: "Have you heard any other rumors about this place?"
-    color: "lore"
     goto: "feast_rumor_reply"
 }
 @feast_rumor_reply {
@@ -192,7 +187,7 @@
     goto: "feast_three_reply"
 }
 @feast_three_reply {
-    text: "Three chairs. Three plates. One red, one green, one blue. Sound familiar? Almost feels like the dungeon is... waiting."
+    text: "Three chairs. Three plates. One red, one green, one blue. Sound familiar? Same as the doors. Same as the adventurers who keep showing up. A soldier, a thief, and a mage. Over and over. Like the dungeon is... waiting."
     options: ["opt_feast_who", "opt_dungeon_alive", "opt_leave"]
 }
 @opt_feast_who {
@@ -209,7 +204,6 @@
 # ==============================
 @opt_dungeon_alive {
     label: "You think the dungeon is... alive?"
-    color: "lore"
     goto: "dungeon_alive_reply"
 }
 @dungeon_alive_reply {
@@ -222,16 +216,15 @@
     goto: "dungeon_afraid_reply"
 }
 @dungeon_afraid_reply {
-    text: "Fear is a living person's problem. I'm more worried about forgetting why I should be scared. When that happens... that's when I'll know I'm turning. So I paint. Every brushstroke is me saying 'I'm still here. I'm still Jonathon.'"
+    text: "Every day. But fear is a living person's problem. I'm more worried about forgetting why I should be scared. When that happens... that's when I'll know I'm turning. So I paint. Every brushstroke is me saying 'I'm still here. I'm still Jonathon.'"
     options: ["opt_you_ok", "opt_leave"]
 }
 
 # ==============================
-# MILLHAVEN LIFE — FLAVOR
+# MILLHAVEN LIFE - FLAVOR
 # ==============================
 @opt_millhaven_life {
     label: "What was Millhaven like before the dungeon?"
-    color: "lore"
     goto: "millhaven_life_reply"
 }
 @millhaven_life_reply {
@@ -249,7 +242,6 @@
 }
 @opt_miners {
     label: "Tell me about the miners."
-    color: "lore"
     goto: "miners_reply"
 }
 @miners_reply {
@@ -259,7 +251,6 @@
 }
 @opt_miners_saw {
     label: "What did they see?"
-    color: "lore"
     goto: "miners_saw_reply"
 }
 @miners_saw_reply {
@@ -273,32 +264,30 @@
 # ==============================
 @opt_millhaven {
     label: "You said you're from Millhaven?"
-    color: "quest"
     goto: "millhaven_reply"
 }
 @millhaven_reply {
-    text: "Born and raised! Well, and died. Population went from twelve to eleven when I left. Probably should have told someone where I was going."
+    text: "Born and raised! Well, born and raised and died. Population went from twelve to eleven when I left. Probably should have told someone where I was going."
     set_lore: "jonathon"
     options: ["opt_millhaven_life", "opt_know_mayor", "opt_know_thom", "opt_leave"]
 }
 @opt_know_mayor {
     label: "Do you know Mayor Greta?"
-    color: "quest"
-    require_lore: "mayor_greta"
+    require_flag: "lore_mayor_greta"
     goto: "know_mayor_reply"
 }
 @know_mayor_reply {
-    text: "Know her? She's the one who gave me this note! 'To whom it may concern: the bearer of this letter has permission to leave the dungeon and return to town. Signed, Mayor Greta.' Got it before I died. Bit useless now."
+    text: "Know her? She's the one who gave me this note! 'To whom it may concern: the bearer of this letter has permission to leave the dungeon and return to town. Signed, Mayor Greta.' Got it the day before I died. Bit useless now."
     options: ["opt_about_note", "opt_know_thom", "opt_leave"]
 }
 @opt_know_thom {
     label: "You know Old Thom from the bakery?"
-    require_lore: "old_thom_bakery"
+    require_flag: "lore_old_thom_bakery"
     goto: "know_thom_reply"
 }
 @know_thom_reply {
-    text: "Thom! Great guy. His bread is what I used to prop up my easel. Perfect weight, perfect density. I Miss him."
-    options: ["opt_know_mayor", "opt_leave"]
+    text: "Thom! Great guy. His bread is what I used to prop up my easel. Perfect weight, perfect density. Completely inedible. Miss him."
+    options: ["opt_know_mayor", "opt_about_note", "opt_leave"]
 }
 
 # ==============================
@@ -306,32 +295,37 @@
 # ==============================
 @opt_about_note {
     label: "That note... could I have it?"
-    color: "quest"
     require_not_flag: "quest_skeletons"
     require_not_flag: "has_mayors_note"
     goto: "about_note_reply"
 }
 @about_note_reply {
-    text: "I mean... I literally cannot leave. I'm a skeleton in a dungeon. But I can't just GIVE it away. It's the last official document from my old life. Makes me feel... real."
-    options: ["opt_note_please", "opt_know_thom", "opt_leave"]
+    text: "I mean... I literally cannot leave. I'm a skeleton. In a dungeon. With an easel. But I can't just GIVE it away. It's the last official document with my name on it. Makes me feel... real."
+    options: ["opt_note_trade", "opt_note_please", "opt_leave"]
 }
 @opt_note_please {
     label: "Please? It could really help someone."
-    color: "quest"
     goto: "note_please_reply"
 }
 @note_please_reply {
-    text: "Hmm. Tell you what. The hostile skeletons down here... they are giving me a bad reputation. Kill three of them for me and I'll hand it over. Call it a favour for the non-violent skeleton community."
-    options: ["opt_accept_skeleton_quest", "opt_claim_note", "opt_leave"]
+    text: "Hmm. Tell you what. The hostile skeletons down here... they give the rest of us a bad name. Kill three of them for me and I'll hand it over. Call it a favour for the non-violent skeleton community."
+    options: ["opt_accept_skeleton_quest", "opt_leave"]
+}
+@opt_note_trade {
+    label: "I could trade you something?"
+    goto: "note_trade_reply"
+}
+@note_trade_reply {
+    text: "Unless you've got oil paints and a canvas that isn't a dungeon wall... actually, do you? No? Then how about this: kill three of those hostile skeletons for me. They keep knocking over my easel."
+    options: ["opt_accept_skeleton_quest", "opt_leave"]
 }
 @opt_accept_skeleton_quest {
     label: "Deal. Three skeletons."
-    color: "quest"
     set_flag: "quest_skeletons"
     goto: "quest_accepted_reply"
 }
 @quest_accepted_reply {
-    text: "Wonderful! And please, try not to feel weird about it. They're the mean ones. I'm the art one. We are not the same."
+    text: "Wonderful! And please, try not to feel weird about it. They're the mean ones. I'm the art one. Very different vibes."
     options: ["opt_leave"]
 }
 
@@ -348,7 +342,6 @@
 }
 @opt_claim_note {
     label: "Three skeletons down."
-    color: "complete"
     require_flag_min: "skeleton_kills:3"
     goto: "claim_note_reply"
 }
@@ -356,7 +349,7 @@
     text: "You actually did it! My hero. Well, here you go. One official Mayor's note. I have no use for it. Can't exactly walk back into town looking like this. Thom would faint."
     clear_flag: "quest_skeletons"
     set_flag: "has_mayors_note"
-    give_item: "Mayor's Note"
+    give_item: "mayors_note"
     options: ["opt_you_ok", "opt_leave"]
 }
 
@@ -368,7 +361,7 @@
     goto: "you_ok_reply"
 }
 @you_ok_reply {
-    text: "Honestly? It's not so bad. I've got my art. I've got my beret. I've got a room with... character. And I haven't gone insane YET."
+    text: "Honestly? It's not so bad. I've got my art. I've got my beret. I've got a room with... character. And I haven't gone insane yet. Key word: yet."
     options: ["opt_stay_safe", "opt_visit", "opt_leave"]
 }
 @opt_stay_safe {

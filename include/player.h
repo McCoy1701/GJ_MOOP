@@ -68,7 +68,7 @@ void PlayerRecalcStats( void );
 int  PlayerStat( const char* key );
 int  PlayerEquipEffect( const char* name );
 
-/* Gameplay state wrappers — funnel all mutations through these */
+/* Gameplay state wrappers - funnel all mutations through these */
 void PlayerFullReset( int class_index );
 void PlayerTakeDamage( int amount );
 void PlayerHeal( int amount );

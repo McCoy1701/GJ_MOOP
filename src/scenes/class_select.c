@@ -9,6 +9,7 @@
 #include "sound_manager.h"
 #include "game_scene.h"
 #include "main_menu.h"
+#include "dungeon.h"
 
 static void cs_Logic( float );
 static void cs_Draw( float );
@@ -41,7 +42,7 @@ static void mage_button( void );
 #define MODAL_LINE_MD     26.0f
 #define MODAL_LINE_LG     28.0f
 
-/* Drop target — center of game viewport widget on screen */
+/* Drop target - center of game viewport widget on screen */
 #define DROP_SIZE         64.0f
 #define DROP_TARGET_X     ( 8.0f + ( SCREEN_WIDTH * 0.72f ) / 2.0f )
 #define DROP_TARGET_Y     ( 66.0f + ( SCREEN_HEIGHT - 216.0f ) / 2.0f )
@@ -59,7 +60,7 @@ static int prev_class_idx = -1;
 static int selected_item = 0;
 static int browsing_items = 0;
 
-/* Unified filtered list — consumables + openables for current class */
+/* Unified filtered list - consumables + openables for current class */
 static FilteredItem_t filtered[MAX_CONSUMABLES + MAX_DOORS];
 static int num_filtered = 0;
 
@@ -83,6 +84,7 @@ static void cs_SelectClass( int index )
   PlayerInitStats();
   PlayerRecalcStats();
 
+  g_current_floor = 1;
   a_WidgetCacheFree();
   GameSceneInit();
 }
@@ -132,7 +134,7 @@ static void cs_Logic( float dt )
 {
   a_DoInput();
 
-  /* Outro in progress — blocks all input except ESC to skip */
+  /* Outro in progress - blocks all input except ESC to skip */
   if ( TransitionOutroActive() || TransitionOutroDone() )
   {
     if ( app.keyboard[SDL_SCANCODE_ESCAPE] == 1 )
@@ -147,7 +149,7 @@ static void cs_Logic( float dt )
 
     TransitionOutroUpdate( dt );
 
-    /* Outro just finished — do the actual scene switch */
+    /* Outro just finished - do the actual scene switch */
     if ( TransitionOutroDone() )
     {
       cs_SelectClass( pending_class );
@@ -196,7 +198,7 @@ static void cs_Logic( float dt )
     }
   }
 
-  /* Item keyboard navigation — wraps around through consumables + openables */
+  /* Item keyboard navigation - wraps around through consumables + openables */
   if ( browsing_items && num_filtered > 0 )
   {
     if ( app.keyboard[A_S] == 1 || app.keyboard[A_DOWN] == 1 )
@@ -215,7 +217,7 @@ static void cs_Logic( float dt )
     }
   }
 
-  /* Mouse hovering on item lists — check both panels */
+  /* Mouse hovering on item lists - check both panels */
   if ( num_filtered > 0 && last_class_idx >= 0 )
   {
     int mx = app.mouse.x;
@@ -282,7 +284,7 @@ static void cs_Logic( float dt )
     }
   }
 
-  /* Compute shared button anchor — below the taller item panel */
+  /* Compute shared button anchor - below the taller item panel */
   float panel_bot;
   {
     aContainerWidget_t* cp = a_GetContainerFromWidget( "consumables_panel" );
@@ -292,7 +294,7 @@ static void cs_Logic( float dt )
     panel_bot = cp_bot > dp_bot ? cp_bot : dp_bot;
   }
 
-  /* Programmatic embark button — mouse hover + click */
+  /* Programmatic embark button - mouse hover + click */
   if ( last_class_idx >= 0 )
   {
     aContainerWidget_t* cs = a_GetContainerFromWidget( "class_select" );
@@ -327,7 +329,7 @@ static void cs_Logic( float dt )
     }
   }
 
-  /* Programmatic back button — below embark */
+  /* Programmatic back button - below embark */
   {
     aContainerWidget_t* cs = a_GetContainerFromWidget( "class_select" );
     float bx = cs->rect.x + ( cs->rect.w - BACK_W ) / 2.0f;
@@ -379,7 +381,7 @@ static void cs_Draw( float dt )
     a_DrawRect( (aRectf_t){ dp->rect.x, dp->rect.y, dp->rect.w, dp_h }, panel_fg );
   }
 
-  /* Game viewport box — fades in during outro before the character drops */
+  /* Game viewport box - fades in during outro before the character drops */
   if ( in_outro )
   {
     float vp_a = TransitionGetOutroVPAlpha();
@@ -396,11 +398,11 @@ static void cs_Draw( float dt )
     }
   }
 
-  /* Widget labels (buttons only) — skip once fade is underway */
+  /* Widget labels (buttons only) - skip once fade is underway */
   if ( !in_outro )
     a_DrawWidgets();
 
-  /* Title — draw directly */
+  /* Title - draw directly */
   if ( !in_outro )
   {
     aContainerWidget_t* tp = a_GetContainerFromWidget( "title_panel" );
@@ -416,7 +418,7 @@ static void cs_Draw( float dt )
 
   if ( last_class_idx >= 0 )
   {
-    /* Class info panel — draw directly */
+    /* Class info panel - draw directly */
     if ( !in_outro )
     {
       aContainerWidget_t* ip = a_GetContainerFromWidget( "info_panel" );
@@ -457,7 +459,7 @@ static void cs_Draw( float dt )
       a_DrawText( g_classes[last_class_idx].description, (int)tx, (int)ty, ts );
     }
 
-    /* Draw character image or glyph — stays visible during outro */
+    /* Draw character image or glyph - stays visible during outro */
     {
       aContainerWidget_t* img_panel = a_GetContainerFromWidget( "image_panel" );
       aRectf_t ir = img_panel->rect;
@@ -543,7 +545,7 @@ static void cs_Draw( float dt )
       }
     }
 
-    /* Item lists + modal + buttons — fade with panels during outro */
+    /* Item lists + modal + buttons - fade with panels during outro */
     if ( panel_a > 0.01f )
     {
       aColor_t fade_white = { 0xc7, 0xcf, 0xcc, (int)( 255 * panel_a ) };
@@ -572,7 +574,7 @@ static void cs_Draw( float dt )
           aColor_t ic = g_consumables[ci].color;
           aColor_t ic_a = { ic.r, ic.g, ic.b, (int)( ic.a * panel_a ) };
 
-          /* Highlight selected row — full width */
+          /* Highlight selected row - full width */
           if ( fi == selected_item && browsing_items )
           {
             a_DrawFilledRect( (aRectf_t){ cr.x + LIST_HIT_MARGIN, cy - LIST_HIT_MARGIN, cr.w - LIST_HIT_MARGIN * 2, row_h },
@@ -640,7 +642,7 @@ static void cs_Draw( float dt )
         }
       }
 
-      /* Detail modal — centered between panels, shows consumable or openable info */
+      /* Detail modal - centered between panels, shows consumable or openable info */
       if ( browsing_items && num_filtered > 0 && selected_item < num_filtered )
       {
         aContainerWidget_t* cpanel = a_GetContainerFromWidget( "consumables_panel" );
@@ -741,7 +743,7 @@ static void cs_Draw( float dt )
         btn_panel_bot = cp_bot > dp_bot ? cp_bot : dp_bot;
       }
 
-      /* Draw embark button — only when a class is hovered */
+      /* Draw embark button - only when a class is hovered */
       {
         aContainerWidget_t* cs = a_GetContainerFromWidget( "class_select" );
         float ex = cs->rect.x + ( cs->rect.w - EMBARK_W ) / 2.0f;
@@ -752,7 +754,7 @@ static void cs_Draw( float dt )
                     (aColor_t){ 0x81, 0x97, 0x96, (int)( 255 * panel_a ) }, (aColor_t){ 0xc7, 0xcf, 0xcc, (int)( 255 * panel_a ) } );
       }
 
-      /* Draw back button — below embark */
+      /* Draw back button - below embark */
       {
         aContainerWidget_t* cs = a_GetContainerFromWidget( "class_select" );
         float bx = cs->rect.x + ( cs->rect.w - BACK_W ) / 2.0f;
@@ -765,7 +767,7 @@ static void cs_Draw( float dt )
     } /* end panel fade */
   }
 
-  /* "Press ESC to skip" hint — centered at top during outro */
+  /* "Press ESC to skip" hint - centered at top during outro */
   if ( in_outro )
   {
     aTextStyle_t ts = a_default_text_style;

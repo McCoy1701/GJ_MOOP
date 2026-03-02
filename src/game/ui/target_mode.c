@@ -13,10 +13,10 @@
 extern Player_t player;
 
 /* Targeting styles */
-#define TGT_CARDINAL  0   /* shoot/poison — cursor on cardinal lines */
-#define TGT_FREE      1   /* magic_bolt/freeze/aoe/swap — free move in range */
-#define TGT_ADJACENT  2   /* trap_stun — adjacent tiles only */
-#define TGT_SELF      3   /* smoke — instant at player's feet */
+#define TGT_CARDINAL  0   /* shoot/poison - cursor on cardinal lines */
+#define TGT_FREE      1   /* magic_bolt/freeze/aoe/swap - free move in range */
+#define TGT_ADJACENT  2   /* trap_stun - adjacent tiles only */
+#define TGT_SELF      3   /* smoke - instant at player's feet */
 
 #define RANGE_COLOR     (aColor_t){ 0xde, 0x9e, 0x41, 40 }
 #define AOE_COLOR       (aColor_t){ 0xcf, 0x57, 0x3c, 50 }
@@ -64,6 +64,8 @@ static int style_from_consumable( ConsumableInfo_t* c )
   if ( strcmp( c->effect, "shoot" ) == 0 || strcmp( c->effect, "poison" ) == 0 )
     return TGT_CARDINAL;
   if ( strcmp( c->effect, "reach" ) == 0 )
+    return TGT_CARDINAL;
+  if ( strcmp( c->effect, "fire_cone" ) == 0 )
     return TGT_CARDINAL;
   if ( strcmp( c->effect, "cleave" ) == 0 )
     return TGT_ADJACENT;
@@ -171,7 +173,7 @@ int TargetModeLogic( Enemy_t* enemies, int num_enemies )
     return 1;
   }
 
-  /* Mouse hover — move cursor to hovered tile if valid */
+  /* Mouse hover - move cursor to hovered tile if valid */
   {
     aContainerWidget_t* vp = a_GetContainerFromWidget( "game_viewport" );
     int mx = app.mouse.x;
@@ -189,7 +191,7 @@ int TargetModeLogic( Enemy_t* enemies, int num_enemies )
         cursor_col = mc;
       }
 
-      /* Mouse click — confirm if on valid tile, cancel otherwise */
+      /* Mouse click - confirm if on valid tile, cancel otherwise */
       if ( app.mouse.pressed && app.mouse.button == SDL_BUTTON_LEFT )
       {
         app.mouse.pressed = 0;
@@ -241,7 +243,7 @@ int TargetModeLogic( Enemy_t* enemies, int num_enemies )
          If cursor is on a ray, move along that ray or switch direction. */
       if ( cursor_row == player_row && cursor_col == player_col )
       {
-        /* Starting from player — jump in pressed direction */
+        /* Starting from player - jump in pressed direction */
         nr = player_row + dr;
         nc = player_col + dc;
         if ( valid_tile( nr, nc ) )
@@ -413,7 +415,7 @@ void TargetModeDraw( aRectf_t vp_rect, GameCamera_t* cam, World_t* w )
     }
   }
 
-  /* Cleave splash preview — highlight all adjacent tiles that will be hit */
+  /* Cleave splash preview - highlight all adjacent tiles that will be hit */
   if ( cons_idx >= 0 && strcmp( g_consumables[cons_idx].effect, "cleave" ) == 0
        && ( cursor_row != player_row || cursor_col != player_col ) )
   {
@@ -431,6 +433,33 @@ void TargetModeDraw( aRectf_t vp_rect, GameCamera_t* cam, World_t* w )
       float wx = r * tw + tw / 2.0f;
       float wy = c * th + th / 2.0f;
       GV_DrawFilledRect( vp_rect, cam, wx, wy, (float)tw, (float)th, AOE_COLOR );
+    }
+  }
+
+  /* Fire cone preview - highlight expanding cone in the aimed direction */
+  if ( cons_idx >= 0 && strcmp( g_consumables[cons_idx].effect, "fire_cone" ) == 0
+       && ( cursor_row != player_row || cursor_col != player_col ) )
+  {
+    int dr = ( cursor_row > player_row ) ? 1 : ( cursor_row < player_row ) ? -1 : 0;
+    int dc = ( cursor_col > player_col ) ? 1 : ( cursor_col < player_col ) ? -1 : 0;
+    int perp_r = -dc;
+    int perp_c =  dr;
+
+    for ( int step = 1; step <= tgt_range; step++ )
+    {
+      int spread = step - 1;
+      for ( int s = -spread; s <= spread; s++ )
+      {
+        int r = player_row + step * dr + s * perp_r;
+        int c = player_col + step * dc + s * perp_c;
+        if ( r < 0 || r >= w->width || c < 0 || c >= w->height ) continue;
+        if ( !TileWalkable( r, c ) ) continue;
+        if ( r == cursor_row && c == cursor_col ) continue;
+
+        float wx = r * tw + tw / 2.0f;
+        float wy = c * th + th / 2.0f;
+        GV_DrawFilledRect( vp_rect, cam, wx, wy, (float)tw, (float)th, AOE_COLOR );
+      }
     }
   }
 

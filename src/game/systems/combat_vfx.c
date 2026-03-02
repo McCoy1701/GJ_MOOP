@@ -180,7 +180,7 @@ void CombatVFXDrawHealthBar( aRectf_t vp_rect, GameCamera_t* cam,
                               float wx, float wy,
                               int hp, int max_hp )
 {
-  if ( hp >= max_hp ) return; /* full health — no bar */
+  if ( hp >= max_hp ) return; /* full health - no bar */
   if ( hp < 0 ) hp = 0;
 
   float sx, sy, cl, ct;

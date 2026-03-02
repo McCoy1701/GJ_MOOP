@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
+#include <sys/stat.h>
 #include <Archimedes.h>
 #include <Daedalus.h>
 
@@ -19,7 +20,7 @@ int       g_num_npc_types = 0;
 
 /* ---- Flag system ---- */
 
-typedef struct { char name[MAX_NAME_LENGTH]; int value; } Flag_t;
+typedef struct { dString_t* name; int value; } Flag_t;
 
 static Flag_t g_flags[MAX_FLAGS];
 static int    g_num_flags = 0;
@@ -27,12 +28,14 @@ static int    g_num_flags = 0;
 static int flag_find( const char* name )
 {
   for ( int i = 0; i < g_num_flags; i++ )
-    if ( strcmp( g_flags[i].name, name ) == 0 ) return i;
+    if ( d_StringCompareToCString( g_flags[i].name, name ) == 0 ) return i;
   return -1;
 }
 
 void FlagsInit( void )
 {
+  for ( int i = 0; i < g_num_flags; i++ )
+    d_StringDestroy( g_flags[i].name );
   memset( g_flags, 0, sizeof( g_flags ) );
   g_num_flags = 0;
 }
@@ -48,7 +51,8 @@ void FlagSet( const char* name, int value )
   int i = flag_find( name );
   if ( i >= 0 ) { g_flags[i].value = value; return; }
   if ( g_num_flags >= MAX_FLAGS ) return;
-  strncpy( g_flags[g_num_flags].name, name, MAX_NAME_LENGTH - 1 );
+  g_flags[g_num_flags].name = d_StringInit();
+  d_StringSet( g_flags[g_num_flags].name, name );
   g_flags[g_num_flags].value = value;
   g_num_flags++;
 }
@@ -62,8 +66,99 @@ void FlagClear( const char* name )
 {
   int i = flag_find( name );
   if ( i < 0 ) return;
+  d_StringDestroy( g_flags[i].name );
   g_flags[i] = g_flags[g_num_flags - 1];
+  memset( &g_flags[g_num_flags - 1], 0, sizeof( Flag_t ) );
   g_num_flags--;
+}
+
+/* ---- Init / destroy helpers ---- */
+
+void DialogueEntryInit( DialogueEntry_t* de )
+{
+  memset( de, 0, sizeof( DialogueEntry_t ) );
+  de->key              = d_StringInit();
+  de->text             = d_StringInit();
+  de->label            = d_StringInit();
+  de->goto_key         = d_StringInit();
+  de->require_class    = d_StringInit();
+  de->require_flag_min = d_StringInit();
+  de->require_item     = d_StringInit();
+  de->set_flag         = d_StringInit();
+  de->incr_flag        = d_StringInit();
+  de->clear_flag       = d_StringInit();
+  de->give_item        = d_StringInit();
+  de->take_item        = d_StringInit();
+  de->set_lore         = d_StringInit();
+
+  for ( int i = 0; i < MAX_NODE_OPTIONS; i++ )
+    de->option_keys[i] = d_StringInit();
+  for ( int i = 0; i < MAX_CONDITIONS; i++ )
+  {
+    de->require_flag[i]     = d_StringInit();
+    de->require_not_flag[i] = d_StringInit();
+    de->require_lore[i]     = d_StringInit();
+  }
+}
+
+void DialogueEntryDestroy( DialogueEntry_t* de )
+{
+  d_StringDestroy( de->key );
+  d_StringDestroy( de->text );
+  d_StringDestroy( de->label );
+  d_StringDestroy( de->goto_key );
+  d_StringDestroy( de->require_class );
+  d_StringDestroy( de->require_flag_min );
+  d_StringDestroy( de->require_item );
+  d_StringDestroy( de->set_flag );
+  d_StringDestroy( de->incr_flag );
+  d_StringDestroy( de->clear_flag );
+  d_StringDestroy( de->give_item );
+  d_StringDestroy( de->take_item );
+  d_StringDestroy( de->set_lore );
+
+  for ( int i = 0; i < MAX_NODE_OPTIONS; i++ )
+    d_StringDestroy( de->option_keys[i] );
+  for ( int i = 0; i < MAX_CONDITIONS; i++ )
+  {
+    d_StringDestroy( de->require_flag[i] );
+    d_StringDestroy( de->require_not_flag[i] );
+    d_StringDestroy( de->require_lore[i] );
+  }
+}
+
+void NPCTypeInit( NPCType_t* npc )
+{
+  memset( npc, 0, sizeof( NPCType_t ) );
+  npc->key         = d_StringInit();
+  npc->name        = d_StringInit();
+  npc->glyph       = d_StringInit();
+  npc->description = d_StringInit();
+  npc->combat_bark = d_StringInit();
+  npc->idle_bark   = d_StringInit();
+  npc->idle_log    = d_StringInit();
+}
+
+void NPCTypeDestroy( NPCType_t* npc )
+{
+  for ( int i = 0; i < npc->num_entries; i++ )
+    DialogueEntryDestroy( &npc->entries[i] );
+
+  d_StringDestroy( npc->key );
+  d_StringDestroy( npc->name );
+  d_StringDestroy( npc->glyph );
+  d_StringDestroy( npc->description );
+  d_StringDestroy( npc->combat_bark );
+  d_StringDestroy( npc->idle_bark );
+  d_StringDestroy( npc->idle_log );
+}
+
+void DialogueDestroyAll( void )
+{
+  for ( int i = 0; i < g_num_npc_types; i++ )
+    NPCTypeDestroy( &g_npc_types[i] );
+  memset( g_npc_types, 0, sizeof( g_npc_types ) );
+  g_num_npc_types = 0;
 }
 
 /* ---- DUF color parsing (same as enemies/items) ---- */
@@ -84,25 +179,25 @@ static aColor_t ParseDUFColor( dDUFValue_t* color_node )
 /* ---- Parse DUF string arrays (for options list) ---- */
 
 static int ParseStringArray( dDUFValue_t* arr,
-                              char out[][MAX_NAME_LENGTH], int max )
+                              dString_t* out[], int max )
 {
   if ( !arr || arr->type != D_DUF_ARRAY ) return 0;
   int n = 0;
   for ( dDUFValue_t* ch = arr->child; ch && n < max; ch = ch->next )
   {
     if ( ch->value_string )
-      strncpy( out[n], ch->value_string, MAX_NAME_LENGTH - 1 );
+      d_StringSet( out[n], ch->value_string );
     n++;
   }
   return n;
 }
 
-/* ---- Helper: copy string field if present ---- */
+/* ---- Helper: copy DUF value into dString_t ---- */
 
-static void copy_str( char* dst, dDUFValue_t* node, int max )
+static void copy_dstr( dString_t* dst, dDUFValue_t* node )
 {
   if ( node && node->value_string )
-    strncpy( dst, node->value_string, max - 1 );
+    d_StringSet( dst, node->value_string );
 }
 
 /* ---- Load one NPC dialogue file ---- */
@@ -123,27 +218,33 @@ static void DialogueLoadFile( const char* path, const char* stem )
   }
 
   NPCType_t* npc = &g_npc_types[g_num_npc_types];
-  memset( npc, 0, sizeof( NPCType_t ) );
-  strncpy( npc->key, stem, MAX_NAME_LENGTH - 1 );
-  strncpy( npc->combat_bark, "Can't talk right now!", 127 );
+  NPCTypeInit( npc );
+  d_StringSet( npc->key, stem );
+  d_StringSet( npc->combat_bark, "Can't talk right now!" );
 
   for ( dDUFValue_t* entry = root->child; entry != NULL; entry = entry->next )
   {
     if ( !entry->key ) continue;
 
-    /* @npc block — metadata */
+    /* @npc block - metadata */
     if ( strcmp( entry->key, "npc" ) == 0 )
     {
-      copy_str( npc->name,  d_DUFGetObjectItem( entry, "name" ),  MAX_NAME_LENGTH );
-      copy_str( npc->glyph, d_DUFGetObjectItem( entry, "glyph" ), 8 );
+      copy_dstr( npc->name,  d_DUFGetObjectItem( entry, "name" ) );
+      copy_dstr( npc->glyph, d_DUFGetObjectItem( entry, "glyph" ) );
       npc->color = ParseDUFColor( d_DUFGetObjectItem( entry, "color" ) );
-      copy_str( npc->description, d_DUFGetObjectItem( entry, "description" ), 256 );
-      copy_str( npc->combat_bark, d_DUFGetObjectItem( entry, "combat_bark" ), 128 );
-      copy_str( npc->idle_bark,   d_DUFGetObjectItem( entry, "idle_bark" ),   128 );
+      copy_dstr( npc->description, d_DUFGetObjectItem( entry, "description" ) );
+      copy_dstr( npc->combat_bark, d_DUFGetObjectItem( entry, "combat_bark" ) );
+      copy_dstr( npc->idle_bark,   d_DUFGetObjectItem( entry, "idle_bark" ) );
+      copy_dstr( npc->idle_log,    d_DUFGetObjectItem( entry, "idle_log" ) );
 
       dDUFValue_t* idle_cd = d_DUFGetObjectItem( entry, "idle_cooldown" );
-      if ( idle_cd && idle_cd->value_string )
-        npc->idle_cooldown = atoi( idle_cd->value_string );
+      if ( idle_cd ) npc->idle_cooldown = (int)idle_cd->value_int;
+
+      dDUFValue_t* combat_v = d_DUFGetObjectItem( entry, "combat" );
+      if ( combat_v ) npc->combat = (int)combat_v->value_int;
+
+      dDUFValue_t* damage_v = d_DUFGetObjectItem( entry, "damage" );
+      if ( damage_v ) npc->damage = (int)damage_v->value_int;
 
       dDUFValue_t* img_path = d_DUFGetObjectItem( entry, "image_path" );
       if ( img_path && img_path->value_string && strlen( img_path->value_string ) > 0 )
@@ -152,29 +253,29 @@ static void DialogueLoadFile( const char* path, const char* stem )
       continue;
     }
 
-    /* Dialogue entry — speech or option node */
+    /* Dialogue entry - speech or option node */
     if ( npc->num_entries >= MAX_DIALOGUE_NODES )
     {
       printf( "DIALOGUE: '%s' exceeds %d nodes, '%s' dropped!\n",
-              npc->key, MAX_DIALOGUE_NODES, entry->key );
+              d_StringPeek( npc->key ), MAX_DIALOGUE_NODES, entry->key );
       continue;
     }
 
     DialogueEntry_t* de = &npc->entries[npc->num_entries];
-    memset( de, 0, sizeof( DialogueEntry_t ) );
-    strncpy( de->key, entry->key, MAX_NAME_LENGTH - 1 );
+    DialogueEntryInit( de );
+    d_StringSet( de->key, entry->key );
 
     /* Speech node fields */
-    copy_str( de->text, d_DUFGetObjectItem( entry, "text" ), 512 );
+    copy_dstr( de->text, d_DUFGetObjectItem( entry, "text" ) );
     de->num_options = ParseStringArray(
       d_DUFGetObjectItem( entry, "options" ),
       de->option_keys, MAX_NODE_OPTIONS );
 
     /* Option node fields */
-    copy_str( de->label,    d_DUFGetObjectItem( entry, "label" ),    256 );
-    copy_str( de->goto_key, d_DUFGetObjectItem( entry, "goto" ), MAX_NAME_LENGTH );
+    copy_dstr( de->label,    d_DUFGetObjectItem( entry, "label" ) );
+    copy_dstr( de->goto_key, d_DUFGetObjectItem( entry, "goto" ) );
 
-    /* Label color — named preset or RGBA array (alpha 0 = not set) */
+    /* Label color - named preset or RGBA array (alpha 0 = not set) */
     {
       dDUFValue_t* col = d_DUFGetObjectItem( entry, "color" );
       if ( col && col->value_string )
@@ -198,10 +299,10 @@ static void DialogueLoadFile( const char* path, const char* stem )
     dDUFValue_t* prio = d_DUFGetObjectItem( entry, "priority" );
     if ( prio ) de->priority = (int)prio->value_int;
 
-    /* Conditions — iterate children to collect ALL matching keys */
-    copy_str( de->require_class,    d_DUFGetObjectItem( entry, "require_class" ),    MAX_NAME_LENGTH );
-    copy_str( de->require_flag_min, d_DUFGetObjectItem( entry, "require_flag_min" ), MAX_NAME_LENGTH );
-    copy_str( de->require_item,     d_DUFGetObjectItem( entry, "require_item" ),     MAX_NAME_LENGTH );
+    /* Conditions - iterate children to collect ALL matching keys */
+    copy_dstr( de->require_class,    d_DUFGetObjectItem( entry, "require_class" ) );
+    copy_dstr( de->require_flag_min, d_DUFGetObjectItem( entry, "require_flag_min" ) );
+    copy_dstr( de->require_item,     d_DUFGetObjectItem( entry, "require_item" ) );
 
     de->num_require_flag = 0;
     de->num_require_not_flag = 0;
@@ -209,27 +310,48 @@ static void DialogueLoadFile( const char* path, const char* stem )
     for ( dDUFValue_t* ch = entry->child; ch; ch = ch->next )
     {
       if ( !ch->key ) continue;
-      if ( strcmp( ch->key, "require_flag" ) == 0 && ch->value_string
-           && de->num_require_flag < MAX_CONDITIONS )
-        strncpy( de->require_flag[de->num_require_flag++],
-                 ch->value_string, MAX_NAME_LENGTH - 1 );
-      if ( strcmp( ch->key, "require_not_flag" ) == 0 && ch->value_string
-           && de->num_require_not_flag < MAX_CONDITIONS )
-        strncpy( de->require_not_flag[de->num_require_not_flag++],
-                 ch->value_string, MAX_NAME_LENGTH - 1 );
-      if ( strcmp( ch->key, "require_lore" ) == 0 && ch->value_string
-           && de->num_require_lore < MAX_CONDITIONS )
-        strncpy( de->require_lore[de->num_require_lore++],
-                 ch->value_string, MAX_NAME_LENGTH - 1 );
+      if ( strcmp( ch->key, "require_flag" ) == 0 )
+      {
+        if ( ch->value_string && de->num_require_flag < MAX_CONDITIONS )
+          d_StringSet( de->require_flag[de->num_require_flag++],
+                       ch->value_string );
+        else if ( ch->type == D_DUF_ARRAY )
+          for ( dDUFValue_t* a = ch->child; a && de->num_require_flag < MAX_CONDITIONS; a = a->next )
+            if ( a->value_string )
+              d_StringSet( de->require_flag[de->num_require_flag++],
+                           a->value_string );
+      }
+      if ( strcmp( ch->key, "require_not_flag" ) == 0 )
+      {
+        if ( ch->value_string && de->num_require_not_flag < MAX_CONDITIONS )
+          d_StringSet( de->require_not_flag[de->num_require_not_flag++],
+                       ch->value_string );
+        else if ( ch->type == D_DUF_ARRAY )
+          for ( dDUFValue_t* a = ch->child; a && de->num_require_not_flag < MAX_CONDITIONS; a = a->next )
+            if ( a->value_string )
+              d_StringSet( de->require_not_flag[de->num_require_not_flag++],
+                           a->value_string );
+      }
+      if ( strcmp( ch->key, "require_lore" ) == 0 )
+      {
+        if ( ch->value_string && de->num_require_lore < MAX_CONDITIONS )
+          d_StringSet( de->require_lore[de->num_require_lore++],
+                       ch->value_string );
+        else if ( ch->type == D_DUF_ARRAY )
+          for ( dDUFValue_t* a = ch->child; a && de->num_require_lore < MAX_CONDITIONS; a = a->next )
+            if ( a->value_string )
+              d_StringSet( de->require_lore[de->num_require_lore++],
+                           a->value_string );
+      }
     }
 
     /* Actions */
-    copy_str( de->set_flag,   d_DUFGetObjectItem( entry, "set_flag" ),   MAX_NAME_LENGTH );
-    copy_str( de->incr_flag,  d_DUFGetObjectItem( entry, "incr_flag" ),  MAX_NAME_LENGTH );
-    copy_str( de->clear_flag, d_DUFGetObjectItem( entry, "clear_flag" ), MAX_NAME_LENGTH );
-    copy_str( de->give_item,  d_DUFGetObjectItem( entry, "give_item" ),  MAX_NAME_LENGTH );
-    copy_str( de->take_item,  d_DUFGetObjectItem( entry, "take_item" ),  MAX_NAME_LENGTH );
-    copy_str( de->set_lore,  d_DUFGetObjectItem( entry, "set_lore" ),  MAX_NAME_LENGTH );
+    copy_dstr( de->set_flag,   d_DUFGetObjectItem( entry, "set_flag" ) );
+    copy_dstr( de->incr_flag,  d_DUFGetObjectItem( entry, "incr_flag" ) );
+    copy_dstr( de->clear_flag, d_DUFGetObjectItem( entry, "clear_flag" ) );
+    copy_dstr( de->give_item,  d_DUFGetObjectItem( entry, "give_item" ) );
+    copy_dstr( de->take_item,  d_DUFGetObjectItem( entry, "take_item" ) );
+    copy_dstr( de->set_lore,   d_DUFGetObjectItem( entry, "set_lore" ) );
 
     { dDUFValue_t* v = d_DUFGetObjectItem( entry, "give_gold" );
       if ( v ) de->give_gold = (int)v->value_int; }
@@ -243,26 +365,32 @@ static void DialogueLoadFile( const char* path, const char* stem )
   g_num_npc_types++;
 }
 
-/* ---- Scan dialogue/ folder and load all .duf files ---- */
+/* ---- Scan a directory for .duf files, recurse into subdirs ---- */
 
-void DialogueLoadAll( void )
+static void dialogue_scan_dir( const char* dirpath )
 {
-  memset( g_npc_types, 0, sizeof( g_npc_types ) );
-  g_num_npc_types = 0;
-
-  DIR* dir = opendir( "resources/data/npcs" );
-  if ( !dir ) { printf( "No npcs/ folder found.\n" ); return; }
+  DIR* dir = opendir( dirpath );
+  if ( !dir ) return;
 
   struct dirent* ent;
   while ( ( ent = readdir( dir ) ) != NULL )
   {
     const char* name = ent->d_name;
+    if ( name[0] == '.' ) continue;
+
+    char path[512];
+    snprintf( path, sizeof( path ), "%s/%s", dirpath, name );
+
+    /* Recurse into subdirectories */
+    struct stat st;
+    if ( stat( path, &st ) == 0 && S_ISDIR( st.st_mode ) )
+    {
+      dialogue_scan_dir( path );
+      continue;
+    }
+
     int len = (int)strlen( name );
     if ( len < 5 || strcmp( name + len - 4, ".duf" ) != 0 ) continue;
-
-    /* Build full path */
-    char path[512];
-    snprintf( path, sizeof( path ), "resources/data/npcs/%s", name );
 
     /* Extract stem (filename without .duf) */
     char stem[MAX_NAME_LENGTH] = { 0 };
@@ -274,13 +402,19 @@ void DialogueLoadAll( void )
   }
 
   closedir( dir );
+}
+
+void DialogueLoadAll( void )
+{
+  DialogueDestroyAll();
+  dialogue_scan_dir( "resources/data/npcs" );
   printf( "Loaded %d NPC dialogue files.\n", g_num_npc_types );
 }
 
 int NPCTypeByKey( const char* key )
 {
   for ( int i = 0; i < g_num_npc_types; i++ )
-    if ( strcmp( g_npc_types[i].key, key ) == 0 ) return i;
+    if ( d_StringCompareToCString( g_npc_types[i].key, key ) == 0 ) return i;
   return -1;
 }
 
@@ -297,14 +431,15 @@ static int  dlg_num_visible = 0;
 static DialogueEntry_t* find_entry( NPCType_t* npc, const char* key )
 {
   for ( int i = 0; i < npc->num_entries; i++ )
-    if ( strcmp( npc->entries[i].key, key ) == 0 ) return &npc->entries[i];
+    if ( d_StringCompareToCString( npc->entries[i].key, key ) == 0 )
+      return &npc->entries[i];
   return NULL;
 }
 
 static int find_entry_idx( NPCType_t* npc, const char* key )
 {
   for ( int i = 0; i < npc->num_entries; i++ )
-    if ( strcmp( npc->entries[i].key, key ) == 0 ) return i;
+    if ( d_StringCompareToCString( npc->entries[i].key, key ) == 0 ) return i;
   return -1;
 }
 
@@ -326,25 +461,26 @@ static int has_item( const char* name )
 static int check_conditions( DialogueEntry_t* de )
 {
   /* require_class */
-  if ( de->require_class[0] )
+  if ( d_StringGetLength( de->require_class ) > 0 )
   {
-    if ( strcasecmp( player.name, de->require_class ) != 0 )
+    if ( strcasecmp( player.name, d_StringPeek( de->require_class ) ) != 0 )
       return 0;
   }
 
   /* require_flag: ALL listed flags must be > 0 */
   for ( int i = 0; i < de->num_require_flag; i++ )
   {
-    if ( de->require_flag[i][0] && FlagGet( de->require_flag[i] ) <= 0 )
+    if ( d_StringGetLength( de->require_flag[i] ) > 0
+         && FlagGet( d_StringPeek( de->require_flag[i] ) ) <= 0 )
       return 0;
   }
 
-  /* require_flag_min: "key:value" — flag >= value */
-  if ( de->require_flag_min[0] )
+  /* require_flag_min: "key:value" - flag >= value */
+  if ( d_StringGetLength( de->require_flag_min ) > 0 )
   {
-    char buf[MAX_NAME_LENGTH];
-    strncpy( buf, de->require_flag_min, MAX_NAME_LENGTH - 1 );
-    buf[MAX_NAME_LENGTH - 1] = '\0';
+    char buf[256];
+    strncpy( buf, d_StringPeek( de->require_flag_min ), sizeof( buf ) - 1 );
+    buf[sizeof( buf ) - 1] = '\0';
     char* colon = strchr( buf, ':' );
     if ( colon )
     {
@@ -357,21 +493,23 @@ static int check_conditions( DialogueEntry_t* de )
   /* require_not_flag: ALL listed flags must be 0 or missing */
   for ( int i = 0; i < de->num_require_not_flag; i++ )
   {
-    if ( de->require_not_flag[i][0] && FlagGet( de->require_not_flag[i] ) > 0 )
+    if ( d_StringGetLength( de->require_not_flag[i] ) > 0
+         && FlagGet( d_StringPeek( de->require_not_flag[i] ) ) > 0 )
       return 0;
   }
 
   /* require_lore: ALL listed lore keys must be discovered */
   for ( int i = 0; i < de->num_require_lore; i++ )
   {
-    if ( de->require_lore[i][0] && !LoreIsDiscovered( de->require_lore[i] ) )
+    if ( d_StringGetLength( de->require_lore[i] ) > 0
+         && !LoreIsDiscovered( d_StringPeek( de->require_lore[i] ) ) )
       return 0;
   }
 
   /* require_item */
-  if ( de->require_item[0] )
+  if ( d_StringGetLength( de->require_item ) > 0 )
   {
-    if ( !has_item( de->require_item ) ) return 0;
+    if ( !has_item( d_StringPeek( de->require_item ) ) ) return 0;
   }
 
   /* require_gold_min */
@@ -385,11 +523,11 @@ static int check_conditions( DialogueEntry_t* de )
 
 static void execute_actions( DialogueEntry_t* de )
 {
-  if ( de->set_flag[0] )
+  if ( d_StringGetLength( de->set_flag ) > 0 )
   {
-    char buf[MAX_NAME_LENGTH];
-    strncpy( buf, de->set_flag, MAX_NAME_LENGTH - 1 );
-    buf[MAX_NAME_LENGTH - 1] = '\0';
+    char buf[256];
+    strncpy( buf, d_StringPeek( de->set_flag ), sizeof( buf ) - 1 );
+    buf[sizeof( buf ) - 1] = '\0';
     char* colon = strchr( buf, ':' );
     if ( colon )
     {
@@ -400,34 +538,34 @@ static void execute_actions( DialogueEntry_t* de )
       FlagSet( buf, 1 );
   }
 
-  if ( de->incr_flag[0] )
-    FlagIncr( de->incr_flag );
+  if ( d_StringGetLength( de->incr_flag ) > 0 )
+    FlagIncr( d_StringPeek( de->incr_flag ) );
 
-  if ( de->clear_flag[0] )
-    FlagClear( de->clear_flag );
+  if ( d_StringGetLength( de->clear_flag ) > 0 )
+    FlagClear( d_StringPeek( de->clear_flag ) );
 
-  if ( de->give_item[0] )
+  if ( d_StringGetLength( de->give_item ) > 0 )
   {
     for ( int i = 0; i < g_num_consumables; i++ )
     {
-      if ( strcmp( g_consumables[i].name, de->give_item ) == 0 )
+      if ( strcmp( g_consumables[i].name, d_StringPeek( de->give_item ) ) == 0 )
       { InventoryAdd( INV_CONSUMABLE, i ); break; }
     }
   }
 
-  if ( de->take_item[0] )
+  if ( d_StringGetLength( de->take_item ) > 0 )
   {
     for ( int i = 0; i < MAX_INVENTORY; i++ )
     {
       if ( player.inventory[i].type == INV_CONSUMABLE &&
            strcmp( g_consumables[player.inventory[i].index].name,
-                   de->take_item ) == 0 )
+                   d_StringPeek( de->take_item ) ) == 0 )
       { InventoryRemove( i ); break; }
     }
   }
 
-  if ( de->set_lore[0] )
-    LoreUnlock( de->set_lore );
+  if ( d_StringGetLength( de->set_lore ) > 0 )
+    LoreUnlock( d_StringPeek( de->set_lore ) );
 
   if ( de->give_gold > 0 )
     PlayerAddGold( de->give_gold );
@@ -445,11 +583,11 @@ static void build_visible_options( void )
 
   for ( int i = 0; i < speech->num_options && dlg_num_visible < MAX_NODE_OPTIONS; i++ )
   {
-    DialogueEntry_t* opt = find_entry( npc, speech->option_keys[i] );
+    DialogueEntry_t* opt = find_entry( npc, d_StringPeek( speech->option_keys[i] ) );
     if ( !opt )
     {
       printf( "DIALOGUE: option '%s' not found in '%s'\n",
-              speech->option_keys[i], npc->key );
+              d_StringPeek( speech->option_keys[i] ), d_StringPeek( npc->key ) );
       continue;
     }
     if ( !check_conditions( opt ) ) continue;
@@ -501,14 +639,15 @@ void DialogueSelectOption( int index )
   execute_actions( opt );
 
   /* Follow goto */
-  if ( strcmp( opt->goto_key, "end" ) == 0 )
+  if ( d_StringCompareToCString( opt->goto_key, "end" ) == 0 )
   { DialogueEnd(); return; }
 
-  int next = find_entry_idx( npc, opt->goto_key );
+  int next = find_entry_idx( npc, d_StringPeek( opt->goto_key ) );
   if ( next < 0 )
   {
     printf( "DIALOGUE: goto '%s' not found in '%s' (from option '%s')\n",
-            opt->goto_key, npc->key, opt->key );
+            d_StringPeek( opt->goto_key ), d_StringPeek( npc->key ),
+            d_StringPeek( opt->key ) );
     DialogueEnd();
     return;
   }
@@ -537,7 +676,7 @@ int DialogueActive( void ) { return dlg_active; }
 const char* DialogueGetNPCName( void )
 {
   if ( dlg_npc_type < 0 ) return "";
-  return g_npc_types[dlg_npc_type].name;
+  return d_StringPeek( g_npc_types[dlg_npc_type].name );
 }
 
 aColor_t DialogueGetNPCColor( void )
@@ -549,7 +688,7 @@ aColor_t DialogueGetNPCColor( void )
 const char* DialogueGetText( void )
 {
   if ( dlg_npc_type < 0 || dlg_node_idx < 0 ) return "";
-  return g_npc_types[dlg_npc_type].entries[dlg_node_idx].text;
+  return d_StringPeek( g_npc_types[dlg_npc_type].entries[dlg_node_idx].text );
 }
 
 int DialogueGetOptionCount( void ) { return dlg_num_visible; }
@@ -558,7 +697,7 @@ const char* DialogueGetOptionLabel( int index )
 {
   if ( index < 0 || index >= dlg_num_visible ) return "";
   NPCType_t* npc = &g_npc_types[dlg_npc_type];
-  return npc->entries[dlg_visible_opts[index]].label;
+  return d_StringPeek( npc->entries[dlg_visible_opts[index]].label );
 }
 
 aColor_t DialogueGetOptionColor( int index )
@@ -573,10 +712,13 @@ aColor_t DialogueGetOptionColor( int index )
   if ( opt->label_color.a > 0 ) return opt->label_color;
 
   /* 2. Auto-detect from actions */
-  if ( opt->set_flag[0] && strncmp( opt->set_flag, "quest_", 6 ) == 0 )
-    return (aColor_t){ 0xde, 0x9e, 0x41, 255 };   /* quest start — gold */
-  if ( opt->clear_flag[0] && strncmp( opt->clear_flag, "quest_", 6 ) == 0 )
-    return (aColor_t){ 0x75, 0xa7, 0x43, 255 };   /* quest complete — green */
+  const char* sf = d_StringPeek( opt->set_flag );
+  if ( sf[0] && strncmp( sf, "quest_", 6 ) == 0 )
+    return (aColor_t){ 0xde, 0x9e, 0x41, 255 };   /* quest start - gold */
+
+  const char* cf = d_StringPeek( opt->clear_flag );
+  if ( cf[0] && strncmp( cf, "quest_", 6 ) == 0 )
+    return (aColor_t){ 0x75, 0xa7, 0x43, 255 };   /* quest complete - green */
 
   return def;
 }
@@ -590,5 +732,5 @@ aImage_t* DialogueGetNPCImage( void )
 const char* DialogueGetNPCGlyph( void )
 {
   if ( dlg_npc_type < 0 ) return "";
-  return g_npc_types[dlg_npc_type].glyph;
+  return d_StringPeek( g_npc_types[dlg_npc_type].glyph );
 }

@@ -59,7 +59,7 @@ static void trigger_hit_effect( void )
   TweenFloatWithCallback( &hit_tweens, &hit_shake_y, sy, 0.04f,
                            TWEEN_EASE_OUT_QUAD, shake_back_y, NULL );
 
-  /* Red flash — only start if not already active */
+  /* Red flash - only start if not already active */
   if ( hit_flash_alpha < 1.0f )
   {
     hit_flash_alpha = 60.0f;
@@ -118,7 +118,7 @@ void CombatHandleEnemyDeath( Enemy_t* e )
                   "Picked up %d gold.", t->gold_drop );
   }
 
-  /* Drop item on death — check maps first, then consumables */
+  /* Drop item on death - check maps first, then consumables */
   if ( t->drop_item[0] != '\0' && combat_ground_items && combat_ground_count )
   {
     int mi = MapByKey( t->drop_item );
@@ -157,9 +157,10 @@ void CombatHandleEnemyDeath( Enemy_t* e )
   if ( t->on_death[0] != '\0'
        && strcmp( t->on_death, "poison_pool" ) == 0 )
   {
-    PoisonPoolSpawn( e->row, e->col, t->pool_duration, t->pool_damage );
-    ConsolePushF( console, (aColor_t){ 50, 220, 50, 255 },
-                  "The %s dissolves into a poison pool!", t->name );
+    PoisonPoolSpawn( e->row, e->col, t->pool_duration, t->pool_damage,
+                     t->color );
+    ConsolePushF( console, t->color,
+                  "The %s dissolves into a pool of goo!", t->name );
   }
 }
 
@@ -199,7 +200,7 @@ static void resolve_buff( Enemy_t* primary )
                     "Lifesteal heals %d HP.", heal );
     }
   }
-  /* "none" or unknown — bonus damage was already applied, nothing extra */
+  /* All other buffs (cleave, reach, none) - bonus damage already applied */
 
   PlayerClearBuff();
 }
@@ -213,7 +214,7 @@ int CombatAttack( Enemy_t* e )
   if ( player.buff.active )
     pdmg += player.buff.bonus_damage;
 
-  /* Passive: first_strike — bonus damage on first attack per room */
+  /* Passive: first_strike - bonus damage on first attack per room */
   int fs = PlayerEquipEffect( "first_strike" );
   if ( fs > 0 && player.first_strike_active )
   {
@@ -223,13 +224,19 @@ int CombatAttack( Enemy_t* e )
                   "First Strike! +%d bonus damage!", fs );
   }
 
-  /* Passive: berserk — bonus damage when below half HP */
+  /* Passive: berserk - +effect_value damage per 40% HP missing (max 2) */
   int berserk = PlayerEquipEffect( "berserk" );
-  if ( berserk > 0 && player.hp <= player.max_hp / 2 )
+  if ( berserk > 0 && player.max_hp > 0 )
   {
-    pdmg += berserk;
-    ConsolePushF( console, (aColor_t){ 0xa5, 0x30, 0x30, 255 },
-                  "Berserk! +%d damage!", berserk );
+    int missing_pct = ( ( player.max_hp - player.hp ) * 100 ) / player.max_hp;
+    int stacks = missing_pct / 40;
+    if ( stacks > 2 ) stacks = 2;
+    if ( stacks > 0 )
+    {
+      pdmg += berserk * stacks;
+      ConsolePushF( console, (aColor_t){ 0xa5, 0x30, 0x30, 255 },
+                    "Berserk! +%d damage!", berserk * stacks );
+    }
   }
 
   if ( pdmg < 1 ) pdmg = 1;
@@ -240,7 +247,7 @@ int CombatAttack( Enemy_t* e )
 
   int killed = deal_damage( e, pdmg, (aColor_t){ 0xeb, 0xed, 0xe9, 255 } );
 
-  /* Passive: poison — apply DOT on melee hit */
+  /* Passive: poison - apply DOT on melee hit */
   int psn = PlayerEquipEffect( "poison" );
   if ( psn > 0 && e->alive )
   {
@@ -278,7 +285,7 @@ void CombatEnemyHit( Enemy_t* e )
                  (aColor_t){ 0xa5, 0x30, 0x30, 255 } );
   }
 
-  /* Passive: thorns — reflect damage back (not if dead) */
+  /* Passive: thorns - reflect damage back (not if dead) */
   if ( player.hp > 0 )
   {
     int thorns = PlayerEquipEffect( "thorns" );

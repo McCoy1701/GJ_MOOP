@@ -120,7 +120,7 @@ void PlayerStartMove( int r, int c )
   moving = 1;
   SoundManagerPlayFootstep();
 
-  /* Little bounce — hop up 2px then back down */
+  /* Little bounce - hop up 2px then back down */
   bounce_oy = 0;
   TweenFloatWithCallback( &tweens, &bounce_oy, -2.0f, 0.08f,
                           TWEEN_EASE_OUT_QUAD, bounce_down, NULL );

@@ -45,7 +45,7 @@ int HUDDrawTopBar( int in_combat )
   float tx = r.x + TB_PAD_X;
   float ty = r.y + TB_PAD_Y;
 
-  /* Player name — left side, larger */
+  /* Player name - left side, larger */
   ts.fg = (aColor_t){ 0xeb, 0xed, 0xe9, 255 };
   ts.scale = TB_NAME_SCALE;
   ts.align = TEXT_ALIGN_LEFT;
@@ -55,12 +55,12 @@ int HUDDrawTopBar( int in_combat )
   float name_w = strlen( player.name ) * 8.0f * TB_NAME_SCALE;
   float sx = tx + name_w + TB_SECTION_GAP;
 
-  /* Stats — flexed right of name, smaller */
+  /* Stats - flexed right of name, smaller */
   ts.scale = TB_STAT_SCALE;
   ts.align = TEXT_ALIGN_LEFT;
   char buf[48];
 
-  /* HP — label near-white, numbers colored by percentage */
+  /* HP - label near-white, numbers colored by percentage */
   ts.fg = (aColor_t){ 0xeb, 0xed, 0xe9, 255 };
   a_DrawText( "HP: ", (int)sx, (int)( ty + 4 ), ts );
   float hp_label_w = 4 * 8.0f * TB_STAT_SCALE;
@@ -92,7 +92,7 @@ int HUDDrawTopBar( int in_combat )
   a_DrawText( buf, (int)sx, (int)( ty + 4 ), ts );
   sx += strlen( buf ) * 8.0f * TB_STAT_SCALE + TB_STAT_GAP;
 
-  /* Equipment effects — gold (skip conditional ones) */
+  /* Equipment effects - gold (skip conditional ones) */
   ts.fg = (aColor_t){ 0xde, 0x9e, 0x41, 255 };
   for ( int i = 0; i < EQUIP_SLOTS; i++ )
   {
@@ -109,7 +109,7 @@ int HUDDrawTopBar( int in_combat )
     sx += strlen( buf ) * 8.0f * TB_STAT_SCALE + TB_STAT_GAP;
   }
 
-  /* first_strike — green, only when ready */
+  /* first_strike - green, only when ready */
   {
     int fs = PlayerEquipEffect( "first_strike" );
     if ( fs > 0 && player.first_strike_active )
@@ -121,7 +121,7 @@ int HUDDrawTopBar( int in_combat )
     }
   }
 
-  /* scroll_echo — blue, show progress toward free cast */
+  /* scroll_echo - blue, show progress toward free cast */
   {
     int echo = PlayerEquipEffect( "scroll_echo" );
     if ( echo > 0 )
@@ -133,19 +133,24 @@ int HUDDrawTopBar( int in_combat )
     }
   }
 
-  /* berserk — red, only when below half HP */
+  /* berserk - red, show stacks based on missing HP */
   {
     int bsk = PlayerEquipEffect( "berserk" );
-    if ( bsk > 0 && player.hp <= player.max_hp / 2 )
+    if ( bsk > 0 && player.max_hp > 0 )
     {
-      ts.fg = (aColor_t){ 0xa5, 0x30, 0x30, 255 };
-      snprintf( buf, sizeof( buf ), "BERSERK(%d)", bsk );
+      int missing_pct = ( ( player.max_hp - player.hp ) * 100 ) / player.max_hp;
+      int stacks = missing_pct / 40;
+      if ( stacks > 2 ) stacks = 2;
+      ts.fg = ( stacks > 0 )
+        ? (aColor_t){ 0xa5, 0x30, 0x30, 255 }
+        : (aColor_t){ 0x6e, 0x3b, 0x3b, 255 };
+      snprintf( buf, sizeof( buf ), "BERSERK(+%d)", bsk * stacks );
       a_DrawText( buf, (int)sx, (int)( ty + 4 ), ts );
       sx += strlen( buf ) * 8.0f * TB_STAT_SCALE + TB_STAT_GAP;
     }
   }
 
-  /* amplify — blue, always active when equipped */
+  /* amplify - blue, always active when equipped */
   {
     int amp = PlayerEquipEffect( "amplify" );
     if ( amp > 0 )
@@ -157,7 +162,7 @@ int HUDDrawTopBar( int in_combat )
     }
   }
 
-  /* Combat indicator — red */
+  /* Combat indicator - red */
   if ( in_combat )
   {
     ts.fg = (aColor_t){ 0xa5, 0x30, 0x30, 255 };
@@ -167,7 +172,7 @@ int HUDDrawTopBar( int in_combat )
     sx += 9 * 8.0f * TB_STAT_SCALE + TB_STAT_GAP;
   }
 
-  /* Pause[ESC] — far right, clickable */
+  /* Pause[ESC] - far right, clickable */
   {
     const char* pause_text = "Pause[ESC]";
     float text_w = strlen( pause_text ) * 8.0f * TB_ESC_SCALE;

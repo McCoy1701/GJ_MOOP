@@ -2,7 +2,7 @@
 #define __LORE_H__
 
 #define MAX_LORE_ENTRIES   64
-#define LORE_DATA_PATH     "resources/data/lore.duf"
+#define MAX_LORE_FLOORS     4
 
 typedef struct
 {
@@ -11,6 +11,7 @@ typedef struct
   char category[32];
   char description[512];
   int  discovered;
+  int  floor;
 } LoreEntry_t;
 
 void LoreLoadDefinitions( void );
@@ -29,5 +30,8 @@ int          LoreCountInCategory( const char* category );
 
 /* Fill out[] with unique category names. Returns count. */
 int LoreGetCategories( char out[][32], int max );
+int LoreGetFloorCategories( int floor, char out[][32], int max );
+int LoreGetFloors( int out[], int max );
+int LoreCountInFloorCategory( int floor, const char* category );
 
 #endif

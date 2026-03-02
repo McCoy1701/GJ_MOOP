@@ -15,7 +15,7 @@ void TargetModeExit( void );
 int  TargetModeActive( void );
 
 /* Process input. Returns 1 if input was consumed.
-   Sets confirmed flag internally — caller checks TargetModeConfirmed(). */
+   Sets confirmed flag internally - caller checks TargetModeConfirmed(). */
 int  TargetModeLogic( Enemy_t* enemies, int num_enemies );
 
 /* Returns 1 if target was just confirmed. Fills out row/col/consumable_idx/inv_slot. */

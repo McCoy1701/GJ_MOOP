@@ -17,6 +17,7 @@
 #include "poison_pool.h"
 #include "spell_vfx.h"
 #include "room_enumerator.h"
+#include "dialogue.h"
 
 extern Player_t player;
 
@@ -66,6 +67,7 @@ void GameTurnsUpdateSystems( float dt )
 {
   MovementUpdate( dt );
   EnemiesUpdate( dt );
+  NPCsUpdate( dt );
   EnemyProjectileUpdate( dt );
   CombatUpdate( dt );
   CombatVFXUpdate( dt );
@@ -142,6 +144,11 @@ void GameTurnsHandleTurnEnd( float dt, int turn_skipped )
               a_AudioPlaySound( gt_sfx_click, NULL );
               ConsolePushF( gt_console, icolor, "Picked up %s.", iname );
 
+              /* Quest item pickup flags */
+              if ( inv_type == INV_CONSUMABLE
+                   && strcmp( g_consumables[gi->item_idx].key, "cave_mushroom" ) == 0 )
+                FlagIncr( "mushrooms_collected" );
+
               if ( !hint_shown && inv_type == INV_CONSUMABLE )
               {
                 hint_shown = 1;
@@ -165,8 +172,8 @@ void GameTurnsHandleTurnEnd( float dt, int turn_skipped )
         PlayerSetRoom( room );
     }
 
-    /* Turn tick (skip when shop prompt just opened — browsing is free) */
-    if ( !ShopUIActive() && !EnemiesTurning() )
+    /* Turn tick (skip when shop prompt just opened - browsing is free) */
+    if ( !ShopUIActive() && !EnemiesTurning() && !NPCsTurning() )
     {
       PoisonPoolTick( frame_pr, frame_pc );
       GameEventsNewTurn();
@@ -183,7 +190,8 @@ void GameTurnsHandleTurnEnd( float dt, int turn_skipped )
         EnemiesStartTurn( gt_enemies, *gt_num_enemies, frame_pr, frame_pc, TileWalkable );
       }
 
-      NPCsIdleTick( gt_npcs, *gt_num_npcs );
+      NPCsCombatTick( gt_npcs, *gt_num_npcs, gt_enemies, *gt_num_enemies );
+      NPCsIdleTick( gt_npcs, *gt_num_npcs, gt_console );
     }
   }
   turn.was_moving = PlayerIsMoving();

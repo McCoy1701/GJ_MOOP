@@ -1,0 +1,193 @@
+@npc {
+    name: "Nettle the Brewer"
+    glyph: "N"
+    color: [100, 140, 180, 255]
+    image_path: "resources/assets/npcs/nettle_the_brewer.png"
+    description: "A small goblin arranging tea cups behind a cluttered counter. There appear to be weapons on her rug."
+    idle_bark: "*steeps something*"
+    idle_cooldown: 5
+}
+
+# ==============================
+# GREETINGS
+# ==============================
+@greeting_merc {
+    start: true
+    priority: 1
+    require_class: "Mercenary"
+    text: "Oh my. You're very large. And tense. Have you tried lavender root? It's good for tension. And for people who look like they punch things for a living."
+    options: ["opt_shop", "opt_tea", "opt_who_are_you", "opt_leave"]
+}
+@greeting_rogue {
+    start: true
+    priority: 1
+    require_class: "Rogue"
+    text: "You move quietly! That's good. Loud people disturb the steeping. Last mercenary who came through here SLAMMED the door and I lost a whole batch of cave chamomile. Two weeks of fermentation. Gone."
+    options: ["opt_shop", "opt_tea", "opt_who_are_you", "opt_leave"]
+}
+@greeting_mage {
+    start: true
+    priority: 1
+    require_class: "Mage"
+    text: "A mage! Do you know what arcane residue does to dried mushroom leaves? It makes them SPARKLE. Could you zap this jar? Just a little?"
+    options: ["opt_zap_jar", "opt_shop", "opt_tea", "opt_who_are_you", "opt_leave"]
+}
+@greeting_return {
+    start: true
+    priority: 2
+    require_flag: "visited_nettle"
+    require_not_flag: "quest_mushrooms"
+    text: "You're back! I saved you a cup. Well, I saved myself a cup. But you can have the next one."
+    options: ["opt_shop", "opt_tea", "opt_leave"]
+}
+@greeting_quest {
+    start: true
+    priority: 3
+    require_flag: "quest_mushrooms"
+    require_not_flag: "bought_tea"
+    text: "Any luck with those mushrooms? They grow in the lower caves. Plump, brown, you can't miss them. Well, you CAN miss them. They're in caves. It's dark."
+    options: ["opt_have_mushrooms", "opt_shop", "opt_tea", "opt_leave"]
+}
+@greeting_quest_done {
+    start: true
+    priority: 4
+    require_flag: "bought_tea"
+    text: "My favourite customer! How's the tea? Don't answer that. I know it's perfect."
+    options: ["opt_shop", "opt_tea", "opt_leave"]
+}
+
+# ==============================
+# WHO ARE YOU
+# ==============================
+@opt_who_are_you {
+    label: "Who are you?"
+    goto: "who_reply"
+}
+@who_reply {
+    text: "Nettle! I run the tea shop. Well, I call it a tea shop. Thistlewick calls it 'the supply room.' Grishnak calls it 'the place with the leaf water.' Neither of them understand what I do here."
+    options: ["opt_tea", "opt_shop", "opt_leave"]
+}
+
+# ==============================
+# TEA
+# ==============================
+@opt_tea {
+    label: "Tell me about the tea."
+    goto: "tea_reply"
+}
+@tea_reply {
+    text: "WHERE DO I BEGIN! Mushroom mint - earthy, sharp, wakes you up. Cave chamomile - takes two weeks to ferment but it's worth every second. Deep root brew - tastes like dirt but in a GOOD way. And my masterpiece: stalactite drip. You collect condensation from the ceiling, one drop at a time. Takes a month per cup."
+    set_flag: "visited_nettle"
+    options: ["opt_stalactite", "opt_anyone_drink", "opt_shop", "opt_leave"]
+}
+@opt_stalactite {
+    label: "A month per cup?"
+    goto: "stalactite_reply"
+}
+@stalactite_reply {
+    text: "Art takes time! Grishnak said he'd rather drink cave puddle. I told him cave puddle has no BODY. He said neither does my tea. We didn't speak for a week. It was the most peaceful week of my life."
+    options: ["opt_anyone_drink", "opt_shop", "opt_leave"]
+}
+@opt_anyone_drink {
+    label: "Does anyone actually drink your tea?"
+    goto: "anyone_drink_reply"
+}
+@anyone_drink_reply {
+    text: "Thistlewick drinks it during meditation. He says it helps him find stillness. I think he's just being polite. Burble tried it once and made a face so complicated I thought he was having a vision. He was not. He was having a bad time."
+    options: ["opt_shop", "opt_leave"]
+}
+
+# ==============================
+# MAGE - ZAP THE JAR
+# ==============================
+@opt_zap_jar {
+    label: "I'm not zapping your jar."
+    goto: "zap_jar_reply"
+}
+@zap_jar_reply {
+    text: "Just a TINY zap! The smallest zap! You won't even miss the mana! ...fine. But if you change your mind, the jar is right there. It's the one with the hopeful label."
+    options: ["opt_shop", "opt_tea", "opt_who_are_you", "opt_leave"]
+}
+
+# ==============================
+# SHOP - THE ACTUAL COMMERCE
+# ==============================
+@opt_shop {
+    label: "What's all this other stuff on the shelves?"
+    goto: "shop_reply"
+}
+@shop_reply {
+    text: "Oh, that. People keep leaving things here. Swords, potions, armor bits. Very rude. This is a TEA SHOP. But Thistlewick said I should sell it because the tribe needs gold. So. Fine. I guess I'm a shopkeeper now. The indignity."
+    set_flag: "visited_nettle"
+    options: ["opt_browse", "opt_shop_feelings", "opt_tea", "opt_leave"]
+}
+@opt_shop_feelings {
+    label: "You don't seem happy about it."
+    goto: "shop_feelings_reply"
+}
+@shop_feelings_reply {
+    text: "I went to school for tea! Well, I sat in a cave and experimented with mushrooms for six years. That's basically school! And now people walk in, ignore the tea menu, and ask for a SWORD. Do you know how that feels? It's like asking a painter to sell you the frame."
+    options: ["opt_buy_tea", "opt_browse", "opt_leave"]
+}
+@opt_buy_tea {
+    label: "Can I buy some tea?"
+    require_not_flag: "quest_mushrooms"
+    set_flag: "visited_nettle"
+    goto: "buy_tea_reply"
+}
+@buy_tea_reply {
+    text: "...really? You actually want tea? Not a potion? Not a blade? TEA? I could cry. I won't, because that would disturb the steeping, but I COULD. One mushroom mint coming right-- oh. Oh no."
+    options: ["opt_whats_wrong", "opt_leave"]
+}
+@opt_whats_wrong {
+    label: "What's wrong?"
+    goto: "whats_wrong_reply"
+}
+@whats_wrong_reply {
+    text: "I'm out of mushrooms! I JUST used the last batch! How could this happen on the ONE DAY someone actually wants tea?! I need three cave mushrooms. They grow in the lower caves, past the doors. Plump brown things, can't miss them. PLEASE. I need this sale more than you know."
+    color: "quest"
+    set_flag: "quest_mushrooms"
+    options: ["opt_ill_look", "opt_leave"]
+}
+@opt_ill_look {
+    label: "I'll find your mushrooms."
+    goto: "ill_look_reply"
+}
+@ill_look_reply {
+    text: "You WILL? You're the best customer I've ever had! And technically the ONLY customer I've ever had! Three mushrooms! Lower caves! Don't eat them raw, they taste like regret!"
+    options: ["opt_browse", "opt_leave"]
+}
+
+# ==============================
+# MUSHROOM TURN-IN
+# ==============================
+@opt_have_mushrooms {
+    label: "I found your mushrooms."
+    color: "quest"
+    require_flag_min: "mushrooms_collected:3"
+    goto: "have_mushrooms_reply"
+}
+@have_mushrooms_reply {
+    text: "YOU DID IT! THREE BEAUTIFUL MUSHROOMS! Look at these! Perfect caps, good stems, minimal cave slug residue! Give me just a moment... *furious steeping noises* ...HERE! Mushroom mint tea! My MASTERPIECE! On the house! Well, on the cave floor! There is no house!"
+    give_item: "Mushroom Mint Tea"
+    set_flag: "bought_tea"
+    clear_flag: "quest_mushrooms"
+    options: ["opt_browse", "opt_leave"]
+}
+
+# ==============================
+# BROWSE
+# ==============================
+@opt_browse {
+    label: "Let me see what you've got."
+    set_flag: "visited_nettle"
+    goto: "end"
+}
+
+# ==============================
+# LEAVE
+# ==============================
+@opt_leave {
+    label: "[Leave]"
+    goto: "end"
+}

@@ -1,9 +1,9 @@
-# Openables — doors and chests, color-gated by character type
+# Openables - doors and chests, color-gated by character type
 # required_type determines which character can open them
 # "any" means all characters can open it
 
 # ==============================
-# DOORS — passage between rooms
+# DOORS - passage between rooms
 # ==============================
 @red_door {
     name: "Red Door"
@@ -43,7 +43,7 @@
 }
 
 # ==============================
-# CHESTS — contain consumables
+# CHESTS - contain consumables
 # ==============================
 @red_chest {
     name: "Red Chest"

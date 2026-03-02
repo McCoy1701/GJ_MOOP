@@ -1,0 +1,148 @@
+# Enemy definitions
+# Each enemy (except rat) has a unique gimmick/mechanic
+
+@rat {
+    name: "Dungeon Rat"
+    glyph: "r"
+    hp: 6
+    damage: 1
+    defense: 0
+    ai: "basic"
+    gold_drop: 1
+    image_path: "resources/assets/enemies/rat.png"
+    color: [150, 120, 80, 255]
+    description: "A dusty, angry, murky rat."
+}
+
+@rat_king {
+    name: "Rat King"
+    glyph: "R"
+    hp: 10
+    damage: 2
+    defense: 1
+    ai: "basic"
+    description: "A bloated rat draped in filth. Its tangled crown of tails marks it as king."
+    gold_drop: 8
+    drop_item: ""
+    image_path: ""
+    color: [200, 170, 80, 255]
+}
+
+@skeleton {
+    name: "Skeleton Archer"
+    glyph: "s"
+    hp: 4
+    damage: 2
+    defense: 0
+    ai: "ranged_telegraph"
+    telegraph_turns: 1
+    range: 5
+    sight_range: 8
+    gold_drop: 1
+    image_path: "resources/assets/enemies/skeleton.png"
+    color: [220, 220, 200, 255]
+    description: "A brittle skeleton archer."
+}
+
+@slime {
+    name: "Acid Slime"
+    glyph: "j"
+    hp: 4
+    damage: 1
+    defense: 0
+    ai: "basic"
+    sight_range: 5
+    image_path: "resources/assets/enemies/acid_slime.png"
+    on_death: "poison_pool"
+    pool_duration: 3
+    pool_damage: 1
+    gold_drop: 1
+    color: [50, 220, 50, 255]
+    description: "Easy to kill but leaves a poison pool on death for 3 turns."
+}
+# ==============================
+# UNDEAD MINERS - one per class, same display name
+# Each drops a Treasure Map on death
+# ==============================
+@miner_mat {
+    name: "Undead Miner"
+    glyph: "M"
+    hp: 8
+    damage: 2
+    defense: 1
+    ai: "basic"
+    drop_item: "treasure_map_mat"
+    gold_drop: 3
+    image_path: "resources/assets/enemies/undead_miner.png"
+    color: [180, 150, 100, 255]
+    description: "The reanimated corpse of Miner Mat. Still clutching his pickaxe."
+}
+@miner_jake {
+    name: "Undead Miner"
+    glyph: "M"
+    hp: 8
+    damage: 2
+    defense: 1
+    ai: "basic"
+    drop_item: "treasure_map_jake"
+    gold_drop: 3
+    image_path: "resources/assets/enemies/undead_miner.png"
+    color: [180, 150, 100, 255]
+    description: "The reanimated corpse of Miner Jake. Still clutching his pickaxe."
+}
+@miner_chris {
+    name: "Undead Miner"
+    glyph: "M"
+    hp: 8
+    damage: 2
+    defense: 1
+    ai: "basic"
+    drop_item: "treasure_map_chris"
+    gold_drop: 3
+    image_path: "resources/assets/enemies/undead_miner.png"
+    color: [180, 150, 100, 255]
+    description: "The reanimated corpse of Miner Chris. Still clutching his pickaxe."
+}
+
+# ==============================
+# ELITE ENEMIES - one per class, drops class weapon
+# ==============================
+@elite_merc {
+    name: "Fallen Knight"
+    glyph: "K"
+    hp: 10
+    damage: 3
+    defense: 2
+    ai: "basic"
+    drop_item: "heavy_mace"
+    gold_drop: 3
+    image_path: "resources/assets/enemies/fallen_knight.png"
+    color: [200, 100, 100, 255]
+    description: "A once-proud knight, now a mindless husk."
+}
+@elite_rogue {
+    name: "Phantom Thief"
+    glyph: "T"
+    hp: 7
+    damage: 4
+    defense: 0
+    ai: "basic"
+    drop_item: "serrated_blade"
+    gold_drop: 3
+    image_path: "resources/assets/enemies/phantom_thief.png"
+
+    color: [100, 200, 100, 255]
+    description: "A ghostly rogue, still clutching stolen treasures."
+}
+@elite_mage {
+    name: "Corrupted Wizard"
+    glyph: "W"
+    hp: 6
+    damage: 3
+    defense: 1
+    ai: "basic"
+    drop_item: "arcane_rod"
+    gold_drop: 3
+    color: [100, 100, 200, 255]
+    description: "A wizard consumed by dungeon magic. His rod still glows."
+}

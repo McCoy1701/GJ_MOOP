@@ -21,7 +21,7 @@ void CombatEnemyHit( Enemy_t* e );
    Sets alive = 0. */
 void CombatHandleEnemyDeath( Enemy_t* e );
 
-/* Hit effect state — screen shake + red flash */
+/* Hit effect state - screen shake + red flash */
 float CombatFlashAlpha( void );
 float CombatShakeOX( void );
 float CombatShakeOY( void );

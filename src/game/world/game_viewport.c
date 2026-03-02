@@ -49,7 +49,7 @@ void GV_DrawWorld( aRectf_t rect, GameCamera_t* cam,
 
     if ( bg.tile == TILE_EMPTY )
     {
-      d_LogFatalF( "[GV_DrawWorld] background tile %d has TILE_EMPTY — "
+      d_LogFatalF( "[GV_DrawWorld] background tile %d has TILE_EMPTY - "
                    "background must always have a valid tile index", i );
       exit( 1 );
     }

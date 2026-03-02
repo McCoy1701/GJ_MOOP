@@ -1,0 +1,447 @@
+@npc {
+    name: "Jonathon"
+    glyph: "J"
+    color: [220, 210, 180, 255]
+    image_path: "resources/assets/npcs/jonathon.png"
+    description: "A skeleton in a beret, standing next to an easel. He seems... calm."
+}
+
+# ==============================
+# GREETINGS (priority-based)
+# ==============================
+@greeting {
+    start: true
+    priority: 0
+    text: "Oh! A living person! Don't worry, I'm not like the others. I'm Jonathon. I paint."
+    options: ["opt_why_skeleton", "opt_painting", "opt_need_help", "opt_leave"]
+}
+@greeting_merc {
+    start: true
+    priority: 1
+    require_class: "Mercenary"
+    text: "Please don't hit me! I'm Jonathon! I'm friendly! I paint things! Look, there's a painting right there!"
+    options: ["opt_why_skeleton", "opt_painting", "opt_need_help", "opt_leave"]
+}
+@greeting_rogue {
+    start: true
+    priority: 1
+    require_class: "Rogue"
+    text: "I see you eyeing my easel. It's not worth anything. Trust me. I'm Jonathon, by the way. Fellow resident of Millhaven. Well... former resident."
+    options: ["opt_why_skeleton", "opt_painting", "opt_need_help", "opt_leave"]
+}
+@greeting_mage {
+    start: true
+    priority: 1
+    require_class: "Mage"
+    text: "A mage! Can you... un-skeleton me? Is that a thing? I'm Jonathon. I used to have skin."
+    options: ["opt_unskeleton", "opt_why_skeleton", "opt_painting", "opt_need_help", "opt_leave"]
+}
+@greeting_quest_active {
+    start: true
+    priority: 2
+    require_flag: "quest_skeletons"
+    text: "How's the skeleton situation? And yes, I'm aware of the irony."
+    options: ["opt_claim_note", "opt_skeletons_not_yet", "opt_why_skeleton", "opt_painting", "opt_leave"]
+}
+@greeting_post_quest {
+    start: true
+    priority: 3
+    require_flag: "has_mayors_note"
+    text: "You've got the note! Put it to good use. I'll just be here... painting. Forever. It's fine. I'm fine."
+    options: ["opt_painting", "opt_you_ok", "opt_feast_rumor", "opt_leave"]
+}
+
+# ==============================
+# WHY ARE YOU A SKELETON
+# ==============================
+@opt_why_skeleton {
+    label: "Why are you... a skeleton?"
+    color: "lore"
+    goto: "why_skeleton_reply"
+}
+@why_skeleton_reply {
+    text: "Came down here to paint the dungeon. 'Subterranean Impressionism,' I called it. Very avant-garde. Very stupid. Died on day two. Tripped over my own easel into a pit."
+    options: ["opt_not_hostile", "opt_millhaven", "opt_other_dead", "opt_painting", "opt_leave"]
+}
+@opt_not_hostile {
+    label: "How come you're not trying to kill me?"
+    goto: "not_hostile_reply"
+}
+@not_hostile_reply {
+    text: "Give it time. They say the longer you're dead down here, the more you lose yourself. I've only been dead a few weeks. Still got my wits. Mostly. I did try to eat a paint brush yesterday."
+    options: ["opt_other_dead", "opt_millhaven", "opt_painting", "opt_leave"]
+}
+
+# ==============================
+# PAINTING
+# ==============================
+@opt_painting {
+    label: "What are you painting?"
+    goto: "painting_reply"
+}
+@painting_reply {
+    text: "It's a landscape! Of this room. I know, I know. 'Jonathon, it's a grey room with grey walls.' But if you look closely... there are slightly DIFFERENT shades of grey."
+    options: ["opt_painting_good", "opt_painting_honest", "opt_leave"]
+}
+@opt_painting_good {
+    label: "It's... nice?"
+    goto: "painting_good_reply"
+}
+@painting_good_reply {
+    text: "You hesitated. That's the most honest review I've ever gotten. Thank you. The last person who saw my work just screamed and attacked me. To be fair, they didn't know I was friendly."
+    options: ["opt_why_skeleton", "opt_millhaven", "opt_the_bottom", "opt_leave"]
+}
+@opt_painting_honest {
+    label: "I genuinely cannot tell what that is."
+    goto: "painting_honest_reply"
+}
+@painting_honest_reply {
+    text: "It's abstract! The viewer brings their own meaning! ...also I don't have muscles anymore so brush control is a real challenge."
+    options: ["opt_why_skeleton", "opt_millhaven", "opt_leave"]
+}
+
+# ==============================
+# FRIENDLY SKELETONS / THE TURNING
+# ==============================
+@opt_other_dead {
+    label: "Are there other... friendly skeletons?"
+    color: "lore"
+    goto: "other_dead_reply"
+}
+@other_dead_reply {
+    text: "There were. A few of us in the early days. We'd chat, share stories. But one by one they stopped talking. Started attacking anything that moved. I'm the last one still... me."
+    set_lore: "the_turning"
+    options: ["opt_turning_why", "opt_how_long", "opt_leave"]
+}
+@opt_turning_why {
+    label: "What makes them turn?"
+    goto: "turning_why_reply"
+}
+@turning_why_reply {
+    text: "Something in the dungeon. The deeper you go, the faster it happens. The ones near the bottom? They were gone in days. Up here on the first floor, it takes weeks. I've been trying not to think about my timeline."
+    options: ["opt_the_bottom", "opt_how_long", "opt_leave"]
+}
+@opt_how_long {
+    label: "How long do you think you have?"
+    goto: "how_long_reply"
+}
+@how_long_reply {
+    text: "Hard to say. I still remember my name, my town, my art. That's good. But last Tuesday I stared at a wall for six hours and thought it was a window. That's... less good."
+    options: ["opt_turning_why", "opt_the_bottom", "opt_leave"]
+}
+
+# ==============================
+# THE DEEPER FLOORS
+# ==============================
+@opt_the_bottom {
+    label: "What's at the bottom of the dungeon?"
+    color: "lore"
+    goto: "the_bottom_reply"
+}
+@the_bottom_reply {
+    text: "Nobody knows. Adventurers go down, they don't come back. But I've heard things. Sounds from below. Not monsters. More like... a low hum. Constant. Like the dungeon itself is breathing."
+    set_lore: "the_depths"
+    options: ["opt_hum_more", "opt_who_built", "opt_leave"]
+}
+@opt_hum_more {
+    label: "A hum?"
+    goto: "hum_more_reply"
+}
+@hum_more_reply {
+    text: "Gets louder the deeper you go. The hostile skeletons down on the lower floors? They walk TOWARD it. Like it's calling them. I try to paint over the sound. Doesn't work. But the brush strokes help."
+    options: ["opt_who_built", "opt_feast_rumor", "opt_leave"]
+}
+
+# ==============================
+# WHO BUILT THIS PLACE
+# ==============================
+@opt_who_built {
+    label: "Do you know who built this dungeon?"
+    color: "lore"
+    goto: "who_built_reply"
+}
+@who_built_reply {
+    text: "The miners found it, but they didn't build it. The tunnels were already here. The doors were already here. Old Thom says his grandfather told stories about the doors glowing at night. That was before anyone went inside."
+    set_lore: "dungeon_origins"
+    options: ["opt_doors_glow", "opt_feast_rumor", "opt_leave"]
+}
+@opt_doors_glow {
+    label: "The doors glow?"
+    goto: "doors_glow_reply"
+}
+@doors_glow_reply {
+    text: "Sometimes. Not always. I've seen it. A faint pulse, like a heartbeat. Red, green, blue... all at once. It happens when the hum gets louder. I painted it once. Best thing I ever made. Then a rat ate the canvas."
+    options: ["opt_feast_rumor", "opt_the_bottom", "opt_leave"]
+}
+
+# ==============================
+# THE FEAST TABLE RUMOR
+# ==============================
+@opt_feast_rumor {
+    label: "Have you heard any other rumors about this place?"
+    color: "lore"
+    goto: "feast_rumor_reply"
+}
+@feast_rumor_reply {
+    text: "There's one story. Probably nonsense. They say somewhere in the deepest room, there's a table. Set for three. Food still warm. Candles still lit. Been that way for as long as anyone can remember."
+    set_lore: "the_feast"
+    options: ["opt_feast_three", "opt_feast_who", "opt_leave"]
+}
+@opt_feast_three {
+    label: "Set for three?"
+    goto: "feast_three_reply"
+}
+@feast_three_reply {
+    text: "Three chairs. Three plates. One red, one green, one blue. Sound familiar? Almost feels like the dungeon is... waiting."
+    options: ["opt_feast_who", "opt_dungeon_alive", "opt_leave"]
+}
+@opt_feast_who {
+    label: "Who set the table?"
+    goto: "feast_who_reply"
+}
+@feast_who_reply {
+    text: "Nobody knows. Maybe nobody did. Maybe the dungeon did it itself. I know how that sounds. But I'm a talking skeleton who paints. My bar for 'impossible' is pretty low these days."
+    options: ["opt_dungeon_alive", "opt_leave"]
+}
+
+# ==============================
+# IS THE DUNGEON ALIVE
+# ==============================
+@opt_dungeon_alive {
+    label: "You think the dungeon is... alive?"
+    color: "lore"
+    goto: "dungeon_alive_reply"
+}
+@dungeon_alive_reply {
+    text: "I think it wants something. The doors, the hum, the table, the way dead things get back up and walk around... it's not random. It's a system. And systems are built for a reason."
+    set_lore: "dungeon_alive"
+    options: ["opt_dungeon_afraid", "opt_leave"]
+}
+@opt_dungeon_afraid {
+    label: "Doesn't that scare you?"
+    goto: "dungeon_afraid_reply"
+}
+@dungeon_afraid_reply {
+    text: "Fear is a living person's problem. I'm more worried about forgetting why I should be scared. When that happens... that's when I'll know I'm turning. So I paint. Every brushstroke is me saying 'I'm still here. I'm still Jonathon.'"
+    options: ["opt_you_ok", "opt_leave"]
+}
+
+# ==============================
+# MILLHAVEN LIFE - FLAVOR
+# ==============================
+@opt_millhaven_life {
+    label: "What was Millhaven like before the dungeon?"
+    color: "lore"
+    goto: "millhaven_life_reply"
+}
+@millhaven_life_reply {
+    text: "Quiet. Boring. Perfect. Twelve people who all knew each other's business. Old Thom burnt bread. Greta ran things. I painted the same three trees outside town over and over. Then the miners cracked open the wrong wall."
+    set_lore: "millhaven_before"
+    options: ["opt_three_trees", "opt_miners", "opt_who_built", "opt_leave"]
+}
+@opt_three_trees {
+    label: "Three trees?"
+    goto: "three_trees_reply"
+}
+@three_trees_reply {
+    text: "An oak, a birch, and a willow. Right at the edge of town. I painted them in every season. Thirty-seven paintings of the same three trees. Thom said I needed a hobby. I said painting WAS my hobby. He said I needed a second one."
+    options: ["opt_miners", "opt_painting", "opt_leave"]
+}
+@opt_miners {
+    label: "Tell me about the miners."
+    color: "lore"
+    goto: "miners_reply"
+}
+@miners_reply {
+    text: "There were five of them. Came to Millhaven looking for iron. Found the tunnels instead. Three went deeper. Two came back. They wouldn't talk about what they saw. Packed up and left town the next morning. Never came back."
+    set_lore: "the_miners"
+    options: ["opt_miners_saw", "opt_the_bottom", "opt_leave"]
+}
+@opt_miners_saw {
+    label: "What did they see?"
+    color: "lore"
+    goto: "miners_saw_reply"
+}
+@miners_saw_reply {
+    text: "Nobody knows. One of the two who came back left a journal at Thom's bakery. Thom tried to read it but the last few pages were just the same word written over and over. 'OPEN.' Hundreds of times. Thom used the journal to light his oven."
+    set_lore: "miners_journal"
+    options: ["opt_the_bottom", "opt_who_built", "opt_leave"]
+}
+
+# ==============================
+# MILLHAVEN CONNECTION
+# ==============================
+@opt_millhaven {
+    label: "Are you from Millhaven?"
+    color: "lore"
+    require_lore: "millhaven"
+    goto: "millhaven_reply"
+}
+@millhaven_reply {
+    text: "Born and raised! Well, and died. Population went from twelve to eleven when I left. Probably should have told someone where I was going."
+    set_lore: "jonathon"
+    options: ["opt_millhaven_life", "opt_know_mayor", "opt_know_thom", "opt_leave"]
+}
+@opt_know_mayor {
+    label: "Do you know Mayor Greta?"
+    color: "quest"
+    require_lore: "mayor_greta"
+    goto: "know_mayor_reply"
+}
+@know_mayor_reply {
+    text: "Know her? She's the one who gave me this note! 'To whom it may concern: the bearer of this letter has permission to leave the dungeon and return to town. Signed, Mayor Greta.' Got it before I died. Bit useless now."
+    options: ["opt_about_note", "opt_know_thom", "opt_leave"]
+}
+@opt_know_thom {
+    label: "You know Old Thom from the bakery?"
+    require_lore: "old_thom_bakery"
+    goto: "know_thom_reply"
+}
+@know_thom_reply {
+    text: "Thom! Great guy. His bread is what I used to prop up my easel. Perfect weight, perfect density. I Miss him."
+    options: ["opt_know_mayor", "opt_leave"]
+}
+
+# ==============================
+# THE NOTE / SKELETON QUEST
+# ==============================
+@opt_about_note {
+    label: "That note... could I have it?"
+    color: "quest"
+    require_not_flag: "quest_skeletons"
+    require_not_flag: "has_mayors_note"
+    goto: "about_note_reply"
+}
+@about_note_reply {
+    text: "I mean... I literally cannot leave. I'm a skeleton in a dungeon. But I can't just GIVE it away. It's the last official document from my old life. Makes me feel... real."
+    options: ["opt_note_please", "opt_know_thom", "opt_leave"]
+}
+@opt_note_please {
+    label: "Please? It could really help someone."
+    color: "quest"
+    goto: "note_please_reply"
+}
+@note_please_reply {
+    text: "Hmm. Tell you what. The hostile skeletons down here... they are giving me a bad reputation. Kill three of them for me and I'll hand it over. Call it a favour for the non-violent skeleton community."
+    options: ["opt_accept_skeleton_quest", "opt_already_cleared", "opt_claim_note", "opt_leave"]
+}
+@opt_accept_skeleton_quest {
+    label: "Deal. Three skeletons."
+    color: "quest"
+    set_flag: "quest_skeletons"
+    goto: "quest_accepted_reply"
+}
+@quest_accepted_reply {
+    text: "Wonderful! And please, try not to feel weird about it. They're the mean ones. I'm the art one. We are not the same."
+    options: ["opt_leave"]
+}
+
+# ==============================
+# SKELETON QUEST PROGRESS
+# ==============================
+@opt_skeletons_not_yet {
+    label: "Still working on it."
+    goto: "skeletons_not_yet_reply"
+}
+@skeletons_not_yet_reply {
+    text: "No rush! I'm dead, I've got nothing but time. I'll just be here. Painting. Contemplating the void. You know, normal stuff."
+    options: ["opt_painting", "opt_feast_rumor", "opt_leave"]
+}
+@opt_claim_note {
+    label: "Three skeletons down."
+    color: "complete"
+    require_flag_min: "skeleton_kills:3"
+    goto: "claim_note_reply"
+}
+@claim_note_reply {
+    text: "You actually did it! My hero. Well, here you go. One official Mayor's note. I have no use for it. Can't exactly walk back into town looking like this. Thom would faint."
+    clear_flag: "quest_skeletons"
+    set_flag: "has_mayors_note"
+    give_item: "Mayor's Note"
+    options: ["opt_you_ok", "opt_leave"]
+}
+
+# ==============================
+# POST-QUEST EMOTIONAL BEAT
+# ==============================
+@opt_you_ok {
+    label: "Are you okay? Being stuck down here?"
+    goto: "you_ok_reply"
+}
+@you_ok_reply {
+    text: "Honestly? It's not so bad. I've got my art. I've got my beret. I've got a room with... character. And I haven't gone insane YET."
+    options: ["opt_stay_safe", "opt_visit", "opt_leave"]
+}
+@opt_stay_safe {
+    label: "Stay safe, Jonathon."
+    goto: "stay_safe_reply"
+}
+@stay_safe_reply {
+    text: "I'm already dead! That's the safest you can be! ...right? Don't answer that."
+    options: ["opt_leave"]
+}
+@opt_visit {
+    label: "I'll come back and visit."
+    goto: "visit_reply"
+}
+@visit_reply {
+    text: "I'd like that. Bring snacks. Not for me, obviously. I just miss watching people eat. ...that sounded less creepy in my skull."
+    options: ["opt_leave"]
+}
+
+# ==============================
+# MAGE-SPECIFIC
+# ==============================
+@opt_unskeleton {
+    label: "I really don't think that's a thing."
+    goto: "unskeleton_reply"
+}
+@unskeleton_reply {
+    text: "What about just the face? I miss having expressions. Right now I've got one look: surprised. Permanently. The jaw doesn't close all the way."
+    options: ["opt_why_skeleton", "opt_painting", "opt_leave"]
+}
+
+# ==============================
+# DIRECT HELP PATH (to skeleton quest)
+# ==============================
+@opt_need_help {
+    label: "Need any help down here?"
+    color: "quest"
+    require_not_flag: "quest_skeletons"
+    require_not_flag: "has_mayors_note"
+    goto: "need_help_reply"
+}
+@need_help_reply {
+    text: "Actually... yes. The other skeletons down here? The mean ones? They keep wandering into my painting area and knocking things over. One of them stepped on my best canvas. ON PURPOSE."
+    options: ["opt_help_skeletons", "opt_already_cleared", "opt_why_skeleton", "opt_leave"]
+}
+@opt_help_skeletons {
+    label: "I could thin them out for you."
+    color: "quest"
+    set_flag: "quest_skeletons"
+    goto: "help_skeletons_reply"
+}
+@help_skeletons_reply {
+    text: "You'd do that? Three should send a message. The rest will keep their distance. Probably. I hope. Thank you!"
+    options: ["opt_painting", "opt_why_skeleton", "opt_millhaven", "opt_leave"]
+}
+@opt_already_cleared {
+    label: "I've already smashed a few on the way here."
+    color: "complete"
+    require_flag_min: "skeleton_kills:3"
+    goto: "already_cleared_reply"
+}
+@already_cleared_reply {
+    text: "Wait, you already...? I've been cowering behind my easel for nothing? You're something else. Look, I've got this note. Official letter from Mayor Greta, permission to leave the dungeon. I can't use it. Bit past that. But someone living could put it to good use."
+    set_flag: "has_mayors_note"
+    give_item: "Mayor's Note"
+    options: ["opt_you_ok", "opt_leave"]
+}
+
+# ==============================
+# LEAVE
+# ==============================
+@opt_leave {
+    label: "[Leave]"
+    goto: "end"
+}

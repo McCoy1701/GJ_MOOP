@@ -15,7 +15,7 @@ void VisibilityInit( World_t* w )
 }
 
 /* Bresenham line-of-sight check.
-   Returns 1 if (x1,y1) is visible from (x0,y0) — i.e. no solid tile
+   Returns 1 if (x1,y1) is visible from (x0,y0) - i.e. no solid tile
    blocks the path.  The destination tile itself is allowed to be solid
    (so you can "see" a wall or closed door). */
 int los_clear( int x0, int y0, int x1, int y1 )
@@ -34,11 +34,11 @@ int los_clear( int x0, int y0, int x1, int y1 )
     if ( e2 > -dy ) { err -= dy; cx += sx; }
     if ( e2 <  dx ) { err += dx; cy += sy; }
 
-    /* Reached destination — don't block on the target itself */
+    /* Reached destination - don't block on the target itself */
     if ( cx == x1 && cy == y1 )
       break;
 
-    /* Intermediate tile — check if it blocks sight */
+    /* Intermediate tile - check if it blocks sight */
     if ( cx < 0 || cx >= world->width || cy < 0 || cy >= world->height )
       return 0;
 
@@ -58,7 +58,7 @@ void VisibilityUpdate( int pr, int pc )
   /* Reset all tiles to dark */
   memset( vis, 0, world->tile_count * sizeof( float ) );
 
-  /* Pass 1 — light non-solid tiles (floor) via line-of-sight */
+  /* Pass 1 - light non-solid tiles (floor) via line-of-sight */
   for ( int y = pc - VIS_RADIUS; y <= pc + VIS_RADIUS; y++ )
   {
     for ( int x = pr - VIS_RADIUS; x <= pr + VIS_RADIUS; x++ )
@@ -84,7 +84,7 @@ void VisibilityUpdate( int pr, int pc )
     }
   }
 
-  /* Pass 2 — solid tiles (walls, doors) inherit from brightest
+  /* Pass 2 - solid tiles (walls, doors) inherit from brightest
      visible neighbor.  If you can see the floor next to a wall,
      you can see that wall. */
   static const int ox[] = { -1, 1, 0, 0, -1, -1, 1, 1 };
@@ -111,7 +111,7 @@ void VisibilityUpdate( int pr, int pc )
         if ( nx < 0 || nx >= w || ny < 0 || ny >= h )
           continue;
         int nidx = ny * w + nx;
-        /* Only inherit from non-solid (floor) tiles — prevents cascade */
+        /* Only inherit from non-solid (floor) tiles - prevents cascade */
         if ( world->background[nidx].solid || world->midground[nidx].solid )
           continue;
         if ( vis[nidx] > best ) best = vis[nidx];

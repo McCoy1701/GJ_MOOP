@@ -28,9 +28,20 @@ static World_t*  ge_world       = NULL;
 static Enemy_t*  ge_enemies     = NULL;
 static int*      ge_enemy_count = NULL;
 
+static aSoundEffect_t sfx_spark;
+static aSoundEffect_t sfx_frost;
+static aSoundEffect_t sfx_fireball;
+static aSoundEffect_t sfx_arrow;
+static aSoundEffect_t sfx_merc_swing;
+
 void GameEventsInit( Console_t* c )
 {
   con = c;
+  a_AudioLoadSound( "resources/soundeffects/spark.wav",    &sfx_spark );
+  a_AudioLoadSound( "resources/soundeffects/frost.wav",    &sfx_frost );
+  a_AudioLoadSound( "resources/soundeffects/fireball.wav", &sfx_fireball );
+  a_AudioLoadSound( "resources/soundeffects/arrow_shoot.wav", &sfx_arrow );
+  a_AudioLoadSound( "resources/soundeffects/merc_swing.wav",  &sfx_merc_swing );
 }
 
 void GameEventsSetWorld( World_t* world, Enemy_t* enemies, int* enemy_count )
@@ -122,7 +133,7 @@ int GameEventUseConsumable( int consumable_index )
     return 0;
   }
 
-  /* Potions — instant heal, no attack required */
+  /* Potions - instant heal, no attack required */
   if ( strcmp( c->type, "potion" ) == 0 )
   {
     int healed = c->heal;
@@ -145,7 +156,7 @@ int GameEventUseConsumable( int consumable_index )
     return 1;
   }
 
-  /* Food — buff next attack */
+  /* Food - buff next attack */
   if ( strcmp( c->type, "food" ) == 0 )
   {
     PlayerApplyBuff( c->bonus_damage, c->effect, c->heal );
@@ -161,10 +172,10 @@ int GameEventUseConsumable( int consumable_index )
     return 1;
   }
 
-  /* Quest items — generic handler with optional heal/message/give */
+  /* Quest items - generic handler with optional heal/message/give */
   if ( strcmp( c->type, "quest" ) == 0 )
   {
-    /* Lure — requires specific location, handled in Phase 4 */
+    /* Lure - requires specific location, handled in Phase 4 */
     if ( strcmp( c->effect, "lure" ) == 0 )
     {
       int pr, pc;
@@ -185,7 +196,7 @@ int GameEventUseConsumable( int consumable_index )
                     ge_world->tile_w, ge_world->tile_h );
       if ( rat_idx >= 0 )
       {
-        /* Candidate spots inside Room 24 — skip the player's tile */
+        /* Candidate spots inside Room 24 - skip the player's tile */
         static const int rat_pos[][2] = { {2,1}, {4,1}, {1,2}, {3,2} };
         int spawned = 0;
         for ( int i = 0; i < 4 && spawned < 2; i++ )
@@ -237,14 +248,34 @@ int GameEventUseMap( int map_index )
     return 0;
 
   MapInfo_t* m = &g_maps[map_index];
-  int pr, pc;
-  PlayerGetTile( &pr, &pc );
+
+  ITile_t* it = ITileAt( m->target_x, m->target_y );
+  if ( !it || it->type != ITILE_HIDDEN_WALL )
+  {
+    ConsolePushF( con, m->color,
+                  "%s studies the %s... but it makes no sense.",
+                  player.name, m->name );
+    return 0;
+  }
+
+  if ( it->revealed )
+  {
+    int pr, pc;
+    PlayerGetTile( &pr, &pc );
+    ConsolePushF( con, m->color,
+                  "%s studies the %s... You already know where the secret wall is.",
+                  player.name, m->name );
+    return 0;
+  }
+
+  ITileReveal( ge_world, m->target_x, m->target_y );
+
   ConsolePushF( con, m->color,
                 "%s studies the %s...", player.name, m->name );
-  ConsolePushF( con, m->color,
-                "  Secret wall at (%d, %d) - You are at (%d, %d)",
-                m->target_x, m->target_y, pr, pc );
-  return 0;  /* not consumed — map stays in inventory */
+  ConsolePushF( con, (aColor_t){ 0xde, 0x9e, 0x41, 255 },
+                "A secret passage! The wall looks different now." );
+
+  return 0;  /* map stays in inventory */
 }
 
 void GameEvent( GameEventType_t type, int index )
@@ -313,6 +344,7 @@ int GameEventResolveTarget( int consumable_idx, int inv_slot,
   /* ---- SHOOT: cardinal line projectile ---- */
   if ( strcmp( c->effect, "shoot" ) == 0 )
   {
+    a_AudioPlaySound( &sfx_arrow, NULL );
     int dr = ( target_row > pr ) ? 1 : ( target_row < pr ) ? -1 : 0;
     int dc = ( target_col > pc ) ? 1 : ( target_col < pc ) ? -1 : 0;
 
@@ -357,9 +389,73 @@ int GameEventResolveTarget( int consumable_idx, int inv_slot,
     return 1;
   }
 
+  /* ---- STEW_THROW: heal + cardinal line projectile ---- */
+  if ( strcmp( c->effect, "stew_throw" ) == 0 )
+  {
+    a_AudioPlaySound( &sfx_merc_swing, NULL );
+    /* Heal first */
+    if ( c->heal > 0 )
+    {
+      int healed = c->heal;
+      if ( player.hp + healed > player.max_hp )
+        healed = player.max_hp - player.hp;
+
+      if ( healed > 0 )
+      {
+        PlayerHeal( healed );
+        CombatVFXSpawnNumber( player.world_x, player.world_y, healed,
+                              (aColor_t){ 0x75, 0xa7, 0x43, 255 } );
+        ConsolePushF( con, (aColor_t){ 0x75, 0xa7, 0x43, 255 },
+                      "%s eats %s. Restored %d HP.", player.name, c->name, healed );
+      }
+    }
+
+    /* Throw the bowl */
+    int dr = ( target_row > pr ) ? 1 : ( target_row < pr ) ? -1 : 0;
+    int dc = ( target_col > pc ) ? 1 : ( target_col < pc ) ? -1 : 0;
+
+    Enemy_t* hit = NULL;
+    int cr = pr, cc = pc;
+    for ( int step = 0; step < c->range; step++ )
+    {
+      cr += dr;
+      cc += dc;
+      if ( !TileWalkable( cr, cc ) ) break;
+      hit = EnemyAt( enemies, num_enemies, cr, cc );
+      if ( hit ) break;
+    }
+
+    float tw = 16.0f, th = 16.0f;
+    EnemyProjectileSpawn( pr * tw + tw / 2.0f, pc * th + th / 2.0f,
+                          cr * tw + tw / 2.0f, cc * th + th / 2.0f,
+                          dr, dc );
+
+    if ( hit )
+    {
+      EnemyType_t* t = &g_enemy_types[hit->type_idx];
+      hit->hp -= dmg;
+      hit->turns_since_hit = 0;
+      CombatVFXSpawnNumber( hit->world_x, hit->world_y, dmg, hit_color );
+      ConsolePushF( con, hit_color, "%s hurls the bowl at %s for %d damage!",
+                    player.name, t->name, dmg );
+      if ( hit->hp <= 0 )
+        CombatHandleEnemyDeath( hit );
+    }
+    else
+    {
+      ConsolePushF( con, (aColor_t){ 0x81, 0x97, 0x96, 255 },
+                    "The bowl sails into the darkness..." );
+    }
+
+    InventoryRemove( inv_slot );
+    consumable_used = 1;
+    return 1;
+  }
+
   /* ---- POISON: cardinal line + DOT ---- */
   if ( strcmp( c->effect, "poison" ) == 0 )
   {
+    a_AudioPlaySound( &sfx_arrow, NULL );
     int dr = ( target_row > pr ) ? 1 : ( target_row < pr ) ? -1 : 0;
     int dc = ( target_col > pc ) ? 1 : ( target_col < pc ) ? -1 : 0;
 
@@ -474,6 +570,7 @@ int GameEventResolveTarget( int consumable_idx, int inv_slot,
     }
 
     EnemyType_t* t = &g_enemy_types[hit->type_idx];
+    a_AudioPlaySound( &sfx_spark, NULL );
     SpellVFXSpark( player.world_x, player.world_y,
                    hit->world_x, hit->world_y );
     hit->hp -= dmg;
@@ -503,6 +600,7 @@ int GameEventResolveTarget( int consumable_idx, int inv_slot,
     }
 
     EnemyType_t* t = &g_enemy_types[hit->type_idx];
+    a_AudioPlaySound( &sfx_frost, NULL );
     SpellVFXFrost( player.world_x, player.world_y,
                    hit->world_x, hit->world_y );
     hit->hp -= dmg;
@@ -526,6 +624,7 @@ int GameEventResolveTarget( int consumable_idx, int inv_slot,
   /* ---- AOE: damage target + all enemies in aoe_radius ---- */
   if ( strcmp( c->effect, "aoe" ) == 0 )
   {
+    a_AudioPlaySound( &sfx_fireball, NULL );
     SpellVFXFireball( player.world_x, player.world_y,
                       target_row, target_col, c->aoe_radius );
     int hits = 0;
@@ -608,6 +707,7 @@ int GameEventResolveTarget( int consumable_idx, int inv_slot,
   /* ---- REACH: 2-tile cardinal thrust, hits both tiles ---- */
   if ( strcmp( c->effect, "reach" ) == 0 )
   {
+    a_AudioPlaySound( &sfx_merc_swing, NULL );
     int dr = ( target_row > pr ) ? 1 : ( target_row < pr ) ? -1 : 0;
     int dc = ( target_col > pc ) ? 1 : ( target_col < pc ) ? -1 : 0;
 
@@ -654,6 +754,7 @@ int GameEventResolveTarget( int consumable_idx, int inv_slot,
   /* ---- CLEAVE: hit all adjacent enemies ---- */
   if ( strcmp( c->effect, "cleave" ) == 0 )
   {
+    a_AudioPlaySound( &sfx_merc_swing, NULL );
     int hits = 0;
     static const int dirs[8][2] = {
       {1,0}, {-1,0}, {0,1}, {0,-1}, {1,1}, {1,-1}, {-1,1}, {-1,-1}
@@ -680,6 +781,62 @@ int GameEventResolveTarget( int consumable_idx, int inv_slot,
     if ( hits == 0 )
       ConsolePushF( con, (aColor_t){ 0x81, 0x97, 0x96, 255 },
                     "%s cleaves the air.", player.name );
+
+    InventoryRemove( inv_slot );
+    consumable_used = 1;
+    return 1;
+  }
+
+  /* ---- FIRE_CONE: expanding cone + burn DOT ---- */
+  if ( strcmp( c->effect, "fire_cone" ) == 0 )
+  {
+    int dr = ( target_row > pr ) ? 1 : ( target_row < pr ) ? -1 : 0;
+    int dc = ( target_col > pc ) ? 1 : ( target_col < pc ) ? -1 : 0;
+    int perp_r = -dc;
+    int perp_c =  dr;
+
+    int hits = 0;
+    for ( int step = 1; step <= c->range; step++ )
+    {
+      int spread = step - 1;
+      for ( int s = -spread; s <= spread; s++ )
+      {
+        int cr = pr + step * dr + s * perp_r;
+        int cc = pc + step * dc + s * perp_c;
+        if ( !TileWalkable( cr, cc ) ) continue;
+
+        Enemy_t* hit = EnemyAt( enemies, num_enemies, cr, cc );
+        if ( hit )
+        {
+          EnemyType_t* t = &g_enemy_types[hit->type_idx];
+          hit->hp -= dmg;
+          hit->turns_since_hit = 0;
+          CombatVFXSpawnNumber( hit->world_x, hit->world_y, dmg, hit_color );
+          ConsolePushF( con, hit_color, "%s scorches %s for %d damage!",
+                        player.name, t->name, dmg );
+
+          /* Apply burn DOT */
+          if ( c->ticks > 0 )
+          {
+            hit->burn_ticks = c->ticks;
+            hit->burn_dmg   = c->tick_damage;
+          }
+
+          if ( hit->hp <= 0 )
+            CombatHandleEnemyDeath( hit );
+          hits++;
+        }
+      }
+    }
+
+    if ( hits > 0 )
+      ConsolePushF( con, hit_color,
+                    "%s breathes fire! %d enemies scorched!",
+                    player.name, hits );
+    else
+      ConsolePushF( con, hit_color,
+                    "%s breathes fire! The flames lick at empty air.",
+                    player.name );
 
     InventoryRemove( inv_slot );
     consumable_used = 1;

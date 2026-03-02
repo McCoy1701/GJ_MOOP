@@ -63,7 +63,7 @@ int GameOverLogic( float dt )
 {
   if ( state == GO_INACTIVE ) return 0;
 
-  /* Delay phase — block input, wait for VFX to finish */
+  /* Delay phase - block input, wait for VFX to finish */
   if ( state == GO_DELAY )
   {
     delay_timer -= dt;

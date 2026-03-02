@@ -70,15 +70,25 @@
     category: "Enemies"
     description: "The dead in the dungeon slowly lose themselves over time. They stop talking, stop thinking, and become hostile. The deeper floors accelerate the process. Jonathon, a friendly skeleton on floor one, is the last one still holding on."
 }
+@rat_society {
+    title: "Rat Society"
+    category: "Enemies"
+    description: "The rats of the dungeon have their own hierarchy. At the top sits the Rat King, a self-proclaimed royal who demands cheese taxes from his subjects. The three shop rats - Gerald, Pip, and Trevor - rejected his authority and went freelance. They consider themselves above the rest. The rest consider them traitors in a coat."
+}
 @rat_king {
     title: "The Rat King"
     category: "Enemies"
-    description: "A massive tangle of rats fused into one body, living inside the walls of the first floor. Drawn out by the smell of aged cheese. It guarded the path to the lower floors."
+    description: "A fat, mean tyrant who lives in a hole to the northwest of the first floor, surrounded by filth and loyal subjects. Calls himself royalty. Tried to tax the shop rats in cheese. Gerald said no. Pip did the math and said no. Trevor bit his ambassador."
 }
 @rat_royalty {
     title: "Rat Royalty"
     category: "Enemies"
     description: "The three shop rats refuse to discuss the Rat Queen. Gerald, Pip, and Trevor all react with visible terror at the mention. Whatever she is, she is worse than the King."
+}
+@dungeon_slimes {
+    title: "Dungeon Slimes"
+    category: "Enemies"
+    description: "Slow, blobby creatures that keep to themselves. Mostly harmless unless you leave metal lying around - they dissolve it overnight. Don't smell bad alive, but pop one and the vinegar stink gets in your armor and never comes out. Graf lost a belt buckle to one."
 }
 
 # ==============================
@@ -108,4 +118,23 @@
     title: "The Miner's Journal"
     category: "History"
     description: "One of the two surviving miners left a journal at Old Thom's bakery. The last pages were filled with a single word written hundreds of times: 'OPEN.' Thom used the journal as kindling for his oven."
+}
+
+# ==============================
+# ELITES
+# ==============================
+@fallen_knight {
+    title: "Aldric, the Fallen Knight"
+    category: "Elites"
+    description: "A soldier who kicked the red door open and never looked back. His journal entries are blunt - fights won, rats killed, arms getting heavier. He stopped trusting the others before he stopped recognizing them. The last pages are nothing but tally marks. No one knows what he was counting."
+}
+@phantom_thief {
+    title: "Vessa, the Phantom Thief"
+    category: "Elites"
+    description: "A rogue who picked the green lock in nine seconds. Her notes are sharp at first - traps spotted, passages mapped, every detail logged. Then the maps start repeating. The same corridors drawn over and over, each time slightly different. She started standing in the dark, watching. She never wrote down what she saw."
+}
+@corrupted_wizard {
+    title: "R., the Corrupted Wizard"
+    category: "Elites"
+    description: "The mage who opened the blue door with a word he wouldn't write down. Only identified by the initial 'R.' His spells grew stronger as the hum grew louder, but the words were changing - casting things he never learned. The last to turn, and the only one who saw it coming. His final entry is a warning: run."
 }

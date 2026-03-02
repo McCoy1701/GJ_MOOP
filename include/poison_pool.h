@@ -10,14 +10,16 @@
 
 typedef struct
 {
-  int row, col;
-  int turns_remaining;
-  int damage;
-  int active;
+  int      row, col;
+  int      turns_remaining;
+  int      damage;
+  int      active;
+  aColor_t color;
 } PoisonPool_t;
 
 void          PoisonPoolInit( Console_t* con );
-void          PoisonPoolSpawn( int row, int col, int duration, int damage );
+void          PoisonPoolSpawn( int row, int col, int duration, int damage,
+                               aColor_t color );
 PoisonPool_t* PoisonPoolAt( int row, int col );
 void          PoisonPoolTick( int player_row, int player_col );
 void          PoisonPoolDrawAll( aRectf_t vp_rect, GameCamera_t* cam,

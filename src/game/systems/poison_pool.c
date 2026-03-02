@@ -12,9 +12,8 @@ static PoisonPool_t pools[MAX_POISON_POOLS];
 static int          num_pools = 0;
 static Console_t*   console   = NULL;
 
-#define POOL_COLOR       (aColor_t){ 50, 220, 50, 100 }
-#define POOL_GLYPH_COLOR (aColor_t){ 50, 220, 50, 180 }
-#define POOL_DMG_COLOR   (aColor_t){ 50, 220, 50, 255 }
+/* Default green (used when no color specified) */
+#define POOL_DEFAULT_COLOR (aColor_t){ 50, 220, 50, 255 }
 
 void PoisonPoolInit( Console_t* con )
 {
@@ -23,7 +22,8 @@ void PoisonPoolInit( Console_t* con )
   num_pools = 0;
 }
 
-void PoisonPoolSpawn( int row, int col, int duration, int damage )
+void PoisonPoolSpawn( int row, int col, int duration, int damage,
+                      aColor_t color )
 {
   /* Reuse an inactive slot or append */
   int slot = -1;
@@ -42,6 +42,7 @@ void PoisonPoolSpawn( int row, int col, int duration, int damage )
   pools[slot].turns_remaining = duration;
   pools[slot].damage          = damage;
   pools[slot].active          = 1;
+  pools[slot].color           = color;
 }
 
 PoisonPool_t* PoisonPoolAt( int row, int col )
@@ -63,10 +64,11 @@ void PoisonPoolTick( int player_row, int player_col )
     /* Damage player if standing on pool */
     if ( pools[i].row == player_row && pools[i].col == player_col )
     {
+      aColor_t c = pools[i].color;
       PlayerTakeDamage( pools[i].damage );
       CombatVFXSpawnNumber( player.world_x, player.world_y,
-                            pools[i].damage, POOL_DMG_COLOR );
-      ConsolePushF( console, POOL_DMG_COLOR,
+                            pools[i].damage, c );
+      ConsolePushF( console, c,
                     "The poison pool burns you for %d damage!",
                     pools[i].damage );
       if ( player.hp <= 0 )
@@ -96,9 +98,14 @@ void PoisonPoolDrawAll( aRectf_t vp_rect, GameCamera_t* cam,
     float wx = pools[i].row * world->tile_w + world->tile_w / 2.0f;
     float wy = pools[i].col * world->tile_h + world->tile_h / 2.0f;
 
+    aColor_t fill  = { pools[i].color.r, pools[i].color.g,
+                        pools[i].color.b, 100 };
+    aColor_t glyph = { pools[i].color.r, pools[i].color.g,
+                        pools[i].color.b, 180 };
+
     GV_DrawFilledRect( vp_rect, cam, wx, wy,
                        (float)world->tile_w, (float)world->tile_h,
-                       POOL_COLOR );
+                       fill );
 
     /* Draw '~' glyph over the pool */
     float sx, sy;
@@ -110,7 +117,7 @@ void PoisonPoolDrawAll( aRectf_t vp_rect, GameCamera_t* cam,
     int dw = (int)( world->tile_w * ( vp_rect.w / ( half_w * 2.0f ) ) );
     int dh = (int)( world->tile_h * ( vp_rect.h / ( cam->half_h * 2.0f ) ) );
     a_DrawGlyph( "~", (int)sx, (int)sy, dw, dh,
-                 POOL_GLYPH_COLOR, (aColor_t){ 0, 0, 0, 0 },
+                 glyph, (aColor_t){ 0, 0, 0, 0 },
                  FONT_CODE_PAGE_437 );
   }
 }

@@ -29,7 +29,7 @@ static int sfx_loaded = 0;
 #define PM_ITEM_H      32.0f
 #define PM_VOL_STEP     5
 
-/* Palette — matches settings/main menu */
+/* Palette - matches settings/main menu */
 #define BG_NORM   (aColor_t){ 0x10, 0x14, 0x1f, 255 }
 #define BG_HOVER  (aColor_t){ 0x20, 0x2e, 0x37, 255 }
 #define FG_NORM   (aColor_t){ 0x81, 0x97, 0x96, 255 }
@@ -126,7 +126,7 @@ int PauseMenuActive( void )
 
 static int pm_MainLogic( void )
 {
-  /* ESC — close pause menu */
+  /* ESC - close pause menu */
   if ( app.keyboard[SDL_SCANCODE_ESCAPE] == 1 )
   {
     app.keyboard[SDL_SCANCODE_ESCAPE] = 0;
@@ -211,7 +211,7 @@ static int pm_MainLogic( void )
 
 static int pm_SettingsLogic( void )
 {
-  /* ESC — back to main */
+  /* ESC - back to main */
   if ( app.keyboard[SDL_SCANCODE_ESCAPE] == 1 )
   {
     app.keyboard[SDL_SCANCODE_ESCAPE] = 0;
@@ -238,7 +238,7 @@ static int pm_SettingsLogic( void )
     a_AudioPlaySound( &sfx_move, NULL );
   }
 
-  /* Left / Right — adjust (only on setting rows) */
+  /* Left / Right - adjust (only on setting rows) */
   if ( cursor < PM_NUM_SETS )
   {
     if ( app.keyboard[A_A] == 1 || app.keyboard[A_LEFT] == 1 )
@@ -257,7 +257,7 @@ static int pm_SettingsLogic( void )
     }
   }
 
-  /* Enter / Space — toggle (gfx) or activate (back) */
+  /* Enter / Space - toggle (gfx) or activate (back) */
   if ( app.keyboard[SDL_SCANCODE_RETURN] == 1 ||
        app.keyboard[SDL_SCANCODE_SPACE] == 1 )
   {
@@ -400,12 +400,12 @@ static void pm_DrawSettings( void )
     ts.bg = (aColor_t){ 0, 0, 0, 0 };
     ts.scale = 1.1f;
 
-    /* Label — left */
+    /* Label - left */
     ts.fg = sel ? FG_HOVER : FG_NORM;
     ts.align = TEXT_ALIGN_LEFT;
     a_DrawText( pm_set_labels[i], (int)( rx + 6 ), (int)( ryi + PM_ITEM_H / 2.0f ), ts );
 
-    /* Value — centered right half */
+    /* Value - centered right half */
     char vbuf[16];
     const char* val = pm_GetValueStr( i, vbuf, sizeof( vbuf ) );
     char display[32];

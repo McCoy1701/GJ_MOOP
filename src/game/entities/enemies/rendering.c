@@ -40,7 +40,7 @@ void EnemiesDrawAll( aRectf_t vp_rect, GameCamera_t* cam,
     }
     else
     {
-      /* Glyph fallback — stretch to fill tile */
+      /* Glyph fallback - stretch to fill tile */
       float sx, sy;
       GV_WorldToScreen( vp_rect, cam,
                         list[i].world_x - world->tile_w / 2.0f,

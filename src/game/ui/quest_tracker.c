@@ -64,5 +64,50 @@ void QuestTrackerDraw( aRectf_t vp_rect )
     }
 
     a_DrawText( buf, (int)x, (int)y, ts );
+
+    float tw2, th2;
+    a_CalcTextDimensions( buf, ts.type, &tw2, &th2 );
+    y += th2 * QT_SCALE + QT_PAD_Y;
+  }
+
+  /* Relic quest */
+  if ( FlagGet( "quest_relic" ) && !FlagGet( "relic_returned" ) )
+  {
+    if ( FlagGet( "has_relic" ) )
+    {
+      snprintf( buf, sizeof( buf ), "Return Hearthstone to Thistlewick" );
+      ts.fg = QT_GREEN;
+    }
+    else
+    {
+      snprintf( buf, sizeof( buf ), "Retrieve the Goblin Hearthstone" );
+      ts.fg = QT_YELLOW;
+    }
+
+    a_DrawText( buf, (int)x, (int)y, ts );
+
+    float tw3, th3;
+    a_CalcTextDimensions( buf, ts.type, &tw3, &th3 );
+    y += th3 * QT_SCALE + QT_PAD_Y;
+  }
+
+  /* Mushroom quest */
+  if ( FlagGet( "quest_mushrooms" ) )
+  {
+    int m = FlagGet( "mushrooms_collected" );
+    if ( m > 3 ) m = 3;
+
+    if ( m >= 3 )
+    {
+      snprintf( buf, sizeof( buf ), "Mushrooms: %d/3 - Return to Nettle", m );
+      ts.fg = QT_GREEN;
+    }
+    else
+    {
+      snprintf( buf, sizeof( buf ), "Mushrooms: %d/3", m );
+      ts.fg = QT_YELLOW;
+    }
+
+    a_DrawText( buf, (int)x, (int)y, ts );
   }
 }
