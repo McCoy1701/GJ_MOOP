@@ -111,6 +111,6 @@ void wel_LoadYes( void )
 
 void wel_LoadNo( void )
 {
-  EditorInit();
+  e_WorldEditorInit();
 }
 

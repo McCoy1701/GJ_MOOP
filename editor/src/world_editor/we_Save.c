@@ -15,10 +15,14 @@
 #include "ed_structs.h"
 
 #include "editor.h"
+#include "utils.h"
+#include "world.h"
 #include "world_editor.h"
 
 static void wes_SaveLogic( float dt );
 static void wes_SaveDraw( float dt );
+
+int no = 0;
 
 void we_Save( void )
 {
@@ -72,19 +76,46 @@ static void wes_SaveDraw( float dt )
     .scale = 1.0f,
     .padding = 0
   };
-
-  a_DrawText( "Save?", 635, 270, fps_style );
+  
+  if ( !no )
+  {
+    a_DrawText( "Save?", 635, 270, fps_style );
+  }
+  else
+  {
+    a_DrawText( "Are you sure?", 635, 270, fps_style );
+  }
 
   a_DrawWidgets();
 }
 
 void wes_SaveYes( void )
 {
+  if ( current_filename != NULL )
+  {
+    printf("%s\n", current_filename );
+    printf("%s\n", map->filename );
+    e_SaveWorld( map, current_filename );
+    
+    if ( map != NULL )
+    {
+      WorldDestroy( map );
+    }
+  }
+  
   EditorInit();
 }
 
 void wes_SaveNo( void )
 {
-  EditorInit();
+  if ( !no )
+  {
+    no = !no;
+  }
+  
+  else
+  {
+    EditorInit();
+  }
 }
 

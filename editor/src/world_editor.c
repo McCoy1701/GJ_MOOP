@@ -25,7 +25,7 @@
 static void e_WorldEditorLogic( float );
 static void e_WorldEditorDraw( float );
 
-const char* current_filename = NULL;
+char* current_filename;
 Tileset_t* tile_sets[MAX_TILESETS];
 World_t* map        = NULL;
 int toggle_ascii    = 0;
@@ -42,7 +42,7 @@ void e_WorldEditorInit( void )
 {
   app.delegate.logic = e_WorldEditorLogic;
   app.delegate.draw  = e_WorldEditorDraw;
- 
+
   float ratio = SCREEN_WIDTH/SCREEN_HEIGHT;
   float view_h = 50.0f;
   float view_w = view_h * ratio;
@@ -110,12 +110,7 @@ static void e_WorldEditorLogic( float dt )
   if ( app.keyboard[A_ESCAPE] == 1 )
   {
     app.keyboard[A_ESCAPE] = 0;
-    if ( map )
-    {
-      e_SaveWorld( map, "test.map");
-    }
-
-    EditorInit();
+    we_Save();
   }
   
   if ( app.keyboard[A_T] == 1 )

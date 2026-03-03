@@ -308,6 +308,7 @@ World_t* convert_mats_worlds( const char* filename )
     new_world->tile_h = 16;
 
     new_world->tile_count = world_width * world_height;
+    new_world->filename = filename;
 
     new_world->background = malloc( sizeof(Tile_t) * new_world->tile_count );
     if ( new_world->background == NULL ) return NULL;
@@ -428,10 +429,12 @@ void e_SaveWorld( World_t* world, const char* filename )
 {
   if ( world == NULL ) return;
   FILE* file;
+  printf("%s\n", filename);
+  printf("%s\n", world->filename);
 
   file = fopen( filename, "w" );
   dString_t* size_string = d_StringInit();
-  d_StringFormat( size_string, "// %d %d", world->width, world->height );
+  d_StringFormat( size_string, "// %d %d\n", world->width, world->height );
   fwrite( d_StringPeek( size_string ), sizeof(char), size_string->len, file );
 
   dString_t* line_string = d_StringInit();
@@ -444,15 +447,27 @@ void e_SaveWorld( World_t* world, const char* filename )
       if ( world->room_ids[index] != TILE_EMPTY )
       {
         current_char = world->room_ids[index];
-        d_StringAppendChar( line_string, current_char );
+        d_StringAppendChar( line_string, current_char+1 );
         continue;
       }
       
       else if ( world->midground[index].glyph_index != TILE_EMPTY )
       {
+        current_char = world->midground[index].glyph_index;
+        d_StringAppendChar( line_string, current_char+1 );
+        continue;
+      }
 
+      else if ( world->background[index].glyph_index != TILE_EMPTY )
+      {
+        current_char = world->background[index].glyph_index;
+        d_StringAppendChar( line_string, current_char+1 );
+        continue;
       }
     }
+    d_StringAppendChar(line_string, '\n');
+    fwrite( d_StringPeek( line_string ), sizeof(char), line_string->len, file );
+    d_StringClear( line_string );
   }
 
   fclose(file);

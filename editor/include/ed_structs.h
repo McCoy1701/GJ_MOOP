@@ -83,6 +83,7 @@ typedef struct
   int tile_count;
   int tile_w, tile_h;
   int width, height;
+  const char* filename;
 } World_t;
 
 enum

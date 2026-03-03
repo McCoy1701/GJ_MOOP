@@ -10,16 +10,17 @@
 #define __WORLD_EDITOR_H__
 
 #include <Archimedes.h>
+#include <Daedalus.h>
 
 #include "ed_defines.h"
 #include "ed_structs.h"
 
-extern Tileset_t*  tile_sets[MAX_TILESETS];
-extern World_t*    map;
-extern int         toggle_ascii;
-extern int         toggle_room;
-extern int         current_tileset;
-extern const char* current_filename;
+extern Tileset_t* tile_sets[MAX_TILESETS];
+extern World_t*   map;
+extern int        toggle_ascii;
+extern int        toggle_room;
+extern int        current_tileset;
+extern char*      current_filename;
 
 enum
 {
