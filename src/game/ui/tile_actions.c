@@ -20,6 +20,7 @@
 #include "shop.h"
 #include "poison_pool.h"
 #include "interactive_tile.h"
+#include "game_input.h"
 
 extern Player_t player;
 
@@ -90,6 +91,30 @@ static int build_labels( const char** labels, Enemy_t* enemies, int num_enemies 
 
   if ( !adjacent )
   {
+    int in_combat = EnemiesInCombat( enemies, num_enemies );
+
+    /* Distant door - offer Open (auto-walk then open) */
+    if ( !in_combat
+         && tile_has_door( tile_action_row, tile_action_col ) )
+    {
+      labels[0] = "Open";
+      labels[1] = "Look";
+      return 2;
+    }
+
+    /* Distant walkable tile - offer Move (auto-walk) */
+    if ( !in_combat
+         && TileWalkable( tile_action_row, tile_action_col )
+         && !EnemyAt( enemies, num_enemies,
+                       tile_action_row, tile_action_col )
+         && !NPCAt( ta_npcs, *ta_num_npcs,
+                     tile_action_row, tile_action_col ) )
+    {
+      labels[0] = "Move";
+      labels[1] = "Look";
+      return 2;
+    }
+
     labels[0] = "Look";
     return 1;
   }
@@ -279,26 +304,39 @@ int TileActionsLogic( int mouse_moved, Enemy_t* enemies, int num_enemies )
     }
     else if ( strcmp( action, "Move" ) == 0 )
     {
-      if ( TileWalkable( tile_action_row, tile_action_col ) )
-        PlayerStartMove( tile_action_row, tile_action_col );
+      if ( TileAdjacent( tile_action_row, tile_action_col ) )
+      {
+        if ( TileWalkable( tile_action_row, tile_action_col ) )
+          PlayerStartMove( tile_action_row, tile_action_col );
+        else
+        {
+          int pr, pc;
+          PlayerGetTile( &pr, &pc );
+          PlayerWallBump( tile_action_row - pr, tile_action_col - pc );
+        }
+      }
       else
       {
-        int pr, pc;
-        PlayerGetTile( &pr, &pc );
-        PlayerWallBump( tile_action_row - pr, tile_action_col - pc );
+        GameInputStartAutoPath( tile_action_row, tile_action_col );
       }
     }
     else if ( strcmp( action, "Open" ) == 0 )
     {
-      if ( TileActionsTryOpen( tile_action_row, tile_action_col ) )
+      if ( TileAdjacent( tile_action_row, tile_action_col ) )
       {
-        PlayerStartMove( tile_action_row, tile_action_col );
+        if ( TileActionsTryOpen( tile_action_row, tile_action_col ) )
+          PlayerStartMove( tile_action_row, tile_action_col );
+        else
+        {
+          int pr, pc;
+          PlayerGetTile( &pr, &pc );
+          PlayerShake( tile_action_row - pr, tile_action_col - pc );
+        }
       }
       else
       {
-        int pr, pc;
-        PlayerGetTile( &pr, &pc );
-        PlayerShake( tile_action_row - pr, tile_action_col - pc );
+        /* Auto-walk to tile adjacent to the door, then open on arrival */
+        GameInputStartAutoPath( tile_action_row, tile_action_col );
       }
     }
     else if ( strcmp( action, "Attack" ) == 0 )

@@ -116,6 +116,8 @@
     class: "rogue"
     description: "Your first attack each room deals +1 bonus damage."
     color: [80, 180, 80, 255]
+    image_path: "resources/assets/equipment/shadow_charm.png"
+
 }
 @crystal_pendant {
     name: "Crystal Pendant"
@@ -129,4 +131,6 @@
     class: "mage"
     description: "Every 4th scroll used is not consumed."
     color: [80, 80, 180, 255]
+    image_path: "resources/assets/equipment/crystal_pendant.png"
+
 }

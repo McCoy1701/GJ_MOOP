@@ -62,6 +62,7 @@
     start: true
     priority: 5
     require_flag: "warning_delivered"
+    require_not_flag: "laura_relocated"
     text: "So now they know. And they're still just sitting there, aren't they? ...yeah. That sounds right."
     options: ["opt_what_now", "opt_who_are_you", "opt_why_fighting", "opt_leave"]
 }
@@ -307,7 +308,7 @@
 }
 @what_now_reply {
     text: "I don't know. The war goblins won't stop fighting long enough to prepare. The peace goblins won't start fighting to defend themselves. And I'm one goblin with a blade standing in a hallway."
-    options: ["opt_suggest_war", "opt_suggest_peace", "opt_suggest_both", "opt_leave"]
+    options: ["opt_suggest_war", "opt_suggest_peace", "opt_suggest_both", "opt_go_south", "opt_leave"]
 }
 @opt_suggest_war {
     label: "Rally the war goblins. They'll fight."
@@ -315,7 +316,7 @@
 }
 @suggest_war_reply {
     text: "Fight what? Each other? That's all Kragthar knows. Point him at the thing below and he'll charge right in and get everyone killed. Bravely. Stupidly. ...but at least they'd fight."
-    options: ["opt_suggest_peace", "opt_suggest_both", "opt_leave"]
+    options: ["opt_suggest_peace", "opt_suggest_both", "opt_go_south", "opt_leave"]
 }
 @opt_suggest_peace {
     label: "The peace goblins are smart. They'll find another way."
@@ -323,7 +324,7 @@
 }
 @suggest_peace_reply {
     text: "They'll find another way to stand still, maybe. Thistlewick's people are thinkers. Good ones. But you can't think your way out of something that doesn't care about your thoughts. I've seen it."
-    options: ["opt_suggest_war", "opt_suggest_both", "opt_leave"]
+    options: ["opt_suggest_war", "opt_suggest_both", "opt_go_south", "opt_leave"]
 }
 @opt_suggest_both {
     label: "What if both tribes worked together?"
@@ -331,6 +332,21 @@
 }
 @suggest_both_reply {
     text: "You've met them, right? Kragthar thinks peace is weakness. Thistlewick thinks war is barbarism. Getting them in the same room would be harder than whatever's lurking below. ...but it's the only thing that might actually work."
+    options: ["opt_go_south", "opt_leave"]
+}
+
+# ==============================
+# GO SOUTH - triggers relocate
+# ==============================
+@opt_go_south {
+    label: "What about the south passage?"
+    color: "quest"
+    goto: "go_south_reply"
+}
+@go_south_reply {
+    text: "That's where I came back up from. I barricaded it behind me. If you want to go deeper... meet me there. I need a minute."
+    action: "relocate:ROW,COL"
+    set_flag: "laura_relocated"
     options: ["opt_leave"]
 }
 

@@ -3,6 +3,7 @@
     glyph: "?"
     color: [180, 160, 120, 255]
     description: "A leather-bound journal, cracked and stained. Three different handwritings fill its pages."
+    action: "Read"
 }
 
 # ==============================

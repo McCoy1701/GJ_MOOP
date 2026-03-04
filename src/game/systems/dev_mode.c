@@ -55,6 +55,7 @@ int DevModeInput( void )
       ConsolePush( dev_console, "T - teleport to NPC", DEV_COLOR );
       ConsolePush( dev_console, "G - gear up (floor 01 drops)", DEV_COLOR );
       ConsolePush( dev_console, "H - heal to full", DEV_COLOR );
+      ConsolePush( dev_console, "L - show coordinates", DEV_COLOR );
     }
     else
     {
@@ -211,6 +212,16 @@ int DevModeInput( void )
     app.keyboard[SDL_SCANCODE_H] = 0;
     PlayerHeal( player.max_hp );
     ConsolePush( dev_console, "HEALED TO FULL", DEV_COLOR );
+    return 1;
+  }
+
+  /* L - show current coordinates */
+  if ( app.keyboard[SDL_SCANCODE_L] == 1 )
+  {
+    app.keyboard[SDL_SCANCODE_L] = 0;
+    int pr, pc;
+    PlayerGetTile( &pr, &pc );
+    ConsolePushF( dev_console, DEV_COLOR, "POS: (%d, %d)", pr, pc );
     return 1;
   }
 

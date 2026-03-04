@@ -3,6 +3,7 @@
     glyph: ">"
     color: [222, 158, 65, 255]
     description: "A stone stairway spiraling downward into darkness."
+    action: "Walk"
 }
 
 # ==============================

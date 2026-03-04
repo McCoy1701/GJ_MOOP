@@ -1,0 +1,59 @@
+@npc {
+    name: "Barricade"
+    glyph: "="
+    color: [140, 110, 80, 255]
+    description: "A crude barricade of broken furniture and rusty chains. Somebody wanted this passage sealed."
+    action: "Inspect"
+}
+
+# ==============================
+# PRE-LAURA (default)
+# ==============================
+@start_default {
+    start: true
+    priority: 0
+    text: "Somebody put this here for a reason. Best to leave it alone."
+    options: ["opt_leave"]
+}
+
+# ==============================
+# LAURA AT BARRICADE
+# ==============================
+@greeting_at_stairs {
+    start: true
+    priority: 10
+    require_flag: "laura_relocated"
+    text: "I blocked this when I came back up. Didn't want that stuff following me."
+    options: ["opt_open_it", "opt_not_ready", "opt_leave"]
+}
+
+# ==============================
+# OPTIONS
+# ==============================
+@opt_open_it {
+    label: "Can you open it?"
+    color: "quest"
+    goto: "open_reply"
+}
+@open_reply {
+    text: "If you're sure. Don't say I didn't warn you."
+    set_flag: "barricade_opened"
+    options: ["opt_leave"]
+}
+
+@opt_not_ready {
+    label: "Not yet."
+    goto: "not_ready_reply"
+}
+@not_ready_reply {
+    text: "Smart. Take your time. It's not going anywhere."
+    options: ["opt_leave"]
+}
+
+# ==============================
+# LEAVE
+# ==============================
+@opt_leave {
+    label: "[Step away]"
+    goto: "end"
+}

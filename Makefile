@@ -96,7 +96,9 @@ SYS_SRCS = tween.c \
 					 placed_traps.c \
 					 floor_cutscene.c \
 					 dev_mode.c \
-					 bank.c
+					 bank.c \
+					 npc_relocate.c \
+					 pathfinding.c
 
 WORLD_SRCS = world.c \
 						 game_viewport.c \

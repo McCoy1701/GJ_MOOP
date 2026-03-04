@@ -82,6 +82,8 @@ void EnemiesSetWorld( World_t* w );
 void EnemiesSetNPCs( void* npcs, int* num_npcs );
 void EnemiesSetList( Enemy_t* list, int* count );
 int  EnemyBlockedByNPC( int row, int col );
+int  EnemyGridW( void );
+int  EnemyGridH( void );
 
 /* Shaman totem spawn helper (uses stored list/count) */
 int  EnemyShamanSpawnTotem( int row, int col, int (*walkable)(int,int),

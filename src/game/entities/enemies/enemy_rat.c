@@ -1,9 +1,27 @@
 #include <stdlib.h>
 
 #include "enemies.h"
+#include "pathfinding.h"
 #include "visibility.h"
 
 #define DEFAULT_CHASE_TURNS  4
+
+/* ---- A* blocker ---- */
+
+typedef struct
+{
+  int (*walkable)(int,int);
+} RatPathCtx_t;
+
+static int rat_blocked( int r, int c, void* ctx )
+{
+  RatPathCtx_t* p = ctx;
+  if ( !p->walkable( r, c ) )      return 1;
+  if ( EnemyBlockedByNPC( r, c ) ) return 1;
+  return 0;
+}
+
+/* ---- main tick ---- */
 
 void EnemyBasicAITick( Enemy_t* e, int player_row, int player_col,
                    int (*walkable)(int,int),
@@ -56,64 +74,33 @@ void EnemyBasicAITick( Enemy_t* e, int player_row, int player_col,
   /* Already adjacent to player - stay put, combat handled elsewhere */
   if ( can_see && dist <= 1 ) return;
 
-  /* 4-direction pathfinding: pick the walkable, unoccupied neighbor
-     closest to the target (Manhattan distance).  Only move if it
-     actually gets us closer - prevents oscillation. */
-  static const int dx[] = { 1, -1, 0, 0 };
-  static const int dy[] = { 0, 0, 1, -1 };
+  /* Find best adjacent tile to surround target (not occupied by another enemy) */
+  static const int adj_r[] = { -1, 1, 0, 0 };
+  static const int adj_c[] = { 0, 0, -1, 1 };
+  int best_r = target_row, best_c = target_col;
+  int best_dist = 9999;
 
-  int cur_dist = abs( target_row - e->row ) + abs( target_col - e->col );
-  int best_dist = cur_dist;
-  int best_r = e->row;
-  int best_c = e->col;
-
-  for ( int i = 0; i < 4; i++ )
+  for ( int d = 0; d < 4; d++ )
   {
-    int nr = e->row + dx[i];
-    int nc = e->col + dy[i];
-
-    if ( !walkable( nr, nc ) )            continue;
-    if ( EnemyAt( all, count, nr, nc ) ) continue;
-    if ( EnemyBlockedByNPC( nr, nc ) )   continue;
-
-    int nd = abs( target_row - nr ) + abs( target_col - nc );
-    if ( nd < best_dist )
-    {
-      best_dist = nd;
-      best_r = nr;
-      best_c = nc;
-    }
+    int ar = target_row + adj_r[d];
+    int ac = target_col + adj_c[d];
+    if ( !walkable( ar, ac ) )                    continue;
+    if ( EnemyAt( all, count, ar, ac ) )          continue;
+    if ( ar == e->row && ac == e->col )  { best_r = ar; best_c = ac; break; }
+    int ad = abs( ar - e->row ) + abs( ac - e->col );
+    if ( ad < best_dist ) { best_dist = ad; best_r = ar; best_c = ac; }
   }
 
-  /* Stuck - no closer tile found.  Allow a lateral (same-distance)
-     move so the enemy can path around NPCs / other blockers.
-     Randomize start direction to avoid deterministic oscillation. */
-  if ( best_r == e->row && best_c == e->col )
+  /* A* pathfinding toward best adjacent tile */
+  RatPathCtx_t ctx = { walkable };
+  PathNode_t path[PATH_MAX_LEN];
+  int len = PathfindAStar( e->row, e->col, best_r, best_c,
+                           EnemyGridW(), EnemyGridH(),
+                           rat_blocked, &ctx, path );
+  if ( len >= 2
+       && !EnemyAt( all, count, path[1].row, path[1].col ) )
   {
-    int start = rand() % 4;
-    for ( int j = 0; j < 4; j++ )
-    {
-      int i  = ( start + j ) % 4;
-      int nr = e->row + dx[i];
-      int nc = e->col + dy[i];
-
-      if ( !walkable( nr, nc ) )            continue;
-      if ( EnemyAt( all, count, nr, nc ) ) continue;
-      if ( EnemyBlockedByNPC( nr, nc ) )   continue;
-
-      int nd = abs( target_row - nr ) + abs( target_col - nc );
-      if ( nd <= cur_dist )
-      {
-        best_r = nr;
-        best_c = nc;
-        break;
-      }
-    }
-  }
-
-  if ( best_r != e->row || best_c != e->col )
-  {
-    e->row = best_r;
-    e->col = best_c;
+    e->row = path[1].row;
+    e->col = path[1].col;
   }
 }

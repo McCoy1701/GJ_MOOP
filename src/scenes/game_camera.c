@@ -19,7 +19,6 @@ void GameCameraFollow( void )
 {
   cam->x = player.world_x + PlayerShakeOX();
   cam->y = player.world_y + PlayerShakeOY();
-  a_DoWidget();
 }
 
 int GameCameraIntro( float dt )
@@ -46,6 +45,5 @@ int GameCameraIntro( float dt )
     VisibilityUpdate( vr, vc );
   }
 
-  a_DoWidget();
   return 1;
 }

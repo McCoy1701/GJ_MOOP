@@ -43,6 +43,7 @@
 #include "game_turns.h"
 #include "game_input.h"
 #include "floor_cutscene.h"
+#include "npc_relocate.h"
 #include "dev_mode.h"
 #include "bank.h"
 
@@ -175,6 +176,7 @@ void GameSceneInit( void )
                  enemies, &num_enemies, npcs, &num_npcs );
   DevModeInit( &console );
   DevModeSetNPCs( npcs, &num_npcs );
+  NPCRelocateInit( npcs, &num_npcs );
 
   GameOverReset();
   SoundManagerPlayGame();
@@ -198,6 +200,7 @@ static void gs_Logic( float dt )
 
   if ( GameCameraIntro( dt ) )         return;
   if ( FloorCutsceneUpdate( dt ) )   { GameCameraFollow(); return; }
+  if ( NPCRelocateUpdate( dt ) )     { GameCameraFollow(); return; }
 
   /* Game over - takes priority over everything */
   GameOverCheck( dt );
@@ -247,6 +250,7 @@ static void gs_Logic( float dt )
   if ( GameInputTargetMode() )        { GameCameraFollow(); return; }
   if ( GameInputLookMode() )          { GameCameraFollow(); return; }
 
+  GameInputAutoMove();
   GameInputMovement();
   GameInputMouse();
   GameInputZoom();
@@ -541,6 +545,9 @@ static void gs_Draw( float dt )
 
   /* Dev mode overlay (teleport selector) */
   DevModeDraw();
+
+  /* NPC relocate fade-to-black overlay */
+  NPCRelocateDraw();
 
   /* Game over - drawn on top of absolutely everything */
   GameOverDraw();

@@ -17,9 +17,12 @@ int  GameInputEsc( void );
 void GameInputInventory( void );
 int  GameInputTargetMode( void );
 int  GameInputLookMode( void );
+void GameInputAutoMove( void );
 void GameInputMovement( void );
 void GameInputMouse( void );
 void GameInputZoom( void );
+
+void GameInputStartAutoPath( int goal_r, int goal_c );
 
 int  GameInputHoverRow( void );
 int  GameInputHoverCol( void );

@@ -25,6 +25,8 @@ static float bounce_oy = 0;
 static float shake_ox = 0;
 static float shake_oy = 0;
 static aSoundEffect_t sfx_wall;
+static aTimer_t* wall_bump_timer = NULL;
+#define WALL_BUMP_COOLDOWN_MS 300
 
 /* Lunge animation */
 static float lunge_home_x, lunge_home_y;
@@ -52,6 +54,7 @@ void MovementInit( World_t* w )
   shake_ox = 0;
   shake_oy = 0;
   if ( !rapid_timer ) rapid_timer = a_TimerCreate();
+  if ( !wall_bump_timer ) wall_bump_timer = a_TimerCreate();
   rapid_active = 0;
 
   a_AudioLoadSound( "resources/soundeffects/wall_impact.wav", &sfx_wall );
@@ -171,7 +174,12 @@ void PlayerShake( int dr, int dc )
 
 void PlayerWallBump( int dr, int dc )
 {
-  a_AudioPlaySound( &sfx_wall, NULL );
+  if ( !a_TimerStarted( wall_bump_timer )
+       || a_TimerGetTicks( wall_bump_timer ) > WALL_BUMP_COOLDOWN_MS )
+  {
+    a_AudioPlaySound( &sfx_wall, NULL );
+    a_TimerStart( wall_bump_timer );
+  }
   PlayerShake( dr, dc );
 }
 

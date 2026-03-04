@@ -2,6 +2,7 @@
 #include <string.h>
 
 #include "enemies.h"
+#include "pathfinding.h"
 #include "visibility.h"
 #include "combat_vfx.h"
 #include "spell_vfx.h"
@@ -12,6 +13,23 @@
 #define HEAL_AMOUNT       2
 #define HEAL_RANGE        6   /* Manhattan distance */
 #define DEFAULT_CHASE     4
+
+/* ---- A* blocker (avoids player tile) ---- */
+
+typedef struct
+{
+  int (*walkable)(int,int);
+  int player_row, player_col;
+} ShamanPathCtx_t;
+
+static int shaman_blocked( int r, int c, void* ctx )
+{
+  ShamanPathCtx_t* p = ctx;
+  if ( !p->walkable( r, c ) )                     return 1;
+  if ( r == p->player_row && c == p->player_col )  return 1;
+  if ( EnemyBlockedByNPC( r, c ) )                 return 1;
+  return 0;
+}
 
 /* ---- helpers ---- */
 
@@ -45,54 +63,22 @@ static int totem_alive( Enemy_t* all, int count )
   return 0;
 }
 
-/* Move toward target (basic rat-style greedy pathfinding) */
+/* Move toward target (A* pathfinding, avoids player tile) */
 static void move_toward( Enemy_t* e, int target_row, int target_col,
                          int player_row, int player_col,
                          int (*walkable)(int,int), Enemy_t* all, int count )
 {
-  static const int dx[] = { 1, -1, 0, 0 };
-  static const int dy[] = { 0, 0, 1, -1 };
-
-  int cur_dist = abs( target_row - e->row ) + abs( target_col - e->col );
-  int best_dist = cur_dist;
-  int best_r = e->row, best_c = e->col;
-
-  for ( int i = 0; i < 4; i++ )
+  ShamanPathCtx_t ctx = { walkable, player_row, player_col };
+  PathNode_t path[PATH_MAX_LEN];
+  int len = PathfindAStar( e->row, e->col, target_row, target_col,
+                           EnemyGridW(), EnemyGridH(),
+                           shaman_blocked, &ctx, path );
+  if ( len >= 2
+       && !EnemyAt( all, count, path[1].row, path[1].col ) )
   {
-    int nr = e->row + dx[i];
-    int nc = e->col + dy[i];
-    if ( !walkable( nr, nc ) )            continue;
-    if ( nr == player_row && nc == player_col ) continue;
-    if ( EnemyAt( all, count, nr, nc ) ) continue;
-    if ( EnemyBlockedByNPC( nr, nc ) )   continue;
-
-    int nd = abs( target_row - nr ) + abs( target_col - nc );
-    if ( nd < best_dist )
-    { best_dist = nd; best_r = nr; best_c = nc; }
+    e->row = path[1].row;
+    e->col = path[1].col;
   }
-
-  /* Stuck - try lateral move */
-  if ( best_r == e->row && best_c == e->col )
-  {
-    int start = rand() % 4;
-    for ( int j = 0; j < 4; j++ )
-    {
-      int i  = ( start + j ) % 4;
-      int nr = e->row + dx[i];
-      int nc = e->col + dy[i];
-      if ( !walkable( nr, nc ) )            continue;
-      if ( nr == player_row && nc == player_col ) continue;
-      if ( EnemyAt( all, count, nr, nc ) ) continue;
-      if ( EnemyBlockedByNPC( nr, nc ) )   continue;
-
-      int nd = abs( target_row - nr ) + abs( target_col - nc );
-      if ( nd <= cur_dist )
-      { best_r = nr; best_c = nc; break; }
-    }
-  }
-
-  e->row = best_r;
-  e->col = best_c;
 }
 
 /* Move away from target (flee) */

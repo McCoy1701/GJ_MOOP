@@ -20,6 +20,7 @@
 #include "pause_menu.h"
 #include "dungeon.h"
 #include "interactive_tile.h"
+#include "pathfinding.h"
 
 extern Player_t player;
 
@@ -42,6 +43,11 @@ static int mouse_moved = 0;
 static int hover_row = -1, hover_col = -1;
 static int turn_skipped = 0;
 
+/* Click-to-move auto-path */
+static PathNode_t auto_path[PATH_MAX_LEN];
+static int auto_path_len  = 0;
+static int auto_path_step = 0;
+
 void GameInputInit( World_t* w, GameCamera_t* cam, Console_t* con,
                     Enemy_t* enemies, int* num_enemies,
                     NPC_t* npcs, int* num_npcs )
@@ -57,6 +63,7 @@ void GameInputInit( World_t* w, GameCamera_t* cam, Console_t* con,
   mouse_moved = 0;
   hover_row = hover_col = -1;
   turn_skipped = 0;
+  auto_path_len = 0;
 }
 
 void GameInputFrameBegin( float dt )
@@ -85,6 +92,11 @@ int GameInputEsc( void )
   if ( app.keyboard[SDL_SCANCODE_ESCAPE] != 1 ) return 0;
 
   app.keyboard[SDL_SCANCODE_ESCAPE] = 0;
+  if ( auto_path_len > 0 )
+  {
+    auto_path_len = 0;
+    return 0;
+  }
   if ( TargetModeActive() )
     TargetModeExit();
   else if ( LookModeActive() )
@@ -160,6 +172,73 @@ int GameInputLookMode( void )
   return 0;
 }
 
+/* ---- Click-to-move blocker ---- */
+
+static int player_path_blocked( int r, int c, void* ctx )
+{
+  (void)ctx;
+  if ( !TileWalkable( r, c ) )                                   return 1;
+  if ( EnemyAt( gi_enemies, *gi_num_enemies, r, c ) )            return 1;
+  if ( NPCAt( gi_npcs, *gi_num_npcs, r, c ) )                    return 1;
+  return 0;
+}
+
+void GameInputAutoMove( void )
+{
+  if ( auto_path_len == 0 ) return;
+
+  /* Cancel if combat starts */
+  if ( EnemiesInCombat( gi_enemies, *gi_num_enemies ) )
+  {
+    auto_path_len = 0;
+    return;
+  }
+
+  /* Cancel if any movement key pressed */
+  if ( app.keyboard[SDL_SCANCODE_W] || app.keyboard[SDL_SCANCODE_S]
+       || app.keyboard[SDL_SCANCODE_A] || app.keyboard[SDL_SCANCODE_D]
+       || app.keyboard[SDL_SCANCODE_UP] || app.keyboard[SDL_SCANCODE_DOWN]
+       || app.keyboard[SDL_SCANCODE_LEFT] || app.keyboard[SDL_SCANCODE_RIGHT]
+       || app.keyboard[SDL_SCANCODE_SPACE] )
+  {
+    auto_path_len = 0;
+    return;
+  }
+
+  /* Wait for player to be idle */
+  if ( PlayerIsMoving() || EnemiesTurning() || InventoryUIFocused()
+       || GameTurnsEnemyDelay() > 0 )
+    return;
+
+  /* Check next step is still walkable and unoccupied */
+  int r = auto_path[auto_path_step].row;
+  int c = auto_path[auto_path_step].col;
+
+  if ( EnemyAt( gi_enemies, *gi_num_enemies, r, c )
+       || NPCAt( gi_npcs, *gi_num_npcs, r, c ) )
+  {
+    auto_path_len = 0;
+    return;
+  }
+
+  if ( !TileWalkable( r, c ) )
+  {
+    /* Try opening a door on the path */
+    if ( TileHasDoor( r, c ) && TileActionsTryOpen( r, c ) )
+      ; /* door opened, proceed */
+    else
+    {
+      auto_path_len = 0;
+      return;
+    }
+  }
+
+  PlayerStartMove( r, c );
+  auto_path_step++;
+  if ( auto_path_step >= auto_path_len )
+    auto_path_len = 0;
+}
+
 void GameInputMovement( void )
 {
   if ( PlayerIsMoving() || EnemiesTurning() || InventoryUIFocused()
@@ -176,15 +255,17 @@ void GameInputMovement( void )
     return;
   }
 
+  int in_combat = EnemiesInCombat( gi_enemies, *gi_num_enemies );
+
   int dr = 0, dc = 0;
   if ( app.keyboard[SDL_SCANCODE_UP] == 1 || app.keyboard[SDL_SCANCODE_W] == 1 )
-  { app.keyboard[SDL_SCANCODE_UP] = 0; app.keyboard[SDL_SCANCODE_W] = 0; dc = -1; }
+  { if ( in_combat ) { app.keyboard[SDL_SCANCODE_UP] = 0; app.keyboard[SDL_SCANCODE_W] = 0; } dc = -1; }
   else if ( app.keyboard[SDL_SCANCODE_DOWN] == 1 || app.keyboard[SDL_SCANCODE_S] == 1 )
-  { app.keyboard[SDL_SCANCODE_DOWN] = 0; app.keyboard[SDL_SCANCODE_S] = 0; dc =  1; }
+  { if ( in_combat ) { app.keyboard[SDL_SCANCODE_DOWN] = 0; app.keyboard[SDL_SCANCODE_S] = 0; } dc =  1; }
   else if ( app.keyboard[SDL_SCANCODE_LEFT] == 1 || app.keyboard[SDL_SCANCODE_A] == 1 )
-  { app.keyboard[SDL_SCANCODE_LEFT] = 0; app.keyboard[SDL_SCANCODE_A] = 0; dr = -1; }
+  { if ( in_combat ) { app.keyboard[SDL_SCANCODE_LEFT] = 0; app.keyboard[SDL_SCANCODE_A] = 0; } dr = -1; }
   else if ( app.keyboard[SDL_SCANCODE_RIGHT] == 1 || app.keyboard[SDL_SCANCODE_D] == 1 )
-  { app.keyboard[SDL_SCANCODE_RIGHT] = 0; app.keyboard[SDL_SCANCODE_D] = 0; dr =  1; }
+  { if ( in_combat ) { app.keyboard[SDL_SCANCODE_RIGHT] = 0; app.keyboard[SDL_SCANCODE_D] = 0; } dr =  1; }
 
   if ( dr == 0 && dc == 0 ) return;
 
@@ -298,6 +379,20 @@ void GameInputZoom( void )
   {
     GV_Zoom( gi_cam, app.mouse.wheel, ZOOM_MIN_H, ZOOM_MAX_H );
     app.mouse.wheel = 0;
+  }
+}
+
+void GameInputStartAutoPath( int goal_r, int goal_c )
+{
+  int fpr, fpc;
+  GameTurnsGetPlayerTile( &fpr, &fpc );
+  int len = PathfindAStar( fpr, fpc, goal_r, goal_c,
+                           gi_world->width, gi_world->height,
+                           player_path_blocked, NULL, auto_path );
+  if ( len >= 2 )
+  {
+    auto_path_len  = len;
+    auto_path_step = 1;
   }
 }
 

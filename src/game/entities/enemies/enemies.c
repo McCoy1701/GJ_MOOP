@@ -91,6 +91,9 @@ int EnemyBlockedByNPC( int row, int col )
   return NPCAt( npc_list, *npc_count, row, col ) != NULL;
 }
 
+int EnemyGridW( void ) { return world ? world->width  : 0; }
+int EnemyGridH( void ) { return world ? world->height : 0; }
+
 /* --- Lunge callback data --- */
 
 typedef struct

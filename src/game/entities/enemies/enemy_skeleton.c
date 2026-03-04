@@ -1,6 +1,7 @@
 #include <stdlib.h>
 
 #include "enemies.h"
+#include "pathfinding.h"
 #include "combat.h"
 #include "visibility.h"
 
@@ -12,6 +13,23 @@
 #define ST_SHOOT     2
 #define ST_COOLDOWN1 3
 #define ST_COOLDOWN2 4
+
+/* ---- A* blocker ---- */
+
+typedef struct
+{
+  int (*walkable)(int,int);
+  Enemy_t* all;
+  int count;
+} SkelPathCtx_t;
+
+static int skel_blocked( int r, int c, void* ctx )
+{
+  SkelPathCtx_t* p = ctx;
+  if ( !p->walkable( r, c ) )      return 1;
+  if ( EnemyBlockedByNPC( r, c ) ) return 1;
+  return 0;
+}
 
 /* ---- helpers ---- */
 
@@ -58,39 +76,21 @@ static int has_clear_shot( Enemy_t* e, int pr, int pc, int range,
   return 0;
 }
 
-/* Move toward target (greedy 4-dir) */
+/* Move toward target (A* pathfinding) */
 static void move_toward( Enemy_t* e, int target_r, int target_c,
                          int (*walkable)(int,int),
                          Enemy_t* all, int count )
 {
-  static const int dx[] = { 1, -1, 0, 0 };
-  static const int dy[] = { 0, 0, 1, -1 };
-
-  int cur_dist = abs( target_r - e->row ) + abs( target_c - e->col );
-  int best_dist = cur_dist;
-  int best_r = e->row;
-  int best_c = e->col;
-
-  for ( int i = 0; i < 4; i++ )
+  SkelPathCtx_t ctx = { walkable, all, count };
+  PathNode_t path[PATH_MAX_LEN];
+  int len = PathfindAStar( e->row, e->col, target_r, target_c,
+                           EnemyGridW(), EnemyGridH(),
+                           skel_blocked, &ctx, path );
+  if ( len >= 2
+       && !EnemyAt( all, count, path[1].row, path[1].col ) )
   {
-    int nr = e->row + dx[i];
-    int nc = e->col + dy[i];
-    if ( !walkable( nr, nc ) )            continue;
-    if ( EnemyAt( all, count, nr, nc ) ) continue;
-    if ( EnemyBlockedByNPC( nr, nc ) )   continue;
-    int nd = abs( target_r - nr ) + abs( target_c - nc );
-    if ( nd < best_dist )
-    {
-      best_dist = nd;
-      best_r = nr;
-      best_c = nc;
-    }
-  }
-
-  if ( best_r != e->row || best_c != e->col )
-  {
-    e->row = best_r;
-    e->col = best_c;
+    e->row = path[1].row;
+    e->col = path[1].col;
   }
 }
 

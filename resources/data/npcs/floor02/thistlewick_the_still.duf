@@ -9,7 +9,7 @@
 }
 
 # ==============================
-# PRE-RELIC — WON'T TALK
+# PRE-RELIC - WON'T TALK
 # ==============================
 @greeting {
     start: true
@@ -61,7 +61,7 @@
 }
 
 # ==============================
-# HAS RELIC — NOW HE TALKS
+# HAS RELIC - NOW HE TALKS
 # ==============================
 @greeting_has_relic {
     start: true
@@ -132,6 +132,10 @@
     text: "I know."
     set_flag: "warning_delivered"
     options: ["opt_know", "opt_do_something", "opt_leave"]
+}
+@opt_do_something {
+    label: "You have to DO something."
+    goto: "why_nothing_reply"
 }
 @opt_know {
     label: "You KNOW? And you're just sitting here?"

@@ -188,7 +188,15 @@ static void spawn_floor_2( NPC_t* npcs, int* num_npcs,
   EnemySpawn( enemies, num_enemies, sp, 44, 26, tw, th );  /* room @ */
   EnemySpawn( enemies, num_enemies, sp, 74, 26, tw, th );  /* room ! */
 
-  /* Tier 2 consumables — scattered in bottom rooms and corridors */
+  /* Tier 1 consumables - help player get started in floor02*/
+  spawn_random_consumable( items, num_items, 50, 4, tw, th );  /* \ room 0 */
+  spawn_random_consumable( items, num_items, 46, 14, tw, th );  /* \ south coor*/
+  spawn_random_consumable( items, num_items, 56, 14, tw, th );  /* \ south coor*/
+  spawn_random_consumable( items, num_items, 30, 6, tw, th );  /* \ spider room */
+
+
+
+  /* Tier 2 consumables - scattered in bottom rooms and corridors */
   spawn_t2_consumable( items, num_items, 23, 19, tw, th );  /* room 5 */
   spawn_t2_consumable( items, num_items, 37, 19, tw, th );  /* room 7 */
   spawn_t2_consumable( items, num_items, 62, 19, tw, th );  /* room 8 */

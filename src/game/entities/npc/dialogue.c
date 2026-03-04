@@ -11,6 +11,7 @@
 #include "items.h"
 #include "lore.h"
 #include "bank.h"
+#include "npc_relocate.h"
 
 extern Player_t player;
 
@@ -550,6 +551,17 @@ static void DialogueDispatchAction( const char* a )
   if ( strcmp( a, "bank_withdraw" ) == 0 )  { BankWithdraw( 10 ); }
   if ( strcmp( a, "bank_check" ) == 0 )     { BankCheck(); }
   if ( strcmp( a, "bank_greeting" ) == 0 )  { BankGreeting(); }
+
+  /* relocate:ROW,COL - fade-to-black NPC teleport */
+  if ( strncmp( a, "relocate:", 9 ) == 0 )
+  {
+    int row = 0, col = 0;
+    if ( sscanf( a + 9, "%d,%d", &row, &col ) == 2 )
+    {
+      NPCRelocate( dlg_npc_type, row, col, 1 );
+      DialogueEnd();
+    }
+  }
 }
 
 /* ---- Execute actions on a node ---- */

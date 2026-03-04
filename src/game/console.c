@@ -89,9 +89,6 @@ void ConsoleDraw( Console_t* c, aRectf_t rect )
   int total = (int)c->lines->count;
   int has_scrollbar = ( total > CONSOLE_VISIBLE );
 
-  /* Text area (shrink if scrollbar present) */
-  float text_w = has_scrollbar ? rect.w - CON_SB_W - 4 : rect.w;
-
   aTextStyle_t ts = a_default_text_style;
   ts.bg    = (aColor_t){ 0, 0, 0, 0 };
   ts.scale = CON_SCALE;
