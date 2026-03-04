@@ -101,6 +101,6 @@ void wec_GenerateWorld( void )
     }
   }
 
-  map = WorldCreate( width, height, 16, 16 );
+  g_map = WorldCreate( width, height, 16, 16 );
 }
 

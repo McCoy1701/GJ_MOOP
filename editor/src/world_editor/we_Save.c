@@ -91,15 +91,13 @@ static void wes_SaveDraw( float dt )
 
 void wes_SaveYes( void )
 {
-  if ( current_filename != NULL )
+  if ( g_current_filename != NULL )
   {
-    printf("%s\n", current_filename );
-    printf("%s\n", map->filename );
-    e_SaveWorld( map, current_filename );
+    e_SaveWorld( g_map, g_map->filename );
     
-    if ( map != NULL )
+    if ( g_map != NULL )
     {
-      WorldDestroy( map );
+      WorldDestroy( g_map );
     }
   }
   

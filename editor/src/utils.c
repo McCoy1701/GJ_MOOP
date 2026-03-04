@@ -9,6 +9,7 @@
 #include "ed_structs.h"
 
 #include "tile.h"
+#include "utils.h"
 #include "world_editor.h"
 
 static int string_width( dString_t* string, int start );
@@ -84,10 +85,10 @@ void e_TilesetMouseCheck( const int originx, const int originy, int* index,
                       int* grid_x, int* grid_y, const int centered )
 {
 
-  int row = tile_sets[current_tileset]->row;
-  int col = tile_sets[current_tileset]->col;
-  int tile_w = tile_sets[current_tileset]->tile_w;
-  int tile_h = tile_sets[current_tileset]->tile_h;
+  int row = g_tile_sets[g_current_tileset]->row;
+  int col = g_tile_sets[g_current_tileset]->col;
+  int tile_w = g_tile_sets[g_current_tileset]->tile_w;
+  int tile_h = g_tile_sets[g_current_tileset]->tile_h;
 
   e_GetCellAtMouse( col, row,
                     originx, originy,
@@ -161,6 +162,16 @@ Tileset_t* e_TilesetCreate( const char* filename,
   return new_set;
 }
 
+void e_UpdateTile( int index, int bg_tile, int mg_tile, int fg_tile )
+{
+  g_map->background[index].tile        = bg_tile;
+  g_map->background[index].glyph_index = TileGlyphConverter( bg_tile );
+  g_map->midground[index].tile         = mg_tile;
+  g_map->midground[index].glyph_index  = TileGlyphConverter( mg_tile );
+  g_map->foreground[index].tile        = fg_tile;
+  g_map->foreground[index].glyph_index = TileGlyphConverter( fg_tile );
+}
+
 void e_LoadColorPalette( aColor_t palette[MAX_COLOR_GROUPS][MAX_COLOR_PALETTE],
                        const char * filename )
 {
@@ -198,48 +209,6 @@ void e_LoadColorPalette( aColor_t palette[MAX_COLOR_GROUPS][MAX_COLOR_PALETTE],
   }
 
   fclose( file );
-}
-
-uint16_t GlyphTileConverter( int glyph_index, int rotated )
-{
-  switch ( glyph_index )
-  {
-    case TILE_GLYPH_WALL:
-      return TILE_LVL1_WALL;
-    
-    case TILE_GLYPH_FLOOR:
-      return TILE_LVL1_FLOOR;
-    
-    case TILE_GLYPH_RED_DOOR:
-      if ( rotated )
-      {
-        return TILE_RED_DOOR_EW;
-      }
-      return TILE_RED_DOOR_NS;
-    
-    case TILE_GLYPH_GREEN_DOOR:
-      if ( rotated )
-      {
-        return TILE_GREEN_DOOR_EW;
-      }
-      return TILE_GREEN_DOOR_NS;
-    
-    case TILE_GLYPH_BLUE_DOOR:
-      if ( rotated )
-      {
-        return TILE_BLUE_DOOR_EW;
-      }
-      return TILE_BLUE_DOOR_NS;
-    
-    case TILE_GLYPH_WHITE_DOOR:
-      if ( rotated )
-      {
-        return TILE_WHITE_DOOR_EW;
-      }
-      return TILE_WHITE_DOOR_NS;
-  }
-
-  return TILE_EMPTY;
 }
 
 static int string_width( dString_t* string, int start )
@@ -308,7 +277,9 @@ World_t* convert_mats_worlds( const char* filename )
     new_world->tile_h = 16;
 
     new_world->tile_count = world_width * world_height;
-    new_world->filename = filename;
+    new_world->filename = malloc( sizeof(char) * MAX_FILENAME_LENGTH );
+    if (new_world->filename == NULL ) return NULL;
+    STRNCPY(new_world->filename, filename, MAX_FILENAME_LENGTH);
 
     new_world->background = malloc( sizeof(Tile_t) * new_world->tile_count );
     if ( new_world->background == NULL ) return NULL;
@@ -429,10 +400,8 @@ void e_SaveWorld( World_t* world, const char* filename )
 {
   if ( world == NULL ) return;
   FILE* file;
-  printf("%s\n", filename);
-  printf("%s\n", world->filename);
 
-  file = fopen( filename, "w" );
+  file = fopen( filename, "w+" );
   dString_t* size_string = d_StringInit();
   d_StringFormat( size_string, "// %d %d\n", world->width, world->height );
   fwrite( d_StringPeek( size_string ), sizeof(char), size_string->len, file );
@@ -473,3 +442,70 @@ void e_SaveWorld( World_t* world, const char* filename )
   fclose(file);
 }
 
+uint16_t GlyphTileConverter( int glyph_index, int rotated )
+{
+  switch ( glyph_index )
+  {
+    case TILE_GLYPH_WALL:
+      return TILE_LVL1_WALL;
+    
+    case TILE_GLYPH_FLOOR:
+      return TILE_LVL1_FLOOR;
+    
+    case TILE_GLYPH_RED_DOOR:
+      if ( rotated )
+      {
+        return TILE_RED_DOOR_EW;
+      }
+      return TILE_RED_DOOR_NS;
+    
+    case TILE_GLYPH_GREEN_DOOR:
+      if ( rotated )
+      {
+        return TILE_GREEN_DOOR_EW;
+      }
+      return TILE_GREEN_DOOR_NS;
+    
+    case TILE_GLYPH_BLUE_DOOR:
+      if ( rotated )
+      {
+        return TILE_BLUE_DOOR_EW;
+      }
+      return TILE_BLUE_DOOR_NS;
+    
+    case TILE_GLYPH_WHITE_DOOR:
+      if ( rotated )
+      {
+        return TILE_WHITE_DOOR_EW;
+      }
+      return TILE_WHITE_DOOR_NS;
+  }
+
+  return TILE_EMPTY;
+}
+
+uint16_t TileGlyphConverter( int tile_index )
+{
+  switch ( tile_index )
+  {
+    case TILE_LVL1_WALL:
+      return TILE_GLYPH_WALL-1;
+
+    case TILE_LVL1_FLOOR:
+      return TILE_GLYPH_FLOOR-1;
+    
+    case TILE_RED_DOOR_EW  & TILE_RED_DOOR_NS:
+      return TILE_GLYPH_RED_DOOR-1;
+    
+    case TILE_GREEN_DOOR_EW & TILE_GREEN_DOOR_NS:
+      return TILE_GLYPH_GREEN_DOOR-1;
+    
+    case TILE_BLUE_DOOR_EW & TILE_BLUE_DOOR_NS:
+      return TILE_GLYPH_BLUE_DOOR-1;
+    
+    case TILE_WHITE_DOOR_EW & TILE_WHITE_DOOR_NS:
+      return TILE_GLYPH_WHITE_DOOR-1;
+  }
+
+  return TILE_EMPTY;
+}

@@ -65,7 +65,7 @@ void we_Edit( void )
   app.delegate.logic = we_EditLogic;
   app.delegate.draw  = we_EditDraw;
 
-  e_GetOrigin( map, &originx, &originy );
+  e_GetOrigin( g_map, &originx, &originy );
   
   color_x = edit_menu_x + 5;
   color_y = edit_menu_y + 5;
@@ -74,7 +74,7 @@ void we_Edit( void )
   tile_y  = (edit_menu_y + (8 * GLYPH_HEIGHT)) + 5;
   glyph_x = edit_menu_x + 5;
   glyph_y = edit_menu_y + tile_y +
-    (tile_sets[current_tileset]->col + tile_sets[current_tileset]->tile_h) + 5;
+    (g_tile_sets[g_current_tileset]->col + g_tile_sets[g_current_tileset]->tile_h) + 5;
 
   app.active_widget = a_GetWidget( "generation_menu" );
   aContainerWidget_t* container = a_GetContainerFromWidget( "generation_menu" );
@@ -109,18 +109,22 @@ static void we_EditLogic( float dt )
   {
     app.mouse.button = 0, app.mouse.state = 0;
     e_ColorMouseCheck( color_x, color_y,
-                      &bg_index, &selected_bg.x, &selected_bg.y, 0 );
+                       &bg_index, &selected_bg.x, &selected_bg.y, 0 );
     e_GlyphMouseCheck( glyph_x, glyph_y,
-                      &glyph_index, &selected_glyph.x, &selected_glyph.y, 0 );
+                       &glyph_index, &selected_glyph.x, &selected_glyph.y, 0 );
     e_TilesetMouseCheck( tile_x, tile_y,
-                      &tile_index, &selected_tile.x, &selected_tile.y, 0 );
+                         &tile_index, &selected_tile.x, &selected_tile.y, 0 );
     
-    if ( map != NULL )
+    if ( g_map != NULL )
     {
       int grid_x = 0, grid_y = 0;
-      e_GetCellAtMouseInViewport( map->width, map->height,
-                                  map->tile_w, map->tile_h,
-                                  originx, originy, &grid_x, &grid_y );
+      if ( !g_toggle_ascii )
+      {
+        e_GetCellAtMouseInViewport( g_map->width,  g_map->height,
+                                   g_map->tile_w, g_map->tile_h,
+                                   originx, originy, &grid_x, &grid_y );
+      }
+
       if ( editor_mode == WEM_SELECT )
       {
 
@@ -128,26 +132,23 @@ static void we_EditLogic( float dt )
 
       if ( editor_mode == WEM_NONE )
       {
-        int index = grid_y * map->width + grid_x;
-        if ( !toggle_room )
+        int index = grid_y * g_map->width + grid_x;
+        if ( !g_toggle_room )
         {
           if ( tile_index >= TILE_BLUE_DOOR_EW && tile_index <= TILE_WHITE_DOOR_NS )
           {
-            map->background[index].tile = TILE_LVL1_FLOOR;
-            map->midground[index].tile = tile_index;
+            e_UpdateTile( index, TILE_LVL1_FLOOR, tile_index, TILE_EMPTY );
           }
 
           else
           {
-            map->background[index].tile = tile_index;
-            map->midground[index].tile  = TILE_EMPTY;
-            map->foreground[index].tile = TILE_EMPTY;
+            e_UpdateTile( index, tile_index, TILE_EMPTY, TILE_EMPTY );
           }
         }
 
         else
         {
-          map->room_ids[index] = glyph_index;
+          g_map->room_ids[index] = glyph_index;
         }
       }
     }
@@ -198,13 +199,13 @@ static void we_EditLogic( float dt )
   if ( app.keyboard[A_T] == 1 )
   {
     app.keyboard[A_T] = 0;
-    toggle_ascii = !toggle_ascii;
+    g_toggle_ascii = !g_toggle_ascii;
   }
   
   if ( app.keyboard[A_R] == 1 )
   {
     app.keyboard[A_R] = 0;
-    toggle_room = !toggle_room;
+    g_toggle_room = !g_toggle_room;
   }
   
   a_ViewportInput( &app.g_viewport, EDITOR_WORLD_WIDTH, EDITOR_WORLD_HEIGHT );
@@ -214,9 +215,10 @@ static void we_EditLogic( float dt )
 
 static void we_EditDraw( float dt )
 {
-  if ( map != NULL )
+  if ( g_map != NULL )
   {
-    WorldDraw( originx, originy, map, tile_sets[current_tileset], toggle_room, toggle_ascii );
+    WorldDraw( originx, originy, g_map, g_tile_sets[g_current_tileset],
+               g_toggle_room, g_toggle_ascii );
   }
   
   aRectf_t rect = {
@@ -238,7 +240,7 @@ static void we_EditDraw( float dt )
   ts.bg = master_colors[APOLLO_PALETE][bg_index];
   ts.fg = master_colors[APOLLO_PALETE][fg_index];
 
-  a_Blit( tile_sets[current_tileset]->img_array[tile_index].img,
+  a_Blit( g_tile_sets[g_current_tileset]->img_array[tile_index].img,
           1100, color_y );
   
   aRectf_t glyph_rect = {
@@ -254,7 +256,7 @@ static void we_EditDraw( float dt )
 
   we_DrawColorPalette( color_x, color_y, fg_index, bg_index );
   we_DrawGlyphPalette( glyph_x, glyph_y, glyph_index );
-  we_DrawTilePalette( tile_x, tile_y, tile_index, current_tileset );
+  we_DrawTilePalette(  tile_x, tile_y, tile_index, g_current_tileset );
 
   a_DrawWidgets();
 }

@@ -36,9 +36,9 @@ void EditorInit( void )
   
   e_LoadColorPalette( master_colors, "resources/colorpalette/colors.hex" );
   
-  tile_sets[LVL1_TILESET] = e_TilesetCreate(
+  g_tile_sets[LVL1_TILESET] = e_TilesetCreate(
     "resources/assets/level01tilemap.png", 16, 16 );
-  current_tileset = LVL1_TILESET;
+  g_current_tileset = LVL1_TILESET;
  
 
   a_WidgetsInit( "resources/widgets/editor/editor.auf" );

@@ -98,20 +98,20 @@ void we_DrawGlyphPalette( int originx, int originy, int glyph_index )
 
 void we_DrawTilePalette( int originx, int originy, int tile_index, int tileset )
 {
-  for ( int i = 0; i < tile_sets[tileset]->tile_count; i++ )
+  for ( int i = 0; i < g_tile_sets[tileset]->tile_count; i++ )
   {
-    int row = i % tile_sets[tileset]->col;
-    int col = i / tile_sets[tileset]->col;
+    int row = i % g_tile_sets[tileset]->col;
+    int col = i / g_tile_sets[tileset]->col;
 
-    int x = ( row * tile_sets[tileset]->tile_w ) + originx;
-    int y = ( col * tile_sets[tileset]->tile_h ) + originy;
+    int x = ( row * g_tile_sets[tileset]->tile_w ) + originx;
+    int y = ( col * g_tile_sets[tileset]->tile_h ) + originy;
 
-    a_Blit( tile_sets[tileset]->img_array[i].img, x, y );
+    a_Blit( g_tile_sets[tileset]->img_array[i].img, x, y );
     aRectf_t dest = {
       .x = x,
       .y = y,
-      .w = tile_sets[tileset]->tile_w,
-      .h = tile_sets[tileset]->tile_h
+      .w = g_tile_sets[tileset]->tile_w,
+      .h = g_tile_sets[tileset]->tile_h
     };
     //a_BlitRect( tile_sets[tileset]->img_array[i].img, NULL, &dest, 2 );
     
@@ -120,8 +120,8 @@ void we_DrawTilePalette( int originx, int originy, int tile_index, int tileset )
       aRectf_t rect = {
         .x = x,
         .y = y,
-        .w = tile_sets[tileset]->tile_w,
-        .h = tile_sets[tileset]->tile_h,
+        .w = g_tile_sets[tileset]->tile_w,
+        .h = g_tile_sets[tileset]->tile_h,
       };
       a_DrawRect( rect, magenta );
     }

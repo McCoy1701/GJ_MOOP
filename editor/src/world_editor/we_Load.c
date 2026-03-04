@@ -92,18 +92,18 @@ void wel_LoadYes( void )
     if ( strcmp( current->name, "filename" ) == 0 )
     {
       aInputWidget_t* inp = (aInputWidget_t*)current->data;
-      current_filename = inp->text;
+      STRNCPY(g_current_filename, inp->text, MAX_FILENAME_LENGTH);
     }
   }
 
-  if ( current_filename != NULL )
+  if ( g_current_filename != NULL )
   {
-    if ( map != NULL )
+    if ( g_map != NULL )
     {
-      WorldDestroy( map );
+      WorldDestroy( g_map );
     }
 
-    map = convert_mats_worlds( current_filename );
+    g_map = convert_mats_worlds( g_current_filename );
   }
   
   e_WorldEditorInit();
