@@ -14,10 +14,11 @@
 #include "ed_defines.h"
 #include "ed_structs.h"
 
-extern GlyphArray_t* game_glyphs;
 extern aColor_t master_colors[MAX_COLOR_GROUPS][48];
+extern Tileset_t* g_tile_sets[MAX_TILESETS];
 
 void EditorInit( void );
+void EditorDestroy( void );
 
 #endif
 

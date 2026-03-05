@@ -8,6 +8,7 @@
 #include "ed_defines.h"
 #include "ed_structs.h"
 
+#include "editor.h"
 #include "tile.h"
 #include "utils.h"
 #include "world_editor.h"
@@ -30,7 +31,7 @@ void e_GetCellAtMouseInViewport( const int width,   const int height,
   float view_x = app.g_viewport.x - app.g_viewport.w;
   float view_y = app.g_viewport.y - app.g_viewport.h;
 
-  float world_mouse_x = ( app.mouse.x / scale.x ) + view_x;
+  float world_mouse_x = ( app.mouse.x / scale.y ) + view_x;
   float world_mouse_y = ( app.mouse.y / scale.y ) + view_y;
 
   float relative_x = world_mouse_x - originx;
@@ -159,7 +160,18 @@ Tileset_t* e_TilesetCreate( const char* filename,
     new_set->glyph[i] = 0;
   }
 
+  a_SpriteSheetDestroy( temp_sheet );
+
   return new_set;
+}
+
+void e_TilesetDestroy( Tileset_t* t_set )
+{
+  if ( t_set == NULL ) return;
+
+  free( t_set->glyph );
+  free( t_set->img_array );
+  free( t_set );
 }
 
 void e_UpdateTile( int index, int bg_tile, int mg_tile, int fg_tile )

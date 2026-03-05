@@ -18,6 +18,7 @@ void e_GetCellAtMouse( const int width,      const int height,
 
 Tileset_t* e_TilesetCreate( const char* filename,
                             const int tile_w, const int tile_h );
+void e_TilesetDestroy( Tileset_t* t_set );
 
 void e_TilesetMouseCheck( const int originx, const int originy, int* index,
                       int* grid_x, int* grid_y, const int centered );

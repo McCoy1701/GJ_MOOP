@@ -32,6 +32,7 @@ static aPoint2i_t selected_bg;
 static aPoint2i_t selected_tile;
 static int editor_mode = 0;
 static Tile_t* clipboard = NULL;
+static int clipbard_amout = 0;
 
 static int originx = 0;
 static int originy = 0;
@@ -259,5 +260,13 @@ static void we_EditDraw( float dt )
   we_DrawTilePalette(  tile_x, tile_y, tile_index, g_current_tileset );
 
   a_DrawWidgets();
+}
+
+void we_EditDestroy( void )
+{
+  if ( clipboard != NULL )
+  {
+    
+  }
 }
 

@@ -24,8 +24,8 @@
 static void ed_Logic( float );
 static void ed_Draw( float );
 
-GlyphArray_t* game_glyphs = NULL;
 aColor_t master_colors[MAX_COLOR_GROUPS][48] = {0};
+Tileset_t* g_tile_sets[MAX_TILESETS] = {NULL};
 
 void EditorInit( void )
 {
@@ -40,7 +40,6 @@ void EditorInit( void )
     "resources/assets/level01tilemap.png", 16, 16 );
   g_current_tileset = LVL1_TILESET;
  
-
   a_WidgetsInit( "resources/widgets/editor/editor.auf" );
 
   app.active_widget = a_GetWidget( "tab_bar" );
@@ -109,5 +108,16 @@ static void ed_Draw( float dt )
   a_DrawText( fps_text, 600, 100, fps_style );
   
   a_DrawWidgets();
+}
+
+void EditorDestroy( void )
+{
+  for ( int i = 0; i < MAX_TILESETS; i++ )
+  {
+    if ( g_tile_sets[i] != NULL )
+    {
+      e_TilesetDestroy( g_tile_sets[i] );
+    }
+  }
 }
 

@@ -102,6 +102,7 @@ void WorldDestroy( World_t* world )
   free( world->room_ids );
   
   free( world );
+  world = NULL;
 }
 
 /* Legacy renderer - used by the editor. Game uses GV_DrawWorld instead. */

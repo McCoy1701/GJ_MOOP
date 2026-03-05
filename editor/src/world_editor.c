@@ -25,9 +25,8 @@
 static void e_WorldEditorLogic( float );
 static void e_WorldEditorDraw( float );
 
-char* g_current_filename;
-Tileset_t* g_tile_sets[MAX_TILESETS];
-World_t* g_map      = NULL;
+char* g_current_filename = NULL;
+World_t* g_map        = NULL;
 int g_toggle_ascii    = 0;
 int g_toggle_room     = 0;
 int g_current_tileset = 0;
@@ -43,8 +42,11 @@ void e_WorldEditorInit( void )
   app.delegate.logic = e_WorldEditorLogic;
   app.delegate.draw  = e_WorldEditorDraw;
   
-  g_current_filename = malloc( sizeof(char) * MAX_FILENAME_LENGTH );
-  if (g_current_filename == NULL ) return;
+  if ( g_current_filename == NULL ) 
+  {
+    g_current_filename = malloc( sizeof(char) * MAX_FILENAME_LENGTH );
+    if (g_current_filename == NULL ) return;
+  }
 
   float ratio = SCREEN_WIDTH/SCREEN_HEIGHT;
   float view_h = 50.0f;
@@ -142,5 +144,12 @@ static void e_WorldEditorDraw( float dt )
   }
 
   a_DrawWidgets();
+}
+
+void e_WorldEditorDestroy( void )
+{
+  free( g_current_filename );
+  WorldDestroy( g_map );
+  g_map = NULL;
 }
 

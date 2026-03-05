@@ -15,7 +15,6 @@
 #include "ed_defines.h"
 #include "ed_structs.h"
 
-extern Tileset_t* g_tile_sets[MAX_TILESETS];
 extern World_t*   g_map;
 extern int        g_toggle_ascii;
 extern int        g_toggle_room;
@@ -81,6 +80,7 @@ void we_Creation( void );
  * -- Implementation pending based on world structure requirements
  */
 void we_Edit( void );
+void we_EditDestroy( void );
 
 /*
  * Save the current world to persistent storage (currently unimplemented)

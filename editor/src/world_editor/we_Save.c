@@ -29,6 +29,8 @@ void we_Save( void )
   app.delegate.logic = wes_SaveLogic;
   app.delegate.draw  = wes_SaveDraw;
   
+  no = 0;
+
   app.active_widget = a_GetWidget( "save_menu" );
   aContainerWidget_t* container =
     a_GetContainerFromWidget( "save_menu" );
@@ -91,17 +93,23 @@ static void wes_SaveDraw( float dt )
 
 void wes_SaveYes( void )
 {
-  if ( g_current_filename != NULL )
+  if( !no )
   {
-    e_SaveWorld( g_map, g_map->filename );
-    
-    if ( g_map != NULL )
+    if ( g_current_filename != NULL )
     {
-      WorldDestroy( g_map );
+      e_SaveWorld( g_map, g_map->filename );
+
     }
   }
-  
-  EditorInit();
+  else
+  {
+    EditorInit();
+  }
+
+  if ( g_map != NULL )
+  {
+    e_WorldEditorDestroy();
+  }
 }
 
 void wes_SaveNo( void )
@@ -109,11 +117,6 @@ void wes_SaveNo( void )
   if ( !no )
   {
     no = !no;
-  }
-  
-  else
-  {
-    EditorInit();
   }
 }
 
