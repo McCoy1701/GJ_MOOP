@@ -20,7 +20,7 @@ static int rat_blocked( int r, int c, void* ctx )
   RatPathCtx_t* p = ctx;
   if ( !p->walkable( r, c ) )              return 1;
   if ( EnemyBlockedByNPC( r, c ) )         return 1;
-  if ( EnemyAt( p->all, p->count, r, c ) ) return 1;
+  if ( EnemyMobileAt( p->all, p->count, r, c ) ) return 1;
   return 0;
 }
 
@@ -88,7 +88,7 @@ void EnemyBasicAITick( Enemy_t* e, int player_row, int player_col,
     int ar = target_row + adj_r[d];
     int ac = target_col + adj_c[d];
     if ( !walkable( ar, ac ) )                    continue;
-    if ( EnemyAt( all, count, ar, ac ) )          continue;
+    if ( EnemyMobileAt( all, count, ar, ac ) )     continue;
     if ( ar == e->row && ac == e->col )  { best_r = ar; best_c = ac; break; }
     int ad = abs( ar - e->row ) + abs( ac - e->col );
     if ( ad < best_dist ) { best_dist = ad; best_r = ar; best_c = ac; }
@@ -101,7 +101,7 @@ void EnemyBasicAITick( Enemy_t* e, int player_row, int player_col,
                            EnemyGridW(), EnemyGridH(),
                            rat_blocked, &ctx, path );
   if ( len >= 2
-       && !EnemyAt( all, count, path[1].row, path[1].col )
+       && !EnemyMobileAt( all, count, path[1].row, path[1].col )
        && !EnemyBlockedByNPC( path[1].row, path[1].col ) )
   {
     e->row = path[1].row;

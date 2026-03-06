@@ -3,7 +3,7 @@
 
 #include <Archimedes.h>
 
-#define MAX_CONSUMABLES   32
+#define MAX_CONSUMABLES   48
 #define MAX_DOORS         8
 
 #define FILTERED_CONSUMABLE 0

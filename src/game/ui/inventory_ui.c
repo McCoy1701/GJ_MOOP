@@ -23,8 +23,10 @@
 #define GREY      (aColor_t){ 0x57, 0x72, 0x77, 255 }
 
 /* Inventory grid layout */
-#define INV_TITLE_H   30.0f
-#define INV_PAD        4.0f
+#define INV_TITLE_H       30.0f
+#define INV_PAD            4.0f
+#define INV_VISIBLE_ROWS   5
+#define INV_SB_W           8.0f
 
 /* Equipment panel layout */
 #define EQ_TITLE_H    30.0f
@@ -68,6 +70,7 @@ static int           inv_tile_h = 16;
 
 static int ui_focus = 0;        /* 0 = game viewport, 1 = inventory panels */
 static int show_item_hover = 1; /* 0 = suppress cursor highlight + tooltip */
+static int inv_scroll = 0;      /* first visible row index */
 
 static aSoundEffect_t* sfx_move;
 static aSoundEffect_t* sfx_click;
@@ -85,6 +88,7 @@ void InventoryUIInit( aSoundEffect_t* move, aSoundEffect_t* click )
   ui_focus  = 0;
   eq_action_open  = 0;
   inv_action_open = 0;
+  inv_scroll = 0;
 }
 
 void InventoryUISetGroundItems( GroundItem_t* items, int* count, int tw, int th )
@@ -146,7 +150,7 @@ static float CalcModalW( int item_type, int item_index )
 static int BuildHotkeyMap( int hotkey_slots[MAX_HOTKEYS] )
 {
   int n = 0;
-  for ( int i = 0; i < MAX_INVENTORY && n < MAX_HOTKEYS; i++ )
+  for ( int i = 0; i < player.max_inventory && n < MAX_HOTKEYS; i++ )
   {
     InvSlot_t* s = &player.inventory[i];
     if ( s->type != INV_CONSUMABLE ) continue;
@@ -349,12 +353,12 @@ int InventoryUILogic( int mouse_moved )
       float grid_w = r.w - INV_PAD * 2;
       float grid_h = r.h - INV_TITLE_H - INV_PAD * 2;
       float cell_w = grid_w / INV_COLS;
-      float cell_h = grid_h / INV_ROWS;
+      float cell_h = grid_h / INV_VISIBLE_ROWS;
       float cell = cell_w < cell_h ? cell_w : cell_h;
-      float total_gh = cell * INV_ROWS + 2 * ( INV_ROWS - 1 );
+      float total_gh = cell * INV_VISIBLE_ROWS + 2 * ( INV_VISIBLE_ROWS - 1 );
       float oy = ( grid_h - total_gh ) / 2.0f;
       int row = player.inv_cursor / INV_COLS;
-      float cell_y = grid_y + oy + row * ( cell + 2 );
+      float cell_y = grid_y + oy + ( row - inv_scroll ) * ( cell + 2 );
 
       float mw = CalcModalW( slot->type, slot->index );
       float modal_y = cell_y;
@@ -399,12 +403,12 @@ int InventoryUILogic( int mouse_moved )
       float grid_w = r.w - INV_PAD * 2;
       float grid_h = r.h - INV_TITLE_H - INV_PAD * 2;
       float cell_w = grid_w / INV_COLS;
-      float cell_h = grid_h / INV_ROWS;
+      float cell_h = grid_h / INV_VISIBLE_ROWS;
       float cell = cell_w < cell_h ? cell_w : cell_h;
-      float total_gh = cell * INV_ROWS + 2 * ( INV_ROWS - 1 );
+      float total_gh = cell * INV_VISIBLE_ROWS + 2 * ( INV_VISIBLE_ROWS - 1 );
       float oy = ( grid_h - total_gh ) / 2.0f;
       int row = player.inv_cursor / INV_COLS;
-      float cell_y = grid_y + oy + row * ( cell + 2 );
+      float cell_y = grid_y + oy + ( row - inv_scroll ) * ( cell + 2 );
 
       float mw = CalcModalW( slot->type, slot->index );
       float modal_y = cell_y;
@@ -427,14 +431,18 @@ int InventoryUILogic( int mouse_moved )
         float total_gw = cell * INV_COLS + 4 * ( INV_COLS - 1 );
         float ox = ( grid_w - total_gw ) / 2.0f;
         int clicked_cell = -1;
-        for ( int cr = 0; cr < INV_ROWS && clicked_cell < 0; cr++ )
+        int total_rows_dc = ( player.max_inventory + INV_COLS - 1 ) / INV_COLS;
+        int vis_rows_dc = total_rows_dc < INV_VISIBLE_ROWS ? total_rows_dc : INV_VISIBLE_ROWS;
+        for ( int cr = 0; cr < vis_rows_dc && clicked_cell < 0; cr++ )
         {
           for ( int cc = 0; cc < INV_COLS && clicked_cell < 0; cc++ )
           {
+            int abs_idx = ( inv_scroll + cr ) * INV_COLS + cc;
+            if ( abs_idx >= player.max_inventory ) break;
             float cx = ip->rect.x + INV_PAD + ox + cc * ( cell + 4 );
             float cy = grid_y + oy + cr * ( cell + 2 );
             if ( PointInRect( mx, my, cx, cy, cell - 1, cell - 1 ) )
-              clicked_cell = cr * INV_COLS + cc;
+              clicked_cell = abs_idx;
           }
         }
         if ( clicked_cell == player.inv_cursor )
@@ -617,7 +625,7 @@ int InventoryUILogic( int mouse_moved )
     {
       app.keyboard[SDL_SCANCODE_S] = 0;
       app.keyboard[SDL_SCANCODE_DOWN] = 0;
-      if ( player.inv_cursor + INV_COLS >= MAX_INVENTORY )
+      if ( player.inv_cursor + INV_COLS >= player.max_inventory )
       {
         player.inv_focused = 0;
         player.equip_cursor = 0;
@@ -649,6 +657,14 @@ int InventoryUILogic( int mouse_moved )
       a_AudioPlaySound( sfx_move, NULL );
     }
 
+    /* Auto-scroll to keep cursor visible */
+    {
+      int cr = player.inv_cursor / INV_COLS;
+      if ( cr < inv_scroll ) inv_scroll = cr;
+      if ( cr >= inv_scroll + INV_VISIBLE_ROWS )
+        inv_scroll = cr - INV_VISIBLE_ROWS + 1;
+    }
+
     /* Space/Enter - open action menu on inventory item */
     if ( app.keyboard[SDL_SCANCODE_SPACE] == 1 || app.keyboard[SDL_SCANCODE_RETURN] == 1 )
     {
@@ -672,7 +688,11 @@ int InventoryUILogic( int mouse_moved )
       if ( player.equip_cursor == 0 )
       {
         player.inv_focused = 1;
-        player.inv_cursor = MAX_INVENTORY - INV_COLS;
+        int last_row = ( player.max_inventory - 1 ) / INV_COLS;
+        player.inv_cursor = last_row * INV_COLS;
+        /* Scroll to show last row */
+        if ( last_row >= INV_VISIBLE_ROWS )
+          inv_scroll = last_row - INV_VISIBLE_ROWS + 1;
       }
       else
       {
@@ -746,6 +766,25 @@ int InventoryUILogic( int mouse_moved )
     }
   }
 
+  /* --- Mouse wheel scroll on inventory panel --- */
+  if ( app.mouse.wheel != 0 && !inv_action_open && !eq_action_open )
+  {
+    aContainerWidget_t* ip = a_GetContainerFromWidget( "inv_panel" );
+    if ( PointInRect( app.mouse.x, app.mouse.y,
+                      ip->rect.x, ip->rect.y, ip->rect.w, ip->rect.h ) )
+    {
+      int total_rows_s = ( player.max_inventory + INV_COLS - 1 ) / INV_COLS;
+      int max_scroll = total_rows_s - INV_VISIBLE_ROWS;
+      if ( max_scroll > 0 )
+      {
+        inv_scroll -= app.mouse.wheel;
+        if ( inv_scroll < 0 ) inv_scroll = 0;
+        if ( inv_scroll > max_scroll ) inv_scroll = max_scroll;
+      }
+      app.mouse.wheel = 0;
+    }
+  }
+
   /* --- Mouse hover - inventory cells --- */
   {
     int mx = app.mouse.x;
@@ -757,22 +796,26 @@ int InventoryUILogic( int mouse_moved )
     float grid_w = r.w - INV_PAD * 2;
     float grid_h = r.h - INV_TITLE_H - INV_PAD * 2;
     float cell_w = grid_w / INV_COLS;
-    float cell_h = grid_h / INV_ROWS;
+    float cell_h = grid_h / INV_VISIBLE_ROWS;
     float cell = cell_w < cell_h ? cell_w : cell_h;
     float total_gw = cell * INV_COLS + 4 * ( INV_COLS - 1 );
-    float total_gh = cell * INV_ROWS + 2 * ( INV_ROWS - 1 );
+    float total_gh = cell * INV_VISIBLE_ROWS + 2 * ( INV_VISIBLE_ROWS - 1 );
     float ox = ( grid_w - total_gw ) / 2.0f;
     float oy = ( grid_h - total_gh ) / 2.0f;
 
-    for ( int row = 0; row < INV_ROWS; row++ )
+    int total_rows_h = ( player.max_inventory + INV_COLS - 1 ) / INV_COLS;
+    int vis_rows_h = total_rows_h < INV_VISIBLE_ROWS ? total_rows_h : INV_VISIBLE_ROWS;
+
+    for ( int vr = 0; vr < vis_rows_h; vr++ )
     {
       for ( int col = 0; col < INV_COLS; col++ )
       {
+        int idx = ( inv_scroll + vr ) * INV_COLS + col;
+        if ( idx >= player.max_inventory ) break;
         float cx = r.x + INV_PAD + ox + col * ( cell + 4 );
-        float cy = grid_y + oy + row * ( cell + 2 );
+        float cy = grid_y + oy + vr * ( cell + 2 );
         if ( PointInRect( mx, my, cx, cy, cell - 1, cell - 1 ) )
         {
-          int idx = row * INV_COLS + col;
           if ( mouse_moved )
           {
             if ( idx != player.inv_cursor || !player.inv_focused || ui_focus == 0 )
@@ -831,25 +874,29 @@ static void DrawInventoryGrid( void )
   float grid_w = r.w - INV_PAD * 2;
   float grid_h = r.h - INV_TITLE_H - INV_PAD * 2;
   float cell_w = grid_w / INV_COLS;
-  float cell_h = grid_h / INV_ROWS;
+  float cell_h = grid_h / INV_VISIBLE_ROWS;
   float cell = cell_w < cell_h ? cell_w : cell_h;
 
   float total_grid_w = cell * INV_COLS + 4 * ( INV_COLS - 1 );
-  float total_grid_h = cell * INV_ROWS + 2 * ( INV_ROWS - 1 );
+  float total_grid_h = cell * INV_VISIBLE_ROWS + 2 * ( INV_VISIBLE_ROWS - 1 );
   float ox = ( grid_w - total_grid_w ) / 2.0f;
   float oy = ( grid_h - total_grid_h ) / 2.0f;
+
+  int total_rows = ( player.max_inventory + INV_COLS - 1 ) / INV_COLS;
+  int vis_rows = total_rows < INV_VISIBLE_ROWS ? total_rows : INV_VISIBLE_ROWS;
 
   /* Build hotkey map for labeling */
   int hk_slots[MAX_HOTKEYS];
   int num_hk = BuildHotkeyMap( hk_slots );
 
-  for ( int row = 0; row < INV_ROWS; row++ )
+  for ( int vr = 0; vr < vis_rows; vr++ )
   {
     for ( int col = 0; col < INV_COLS; col++ )
     {
-      int idx = row * INV_COLS + col;
+      int idx = ( inv_scroll + vr ) * INV_COLS + col;
+      if ( idx >= player.max_inventory ) break;
       float cx = r.x + INV_PAD + ox + col * ( cell + 4 );
-      float cy = grid_y + oy + row * ( cell + 2 );
+      float cy = grid_y + oy + vr * ( cell + 2 );
       aRectf_t cr = { cx, cy, cell - 1, cell - 1 };
 
       a_DrawFilledRect( cr, CELL_BG );
@@ -901,6 +948,29 @@ static void DrawInventoryGrid( void )
       if ( ui_focus == 1 && show_item_hover && player.inv_focused && idx == player.inv_cursor )
         a_DrawRect( cr, inv_action_open ? GOLD : (aColor_t){ 0xeb, 0xed, 0xe9, 255 } );
     }
+  }
+
+  /* Scrollbar */
+  if ( total_rows > INV_VISIBLE_ROWS )
+  {
+    int max_scroll = total_rows - INV_VISIBLE_ROWS;
+    float track_x = r.x + r.w - INV_SB_W - 2;
+    float track_y = grid_y;
+    float track_h = grid_h;
+
+    a_DrawFilledRect( (aRectf_t){ track_x, track_y, INV_SB_W, track_h },
+                      (aColor_t){ 0x10, 0x14, 0x1f, 200 } );
+
+    float thumb_h = ( (float)INV_VISIBLE_ROWS / total_rows ) * track_h;
+    if ( thumb_h < 12.0f ) thumb_h = 12.0f;
+
+    float pct = ( max_scroll > 0 ) ? (float)inv_scroll / max_scroll : 0;
+    float thumb_y = track_y + pct * ( track_h - thumb_h );
+
+    a_DrawFilledRect( (aRectf_t){ track_x, thumb_y, INV_SB_W, thumb_h },
+                      (aColor_t){ 0x39, 0x4a, 0x50, 255 } );
+    a_DrawRect( (aRectf_t){ track_x, thumb_y, INV_SB_W, thumb_h },
+                (aColor_t){ 0x57, 0x72, 0x77, 255 } );
   }
 }
 
@@ -1094,7 +1164,7 @@ void InventoryUIDraw( void )
 
   /* Inventory tooltip */
   if ( ui_focus == 1 && show_item_hover && player.inv_focused &&
-       player.inv_cursor >= 0 && player.inv_cursor < MAX_INVENTORY &&
+       player.inv_cursor >= 0 && player.inv_cursor < player.max_inventory &&
        player.inventory[player.inv_cursor].type != INV_EMPTY )
   {
     InvSlot_t* slot = &player.inventory[player.inv_cursor];
@@ -1105,12 +1175,12 @@ void InventoryUIDraw( void )
     float grid_w = r.w - INV_PAD * 2;
     float grid_h = r.h - INV_TITLE_H - INV_PAD * 2;
     float cell_w = grid_w / INV_COLS;
-    float cell_h = grid_h / INV_ROWS;
+    float cell_h = grid_h / INV_VISIBLE_ROWS;
     float cell = cell_w < cell_h ? cell_w : cell_h;
-    float total_gh = cell * INV_ROWS + 2 * ( INV_ROWS - 1 );
+    float total_gh = cell * INV_VISIBLE_ROWS + 2 * ( INV_VISIBLE_ROWS - 1 );
     float oy = ( grid_h - total_gh ) / 2.0f;
     int cur_row = player.inv_cursor / INV_COLS;
-    float cell_y = grid_y + oy + cur_row * ( cell + 2 );
+    float cell_y = grid_y + oy + ( cur_row - inv_scroll ) * ( cell + 2 );
 
     float mw = CalcModalW( slot->type, slot->index );
     float mx = ip->rect.x - mw - 8;

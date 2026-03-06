@@ -18,17 +18,20 @@
 #include "spell_vfx.h"
 #include "room_enumerator.h"
 #include "dialogue.h"
+#include "interactive_tile.h"
 
 extern Player_t player;
 
 static Console_t*      gt_console;
 static aSoundEffect_t* gt_sfx_click;
+static aSoundEffect_t  gt_sfx_powerup;
 static Enemy_t*        gt_enemies;
 static int*            gt_num_enemies;
 static NPC_t*          gt_npcs;
 static int*            gt_num_npcs;
 static GroundItem_t*   gt_items;
 static int*            gt_num_items;
+static World_t*        gt_world;
 
 /* Turn state */
 static struct {
@@ -49,19 +52,26 @@ static int   skip_hint_shown = 0;
 static float skip_hint_timer = 0.0f;
 static int   turn_count = 0;
 
+/* Inventory expansion hint */
+static int   inv_expand_hint_shown = 0;
+static float inv_expand_hint_timer = 0.0f;
+
 void GameTurnsInit( Console_t* con, aSoundEffect_t* click,
                     Enemy_t* enemies, int* num_enemies,
                     NPC_t* npcs, int* num_npcs,
-                    GroundItem_t* items, int* num_items )
+                    GroundItem_t* items, int* num_items,
+                    World_t* world )
 {
   gt_console     = con;
   gt_sfx_click   = click;
+  a_AudioLoadSound( "resources/soundeffects/powerup.wav", &gt_sfx_powerup );
   gt_enemies     = enemies;
   gt_num_enemies = num_enemies;
   gt_npcs        = npcs;
   gt_num_npcs    = num_npcs;
   gt_items       = items;
   gt_num_items   = num_items;
+  gt_world       = world;
   turn.was_moving  = 0;
   turn.enemy_delay = 0;
   hint_shown = 0;
@@ -69,6 +79,8 @@ void GameTurnsInit( Console_t* con, aSoundEffect_t* click,
   skip_hint_shown = 0;
   skip_hint_timer = 0.0f;
   turn_count = 0;
+  inv_expand_hint_shown = 0;
+  inv_expand_hint_timer = 0.0f;
 }
 
 void GameTurnsUpdateSystems( float dt )
@@ -145,31 +157,67 @@ void GameTurnsHandleTurnEnd( float dt, int turn_skipped )
               icolor = g_consumables[gi->item_idx].color;
             }
 
-            int slot = InventoryAdd( inv_type, gi->item_idx );
-            if ( slot >= 0 )
+            /* Cave mushrooms go straight to flag counter, no inventory slot */
+            if ( inv_type == INV_CONSUMABLE
+                 && strcmp( g_consumables[gi->item_idx].key, "cave_mushroom" ) == 0 )
             {
               gi->alive = 0;
+              FlagIncr( "mushrooms_collected" );
               a_AudioPlaySound( gt_sfx_click, NULL );
-              ConsolePushF( gt_console, icolor, "Picked up %s.", iname );
+              int m = FlagGet( "mushrooms_collected" );
+              ConsolePushF( gt_console, icolor,
+                            "Picked up %s. (%d/3)", iname, m > 3 ? 3 : m );
+            }
+            /* Bags and sacks — instant inventory expansion, no slot used */
+            else if ( inv_type == INV_CONSUMABLE
+                      && strcmp( g_consumables[gi->item_idx].type, "pickup" ) == 0 )
+            {
+              const char* ckey = g_consumables[gi->item_idx].key;
+              int expand = 0;
+              if ( strcmp( ckey, "bag" ) == 0 )       expand = 1;
+              else if ( strcmp( ckey, "sack" ) == 0 ) expand = 2;
 
-              /* Quest item pickup flags */
-              if ( inv_type == INV_CONSUMABLE
-                   && strcmp( g_consumables[gi->item_idx].key, "cave_mushroom" ) == 0 )
-                FlagIncr( "mushrooms_collected" );
-              if ( inv_type == INV_CONSUMABLE
-                   && strcmp( g_consumables[gi->item_idx].key, "hearthstone" ) == 0 )
-                FlagSet( "has_relic", 1 );
-
-              if ( !hint_shown && inv_type == INV_CONSUMABLE )
+              if ( expand > 0 && player.max_inventory + expand <= MAX_INVENTORY )
               {
-                hint_shown = 1;
-                hint_timer = HINT_DURATION;
+                gi->alive = 0;
+                player.max_inventory += expand;
+                a_AudioPlaySound( &gt_sfx_powerup, NULL );
+                ConsolePushF( gt_console, icolor,
+                              "Found a %s! +%d inventory slot%s. (%d/%d)",
+                              iname, expand, expand > 1 ? "s" : "",
+                              player.max_inventory, MAX_INVENTORY );
+                if ( !inv_expand_hint_shown )
+                {
+                  inv_expand_hint_shown = 1;
+                  inv_expand_hint_timer = HINT_DURATION;
+                }
               }
             }
             else
             {
-              ConsolePushF( gt_console, (aColor_t){ 0xcf, 0x57, 0x3c, 255 },
-                            "Inventory full! Can't pick up %s.", iname );
+              int slot = InventoryAdd( inv_type, gi->item_idx );
+              if ( slot >= 0 )
+              {
+                gi->alive = 0;
+                a_AudioPlaySound( gt_sfx_click, NULL );
+                ConsolePushF( gt_console, icolor, "Picked up %s.", iname );
+
+                /* Quest item pickup flags */
+                if ( inv_type == INV_CONSUMABLE
+                     && strcmp( g_consumables[gi->item_idx].key, "hearthstone" ) == 0 )
+                  FlagSet( "has_relic", 1 );
+
+                if ( !hint_shown && inv_type == INV_CONSUMABLE )
+                {
+                  hint_shown = 1;
+                  hint_timer = HINT_DURATION;
+                }
+              }
+              else
+              {
+                ConsolePushF( gt_console, (aColor_t){ 0xcf, 0x57, 0x3c, 255 },
+                              "Inventory full! Can't pick up %s.", iname );
+              }
             }
           }
         }
@@ -183,10 +231,35 @@ void GameTurnsHandleTurnEnd( float dt, int turn_skipped )
         PlayerSetRoom( room );
     }
 
+    /* Interactive tile checks (only on actual movement, not skipped turns) */
+    if ( !turn_skipped )
+    {
+      int web_gold = 0;
+      if ( ITileWebCheck( gt_world, frame_pr, frame_pc, &web_gold ) )
+      {
+        ConsolePushF( gt_console, (aColor_t){ 0x9a, 0x8c, 0x7a, 255 },
+                      "You're caught in a spider web! Stuck for %d turns.", WEB_ROOT_TURNS );
+        CombatVFXSpawnText( player.world_x, player.world_y,
+                            "Webbed!", (aColor_t){ 0x9a, 0x8c, 0x7a, 255 } );
+        if ( web_gold > 0 )
+        {
+          PlayerAddGold( web_gold );
+          ConsolePushF( gt_console, (aColor_t){ 0xda, 0xaf, 0x20, 255 },
+                        "You found %d gold hidden within the web!", web_gold );
+          char vfx[8];
+          snprintf( vfx, sizeof( vfx ), "+%d", web_gold );
+          CombatVFXSpawnText( player.world_x, player.world_y,
+                              vfx, (aColor_t){ 0xda, 0xaf, 0x20, 255 } );
+        }
+      }
+
+    }
+
     /* Turn tick (skip when shop prompt just opened - browsing is free) */
     if ( !ShopUIActive() && !EnemiesTurning() && !NPCsTurning() )
     {
       PoisonPoolTick( frame_pr, frame_pc );
+      ITileTick();
       GameEventsNewTurn();
       PlayerTickTurnsSinceHit();
       turn_count++;
@@ -245,6 +318,7 @@ void  GameTurnsTickHint( float dt )
 {
   if ( hint_timer > 0.0f ) hint_timer -= dt;
   if ( skip_hint_timer > 0.0f ) skip_hint_timer -= dt;
+  if ( inv_expand_hint_timer > 0.0f ) inv_expand_hint_timer -= dt;
 }
 float GameTurnsSkipHintTimer( void ) { return skip_hint_timer; }
 void  GameTurnsShowSkipHint( void )
@@ -255,3 +329,4 @@ void  GameTurnsShowSkipHint( void )
     skip_hint_timer = HINT_DURATION;
   }
 }
+float GameTurnsInvExpandHintTimer( void ) { return inv_expand_hint_timer; }

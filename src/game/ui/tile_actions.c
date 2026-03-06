@@ -127,6 +127,17 @@ static int build_labels( const char** labels, Enemy_t* enemies, int num_enemies 
     return 2;
   }
 
+  /* Adjacent breakable (crate / urn) */
+  {
+    ITile_t* it = ITileAt( tile_action_row, tile_action_col );
+    if ( it && ( it->type == ITILE_OLD_CRATE || it->type == ITILE_URN ) )
+    {
+      labels[0] = "Break";
+      labels[1] = "Look";
+      return 2;
+    }
+  }
+
   labels[0] = "Move";
   labels[1] = "Look";
   return 2;
@@ -346,6 +357,39 @@ int TileActionsLogic( int mouse_moved, Enemy_t* enemies, int num_enemies )
         /* Auto-walk to tile adjacent to the door, then open on arrival */
         GameInputStartAutoPath( tile_action_row, tile_action_col );
       }
+    }
+    else if ( strcmp( action, "Break" ) == 0 )
+    {
+      int pr, pc;
+      PlayerGetTile( &pr, &pc );
+      ITile_t* bit = ITileAt( tile_action_row, tile_action_col );
+      int is_urn = ( bit && bit->type == ITILE_URN );
+      int gold = 0;
+      if ( is_urn )
+        ITileUrnCheck( world, tile_action_row, tile_action_col, &gold );
+      else
+        ITileCrateCheck( world, tile_action_row, tile_action_col, &gold );
+      PlayerWallBump( tile_action_row - pr, tile_action_col - pc );
+      const char* name = is_urn ? "urn" : "old crate";
+      if ( gold > 0 )
+      {
+        PlayerAddGold( gold );
+        ConsolePushF( console, (aColor_t){ 0xda, 0xaf, 0x20, 255 },
+                      "You smash the %s. Found %d gold inside!", name, gold );
+        char vfx[8];
+        snprintf( vfx, sizeof( vfx ), "+%d", gold );
+        CombatVFXSpawnText( tile_action_row * world->tile_w + world->tile_w / 2.0f,
+                            tile_action_col * world->tile_h + world->tile_h / 2.0f,
+                            vfx, (aColor_t){ 0xda, 0xaf, 0x20, 255 } );
+      }
+      else
+      {
+        aColor_t c = is_urn ? (aColor_t){ 0x8a, 0x5c, 0x3e, 255 }
+                            : (aColor_t){ 0xa0, 0x78, 0x46, 255 };
+        ConsolePushF( console, c, "You smash the %s. Empty.", name );
+      }
+      tile_action_open = 0;
+      return 2;
     }
     else if ( strcmp( action, "Attack" ) == 0 )
     {

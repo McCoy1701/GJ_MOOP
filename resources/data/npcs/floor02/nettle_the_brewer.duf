@@ -185,7 +185,6 @@
 }
 @already_have_reply {
     text: "Wait. Are those cave mushrooms? You just have those? ...give me those. Here, take some mushroom mint tea!"
-    take_item: "Cave Mushroom:3"
     give_item: "Mushroom Mint Tea"
     set_flag: "bought_tea"
     options: ["opt_browse", "opt_leave"]
@@ -198,7 +197,6 @@
 }
 @have_mushrooms_reply {
     text: "Perfect caps, good stems, minimal cave slug residue. Give me a moment... *careful steeping noises* ...here. Mushroom mint tea. On the house."
-    take_item: "Cave Mushroom:3"
     give_item: "Mushroom Mint Tea"
     set_flag: "bought_tea"
     clear_flag: "quest_mushrooms"

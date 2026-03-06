@@ -191,6 +191,13 @@ void GameInputAutoMove( void )
 {
   if ( auto_path_len == 0 ) return;
 
+  /* Cancel if rooted */
+  if ( player.root_turns > 0 )
+  {
+    auto_path_len = 0;
+    return;
+  }
+
   /* Cancel if combat starts */
   if ( EnemiesInCombat( gi_enemies, *gi_num_enemies ) )
   {
@@ -248,6 +255,32 @@ void GameInputMovement( void )
   if ( PlayerIsMoving() || EnemiesTurning() || InventoryUIFocused()
        || GameTurnsEnemyDelay() > 0 )
     return;
+
+  /* Rooted — forced skip turn */
+  if ( player.root_turns > 0 )
+  {
+    /* Any movement key or space consumes the root turn */
+    int any_key = app.keyboard[SDL_SCANCODE_SPACE] == 1
+               || app.keyboard[SDL_SCANCODE_UP] == 1
+               || app.keyboard[SDL_SCANCODE_DOWN] == 1
+               || app.keyboard[SDL_SCANCODE_LEFT] == 1
+               || app.keyboard[SDL_SCANCODE_RIGHT] == 1
+               || app.keyboard[SDL_SCANCODE_W] == 1
+               || app.keyboard[SDL_SCANCODE_A] == 1
+               || app.keyboard[SDL_SCANCODE_S] == 1
+               || app.keyboard[SDL_SCANCODE_D] == 1;
+    if ( any_key )
+    {
+      for ( int k = 0; k < SDL_NUM_SCANCODES; k++ )
+        if ( app.keyboard[k] == 1 ) app.keyboard[k] = 0;
+      player.root_turns--;
+      turn_skipped = 1;
+      ConsolePushF( gi_console, (aColor_t){ 0x9a, 0x8c, 0x7a, 255 },
+                    "You struggle against the web! (%d)", player.root_turns );
+      return;
+    }
+    return;
+  }
 
   /* Space = skip turn */
   if ( app.keyboard[SDL_SCANCODE_SPACE] == 1 )
@@ -331,6 +364,37 @@ void GameInputMovement( void )
     ITileOpenHiddenWall( gi_world, tr, tc );
     PlayerStartMove( tr, tc );
   }
+  else if ( ITileAt( tr, tc ) && ( ITileAt( tr, tc )->type == ITILE_OLD_CRATE
+            || ITileAt( tr, tc )->type == ITILE_URN ) )
+  {
+    ITile_t* it = ITileAt( tr, tc );
+    int is_urn = ( it->type == ITILE_URN );
+    int gold = 0;
+    if ( is_urn )
+      ITileUrnCheck( gi_world, tr, tc, &gold );
+    else
+      ITileCrateCheck( gi_world, tr, tc, &gold );
+    PlayerWallBump( dr, dc );
+    const char* name = is_urn ? "urn" : "old crate";
+    if ( gold > 0 )
+    {
+      PlayerAddGold( gold );
+      ConsolePushF( gi_console, (aColor_t){ 0xda, 0xaf, 0x20, 255 },
+                    "You smash the %s. Found %d gold inside!", name, gold );
+      char vfx[8];
+      snprintf( vfx, sizeof( vfx ), "+%d", gold );
+      CombatVFXSpawnText( tr * gi_world->tile_w + gi_world->tile_w / 2.0f,
+                          tc * gi_world->tile_h + gi_world->tile_h / 2.0f,
+                          vfx, (aColor_t){ 0xda, 0xaf, 0x20, 255 } );
+    }
+    else
+    {
+      aColor_t c = is_urn ? (aColor_t){ 0x8a, 0x5c, 0x3e, 255 }
+                          : (aColor_t){ 0xa0, 0x78, 0x46, 255 };
+      ConsolePushF( gi_console, c, "You smash the %s. Empty.", name );
+    }
+    turn_skipped = 1;
+  }
   else
     PlayerWallBump( dr, dc );
 }
@@ -403,6 +467,7 @@ void GameInputZoom( void )
 
 void GameInputStartAutoPath( int goal_r, int goal_c )
 {
+  if ( player.root_turns > 0 ) return;
   int fpr, fpc;
   GameTurnsGetPlayerTile( &fpr, &fpc );
   int len = PathfindAStar( fpr, fpc, goal_r, goal_c,

@@ -28,7 +28,7 @@ static int horror_blocked( int r, int c, void* ctx )
   if ( !p->walkable( r, c ) )                     return 1;
   if ( r == p->player_row && c == p->player_col )  return 1;
   if ( EnemyBlockedByNPC( r, c ) )                 return 1;
-  if ( EnemyAt( p->all, p->count, r, c ) )        return 1;
+  if ( EnemyMobileAt( p->all, p->count, r, c ) )   return 1;
   return 0;
 }
 
@@ -56,7 +56,7 @@ static void move_toward( Enemy_t* e, int target_row, int target_col,
                            EnemyGridW(), EnemyGridH(),
                            horror_blocked, &ctx, path );
   if ( len >= 2
-       && !EnemyAt( all, count, path[1].row, path[1].col )
+       && !EnemyMobileAt( all, count, path[1].row, path[1].col )
        && !EnemyBlockedByNPC( path[1].row, path[1].col ) )
   {
     e->row = path[1].row;

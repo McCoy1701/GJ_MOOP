@@ -30,7 +30,7 @@ static int shaman_blocked( int r, int c, void* ctx )
   if ( !p->walkable( r, c ) )                     return 1;
   if ( r == p->player_row && c == p->player_col )  return 1;
   if ( EnemyBlockedByNPC( r, c ) )                 return 1;
-  if ( EnemyAt( p->all, p->count, r, c ) )        return 1;
+  if ( EnemyMobileAt( p->all, p->count, r, c ) )   return 1;
   return 0;
 }
 
@@ -77,7 +77,7 @@ static void move_toward( Enemy_t* e, int target_row, int target_col,
                            EnemyGridW(), EnemyGridH(),
                            shaman_blocked, &ctx, path );
   if ( len >= 2
-       && !EnemyAt( all, count, path[1].row, path[1].col )
+       && !EnemyMobileAt( all, count, path[1].row, path[1].col )
        && !EnemyBlockedByNPC( path[1].row, path[1].col ) )
   {
     e->row = path[1].row;
@@ -103,7 +103,7 @@ static void move_away( Enemy_t* e, int target_row, int target_col,
     int nc = e->col + dy[i];
     if ( !walkable( nr, nc ) )            continue;
     if ( nr == player_row && nc == player_col ) continue;
-    if ( EnemyAt( all, count, nr, nc ) ) continue;
+    if ( EnemyMobileAt( all, count, nr, nc ) ) continue;
     if ( EnemyBlockedByNPC( nr, nc ) )   continue;
 
     int nd = abs( target_row - nr ) + abs( target_col - nc );
@@ -122,7 +122,7 @@ static void move_away( Enemy_t* e, int target_row, int target_col,
       int nc = e->col + dy[i];
       if ( !walkable( nr, nc ) )            continue;
       if ( nr == player_row && nc == player_col ) continue;
-      if ( EnemyAt( all, count, nr, nc ) ) continue;
+      if ( EnemyMobileAt( all, count, nr, nc ) ) continue;
       if ( EnemyBlockedByNPC( nr, nc ) )   continue;
       best_r = nr; best_c = nc; break;
     }
@@ -184,6 +184,7 @@ void EnemyShamanTick( Enemy_t* e, int player_row, int player_col,
                       Enemy_t* all, int count )
 {
   if ( !e->alive ) return;
+  if ( e->stun_turns > 0 || e->root_turns > 0 ) return;
 
   int sight = g_enemy_types[e->type_idx].sight_range;
   int dr = player_row - e->row;

@@ -13,6 +13,9 @@ ClassInfo_t      g_classes[3];
 const char*      g_class_keys[3] = { "mercenary", "rogue", "mage" };
 ConsumableInfo_t g_consumables[MAX_CONSUMABLES];
 int              g_num_consumables = 0;
+
+static aSoundEffect_t sfx_heal;
+static int sfx_heal_loaded = 0;
 OpenableInfo_t   g_openables[MAX_DOORS];
 int              g_num_openables = 0;
 EquipmentInfo_t  g_equipment[MAX_EQUIPMENT];
@@ -417,18 +420,9 @@ int EquipSlotForKind( const char* kind )
 
 int EquipSlotForTrinket( int equip_idx )
 {
-  EquipmentInfo_t* incoming = &g_equipment[equip_idx];
+  (void)equip_idx;
 
-  /* If an equipped trinket shares the same effect, replace it */
-  for ( int s = EQUIP_TRINKET1; s <= EQUIP_TRINKET2; s++ )
-  {
-    if ( player.equipment[s] < 0 ) continue;
-    EquipmentInfo_t* cur = &g_equipment[player.equipment[s]];
-    if ( strcmp( cur->effect, incoming->effect ) == 0 )
-      return s;
-  }
-
-  /* Otherwise first empty, or default to slot 2 */
+  /* First empty slot, or default to slot 2 */
   if ( player.equipment[EQUIP_TRINKET1] == -1 ) return EQUIP_TRINKET1;
   if ( player.equipment[EQUIP_TRINKET2] == -1 ) return EQUIP_TRINKET2;
   return EQUIP_TRINKET2;
@@ -448,7 +442,7 @@ void EquipStarterGear( const char* class_key )
 
 int InventoryAdd( int item_type, int index )
 {
-  for ( int i = 0; i < MAX_INVENTORY; i++ )
+  for ( int i = 0; i < player.max_inventory; i++ )
   {
     if ( player.inventory[i].type == INV_EMPTY )
     {
@@ -517,6 +511,7 @@ void PlayerFullReset( int class_index )
   player.world_x = 64.0f;
   player.world_y = 64.0f;
   memset( player.inventory, 0, sizeof( player.inventory ) );
+  player.max_inventory = 20;  /* base capacity */
   memset( &player.buff, 0, sizeof( ConsumableBuff_t ) );
   player.inv_cursor = 0;
   player.selected_consumable = 0;
@@ -528,6 +523,7 @@ void PlayerFullReset( int class_index )
   player.scroll_echo_counter = 0;
   player.dodge_counter = 0;
   player.attack_counter = 0;
+  player.root_turns = 0;
   player.last_room_id = -1;
   for ( int i = 0; i < EQUIP_SLOTS; i++ )
     player.equipment[i] = -1;
@@ -542,8 +538,14 @@ void PlayerTakeDamage( int amount )
 
 void PlayerHeal( int amount )
 {
+  if ( !sfx_heal_loaded )
+  {
+    a_AudioLoadSound( "resources/soundeffects/heal.wav", &sfx_heal );
+    sfx_heal_loaded = 1;
+  }
   player.hp += amount;
   if ( player.hp > player.max_hp ) player.hp = player.max_hp;
+  a_AudioPlaySound( &sfx_heal, NULL );
 }
 
 void PlayerAddGold( int amount )

@@ -491,7 +491,7 @@ static int find_entry_idx( NPCType_t* npc, const char* key )
 
 static int has_item( const char* name )
 {
-  for ( int i = 0; i < MAX_INVENTORY; i++ )
+  for ( int i = 0; i < player.max_inventory; i++ )
   {
     if ( player.inventory[i].type == INV_CONSUMABLE )
     {
@@ -568,13 +568,25 @@ static int check_conditions( DialogueEntry_t* de )
   if ( de->require_gold_min > 0 && player.gold < de->require_gold_min )
     return 0;
 
-  /* give_item requires inventory space */
+  /* give_item requires inventory space (account for take_item freeing slots) */
   if ( d_StringGetLength( de->give_item ) > 0 )
   {
-    int has_space = 0;
-    for ( int i = 0; i < MAX_INVENTORY; i++ )
-      if ( player.inventory[i].type == INV_EMPTY ) { has_space = 1; break; }
-    if ( !has_space ) return 0;
+    int free_slots = 0;
+    for ( int i = 0; i < player.max_inventory; i++ )
+      if ( player.inventory[i].type == INV_EMPTY ) free_slots++;
+
+    /* Count how many slots take_item will free */
+    if ( d_StringGetLength( de->take_item ) > 0 )
+    {
+      char tbuf[256];
+      strncpy( tbuf, d_StringPeek( de->take_item ), sizeof( tbuf ) - 1 );
+      tbuf[sizeof( tbuf ) - 1] = '\0';
+      char* tcolon = strchr( tbuf, ':' );
+      int take_n = tcolon ? atoi( tcolon + 1 ) : 1;
+      free_slots += take_n;
+    }
+
+    if ( free_slots < 1 ) return 0;
   }
 
   return 1;
@@ -605,11 +617,33 @@ static void DialogueDispatchAction( const char* a )
 
 static int execute_actions( DialogueEntry_t* de )
 {
-  /* If this node gives an item, check inventory space first */
+  /* take_item FIRST — frees inventory slots before give_item check */
+  if ( d_StringGetLength( de->take_item ) > 0 )
+  {
+    /* Support "Item Name:N" to take multiple */
+    char tbuf[256];
+    strncpy( tbuf, d_StringPeek( de->take_item ), sizeof( tbuf ) - 1 );
+    tbuf[sizeof( tbuf ) - 1] = '\0';
+    int take_count = 1;
+    char* tcolon = strchr( tbuf, ':' );
+    if ( tcolon ) { *tcolon = '\0'; take_count = atoi( tcolon + 1 ); }
+
+    for ( int t = 0; t < take_count; t++ )
+    {
+      for ( int i = 0; i < player.max_inventory; i++ )
+      {
+        if ( player.inventory[i].type == INV_CONSUMABLE &&
+             strcmp( g_consumables[player.inventory[i].index].name, tbuf ) == 0 )
+        { InventoryRemove( i ); break; }
+      }
+    }
+  }
+
+  /* Now check inventory space for give_item (after take_item freed slots) */
   if ( d_StringGetLength( de->give_item ) > 0 )
   {
     int has_space = 0;
-    for ( int i = 0; i < MAX_INVENTORY; i++ )
+    for ( int i = 0; i < player.max_inventory; i++ )
       if ( player.inventory[i].type == INV_EMPTY ) { has_space = 1; break; }
     if ( !has_space )
     {
@@ -638,27 +672,6 @@ static int execute_actions( DialogueEntry_t* de )
 
   if ( d_StringGetLength( de->clear_flag ) > 0 )
     FlagClear( d_StringPeek( de->clear_flag ) );
-
-  if ( d_StringGetLength( de->take_item ) > 0 )
-  {
-    /* Support "Item Name:N" to take multiple */
-    char tbuf[256];
-    strncpy( tbuf, d_StringPeek( de->take_item ), sizeof( tbuf ) - 1 );
-    tbuf[sizeof( tbuf ) - 1] = '\0';
-    int take_count = 1;
-    char* tcolon = strchr( tbuf, ':' );
-    if ( tcolon ) { *tcolon = '\0'; take_count = atoi( tcolon + 1 ); }
-
-    for ( int t = 0; t < take_count; t++ )
-    {
-      for ( int i = 0; i < MAX_INVENTORY; i++ )
-      {
-        if ( player.inventory[i].type == INV_CONSUMABLE &&
-             strcmp( g_consumables[player.inventory[i].index].name, tbuf ) == 0 )
-        { InventoryRemove( i ); break; }
-      }
-    }
-  }
 
   if ( d_StringGetLength( de->give_item ) > 0 )
   {

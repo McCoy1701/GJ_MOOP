@@ -94,7 +94,7 @@
     name: "Flint Arrow"
     type: "gadget"
     glyph: ")"
-    bonus_damage: 1
+    bonus_damage: 2
     effect: "pierce"
     range: 5
     requires_los: 1
@@ -131,7 +131,7 @@
     name: "Steel Arrow"
     type: "gadget"
     glyph: ")"
-    bonus_damage: 2
+    bonus_damage: 4
     effect: "pierce"
     range: 5
     requires_los: 1
@@ -382,4 +382,27 @@
     image_path: ""
     description: "Nettle's specialty. Earthy, sharp, and surprisingly restorative. Heals to full HP."
     color: [120, 160, 90, 255]
+}
+# ==============================
+# PICKUPS (instant, no inventory slot)
+# ==============================
+@bag {
+    name: "Bag"
+    type: "pickup"
+    glyph: "♦"
+    bonus_damage: 0
+    effect: "none"
+    image_path: "resources/assets/consumables/small_bag.png"
+    description: "A sturdy leather bag. +1 inventory slot."
+    color: [139, 109, 58, 255]
+}
+@sack {
+    name: "Sack"
+    type: "pickup"
+    glyph: "♦"
+    bonus_damage: 0
+    effect: "none"
+    image_path: "resources/assets/consumables/large_sack.png"
+    description: "A large canvas sack. +2 inventory slots."
+    color: [201, 158, 80, 255]
 }

@@ -5,7 +5,7 @@
     image_path: "resources/assets/npcs/laura.png"
     description: "A goblin girl with messy face paint. She's holding a weapon."
     idle_bark: "*sharpens blade*"
-    idle_cooldown: 5
+    idle_cooldown: 7
     combat: true
     damage: 2
 }
@@ -342,7 +342,7 @@
     goto: "suggest_war_reply"
 }
 @suggest_war_reply {
-    text: "Fight what? Each other? That's all Kragthar knows. Point him at the thing below and he'll charge right in and get everyone killed. Bravely. Stupidly. ...but at least they'd fight."
+    text: "Fight what? Each other? Point him at them at thing below and he'll charge right in and get everyone killed. Bravely. Stupidly. ...but at least they'd fight."
     options: ["opt_suggest_peace", "opt_suggest_both", "opt_go_south", "opt_leave"]
 }
 @opt_suggest_peace {

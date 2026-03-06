@@ -5,6 +5,7 @@
 #include "world.h"
 #include "game_viewport.h"
 #include "visibility.h"
+#include "interactive_tile.h"
 
 #define GV_ZOOM_STEP 0.9f  /* multiplier per scroll tick (< 1 = zoom in) */
 
@@ -72,6 +73,28 @@ void GV_DrawWorld( aRectf_t rect, GameCamera_t* cam,
         a_DrawGlyph( mg.glyph, nx, ny, nw, nh,
                      mg.glyph_fg, mg.glyph_bg, FONT_CODE_PAGE_437 );
 
+      /* Gold hint on interactive tiles (glyph mode) */
+      if ( has_mg )
+      {
+        ITile_t* it = ITileAt( x, y );
+        if ( it && it->gold > 0 )
+        {
+          aColor_t gold = { 0xda, 0xaf, 0x20, 255 };
+          if ( it->type == ITILE_SPIDER_WEB )
+          {
+            a_DrawFilledRect( (aRectf_t){ nx + nw - 4, ny + 2, 2, 2 }, gold );
+            if ( it->gold > 1 )
+              a_DrawFilledRect( (aRectf_t){ nx + nw - 7, ny + 5, 2, 2 }, gold );
+          }
+          else if ( it->type == ITILE_OLD_CRATE || it->type == ITILE_URN )
+          {
+            a_DrawFilledRect( (aRectf_t){ nx + nw / 2 - 2, ny + 1, 2, 2 }, gold );
+            if ( it->gold > 1 )
+              a_DrawFilledRect( (aRectf_t){ nx + nw / 2 + 1, ny + 4, 2, 2 }, gold );
+          }
+        }
+      }
+
       if ( has_fg && fg.glyph[0] != '\0' )
         a_DrawGlyph( fg.glyph, nx, ny, nw, nh,
                      fg.glyph_fg, fg.glyph_bg, FONT_CODE_PAGE_437 );
@@ -87,6 +110,32 @@ void GV_DrawWorld( aRectf_t rect, GameCamera_t* cam,
       a_BlitRect( tileset[bg.tile].img, NULL, &dst, 1.0f );
       if ( has_mg )
         a_BlitRect( tileset[mg.tile].img, NULL, &dst, 1.0f );
+
+      /* Gold hint on interactive tiles (image mode) — scale with tile size */
+      if ( has_mg )
+      {
+        ITile_t* it = ITileAt( x, y );
+        if ( it && it->gold > 0 )
+        {
+          aColor_t gold = { 0xda, 0xaf, 0x20, 255 };
+          float gs = nw * 0.15f;  /* dot size = 15% of tile */
+          float gp = nw * 0.1f;   /* padding from edge */
+          if ( it->type == ITILE_SPIDER_WEB )
+          {
+            a_DrawFilledRect( (aRectf_t){ nx + nw - gp - gs, ny + nh - gp - gs, gs, gs }, gold );
+            if ( it->gold > 1 )
+              a_DrawFilledRect( (aRectf_t){ nx + nw - gp * 2 - gs * 2, ny + nh - gp * 2 - gs * 2, gs, gs }, gold );
+          }
+          else if ( it->type == ITILE_OLD_CRATE || it->type == ITILE_URN )
+          {
+            float cx = nx + nw * 0.35f;  /* top, left-of-center */
+            a_DrawFilledRect( (aRectf_t){ cx, ny + gp, gs, gs }, gold );
+            if ( it->gold > 1 )
+              a_DrawFilledRect( (aRectf_t){ cx + gs + gp * 0.5f, ny + gp + gs * 0.5f, gs, gs }, gold );
+          }
+        }
+      }
+
       if ( has_fg )
         a_BlitRect( tileset[fg.tile].img, NULL, &dst, 1.0f );
     }

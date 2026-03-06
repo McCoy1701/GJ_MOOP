@@ -415,7 +415,7 @@ void CombatEnemyHit( Enemy_t* e )
       /* Find a random scroll in inventory */
       int scroll_slots[MAX_INVENTORY];
       int num_scrolls = 0;
-      for ( int i = 0; i < MAX_INVENTORY; i++ )
+      for ( int i = 0; i < player.max_inventory; i++ )
       {
         if ( player.inventory[i].type == INV_CONSUMABLE
              && strcmp( g_consumables[player.inventory[i].index].type, "scroll" ) == 0 )

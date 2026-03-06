@@ -6,7 +6,7 @@
 
 #define INV_COLS         4
 #define INV_ROWS         5
-#define MAX_INVENTORY   (INV_COLS * INV_ROWS)
+#define MAX_INVENTORY   32       /* array size: 4×8 absolute max */
 
 #define INV_EMPTY        0
 #define INV_CONSUMABLE   1
@@ -46,7 +46,8 @@ typedef struct
   float world_x;
   float world_y;
 
-  InvSlot_t inventory[MAX_INVENTORY];   /* 4x5 grid */
+  InvSlot_t inventory[MAX_INVENTORY];   /* 4×8 max grid */
+  int max_inventory;                    /* usable slots (starts 20, grows to 32) */
   int inv_cursor;
   int selected_consumable;
 
@@ -63,6 +64,7 @@ typedef struct
   int dodge_counter;                    /* incoming hits toward next dodge   */
   int attack_counter;                   /* outgoing attacks toward armor break */
   int last_room_id;                     /* detect room changes */
+  int root_turns;                       /* forced skip turns (spider web etc.) */
 } Player_t;
 
 void PlayerInitStats( void );

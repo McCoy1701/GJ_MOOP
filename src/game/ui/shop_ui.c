@@ -81,7 +81,7 @@ void ShopUIOpen( int item_idx )
 
   /* Check inventory space */
   int has_space = 0;
-  for ( int i = 0; i < MAX_INVENTORY; i++ )
+  for ( int i = 0; i < player.max_inventory; i++ )
   {
     if ( player.inventory[i].type == INV_EMPTY )
     { has_space = 1; break; }
@@ -117,7 +117,7 @@ static void do_buy( void )
 
   /* Check inventory space */
   int has_space = 0;
-  for ( int i = 0; i < MAX_INVENTORY; i++ )
+  for ( int i = 0; i < player.max_inventory; i++ )
   {
     if ( player.inventory[i].type == INV_EMPTY )
     { has_space = 1; break; }

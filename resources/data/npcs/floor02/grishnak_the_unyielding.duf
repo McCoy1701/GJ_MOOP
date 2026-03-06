@@ -291,7 +291,6 @@
 }
 @give_mushrooms_reply {
     text: "...you actually brought mushrooms. I'm not going to thank you. But I will brew you the strongest ale this dungeon has ever seen. *aggressive brewing noises* ...here. Unyielding Ale. Drink it before a fight. You'll hit like you mean it."
-    take_item: "Cave Mushroom:3"
     give_item: "Unyielding Ale"
     set_flag: "bought_ale"
     clear_flag: "quest_mushrooms"

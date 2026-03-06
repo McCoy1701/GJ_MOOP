@@ -4,6 +4,7 @@
 
 #include "dungeon.h"
 #include "dungeon_spawner.h"
+#include "interactive_tile.h"
 #include "player.h"
 #include "items.h"
 #include "movement.h"
@@ -91,6 +92,27 @@ void SpawnFloor2( NPC_t* npcs, int* num_npcs,
   EnemySpawn( enemies, num_enemies, sp, 44, 26, tw, th );  /* room @ */
   EnemySpawn( enemies, num_enemies, sp, 74, 26, tw, th );  /* room ! */
 
+  /* Small bag in room 5 */
+  {
+    int bag_idx = ConsumableByKey( "bag" );
+    if ( bag_idx >= 0 )
+      GroundItemSpawn( items, num_items, bag_idx, 22, 25, tw, th );
+  }
+
+  /* Spider webs - near spider rooms */
+  ITilePlace( world, 25, 20, ITILE_SPIDER_WEB );  /* room 5 */
+  ITilePlace( world, 23, 20, ITILE_SPIDER_WEB );  /* room 5 */
+  ITilePlace( world, 37, 20, ITILE_SPIDER_WEB );  /* room 7 */
+  ITilePlace( world, 36, 19, ITILE_SPIDER_WEB );  /* room 7 */
+  ITilePlace( world, 63, 20, ITILE_SPIDER_WEB );  /* room 8 */
+  ITilePlace( world, 61, 20, ITILE_SPIDER_WEB );  /* room 8 */
+  ITilePlace( world, 45, 26, ITILE_SPIDER_WEB );  /* room @ */
+  ITilePlace( world, 44, 25, ITILE_SPIDER_WEB );  /* room @ */
+  ITilePlace( world, 75, 26, ITILE_SPIDER_WEB );  /* room ! */
+  ITilePlace( world, 74, 24, ITILE_SPIDER_WEB );  /* room ! */
+  ITilePlace( world, 29, 6, ITILE_SPIDER_WEB );   /* before Burble */
+  ITileWebScatterGold();
+
   /* Tier 1 consumables - help player get started in floor02*/
   SpawnRandomConsumable( items, num_items, 50, 4, tw, th );  /* \ room 0 */
   SpawnRandomConsumable( items, num_items, 46, 14, tw, th );  /* \ south coor*/
@@ -134,6 +156,8 @@ void SpawnFloor2( NPC_t* npcs, int* num_npcs,
       GroundItemSpawn( items, num_items, hp, 28, 20, tw, th );  /* left corridor */
       GroundItemSpawn( items, num_items, hp, 50, 22, tw, th );  /* center corridor */
       GroundItemSpawn( items, num_items, hp, 72, 20, tw, th );  /* right corridor */
+      GroundItemSpawn( items, num_items, hp, 47, 25, tw, th );
+      GroundItemSpawn( items, num_items, hp, 55, 25, tw, th );
     }
   }
 
@@ -176,7 +200,7 @@ void SpawnFloor2( NPC_t* npcs, int* num_npcs,
 
     /* e room (Goblin Jail) - jailer + shaman */
     EnemySpawn( enemies, num_enemies, EnemyTypeByKey( "goblin_jailer" ),
-                48, 19, tw, th );
+                51, 17, tw, th );
     EnemySpawn( enemies, num_enemies, sh, 50, 19, tw, th );
 
     /* Corridor leading to boss */
@@ -209,9 +233,21 @@ void SpawnFloor2( NPC_t* npcs, int* num_npcs,
 
     SpawnRandomT2Consumable( items, num_items, 21, 9, tw, th );  /* room 2 */
     SpawnRandomT2Consumable( items, num_items, 35, 9, tw, th );  /* room 1 */
+
+    /* Small bag in room 1 */
+    {
+      int bag_idx = ConsumableByKey( "bag" );
+      if ( bag_idx >= 0 )
+        GroundItemSpawn( items, num_items, bag_idx, 33, 10, tw, th );
+    }
     SpawnRandomT2Consumable( items, num_items, 63, 9, tw, th );  /* room 3 */
     SpawnRandomT2Consumable( items, num_items, 77, 9, tw, th );  /* room 4 */
   }
+
+  EnemySpawn( enemies, num_enemies, EnemyTypeByKey( "goblin_grunt" ),
+              50, 29, tw, th );
+  EnemySpawn( enemies, num_enemies, EnemyTypeByKey( "goblin_slinger" ),
+              50, 30, tw, th );
 
   /* Barricade - south passage, 2 tiles below Laura's relocate spot */
   NPCSpawn( npcs, num_npcs, NPCTypeByKey( "barricade" ),
@@ -223,6 +259,13 @@ void SpawnFloor2( NPC_t* npcs, int* num_npcs,
   /* Stairway to floor 03 - deep south past the barricade */
   NPCSpawn( npcs, num_npcs, NPCTypeByKey( "stairway" ),
             53, 47, tw, th );
+
+  /* Large sack - south passage */
+  {
+    int sack_idx = ConsumableByKey( "sack" );
+    if ( sack_idx >= 0 )
+      GroundItemSpawn( items, num_items, sack_idx, 42, 37, tw, th );
+  }
 
   /* Cave mushrooms for Nettle's quest - one per W-accessible path */
   {

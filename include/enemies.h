@@ -61,6 +61,7 @@ Enemy_t* EnemySpawn( Enemy_t* list, int* count,
                      int type_idx, int row, int col,
                      int tile_w, int tile_h );
 Enemy_t* EnemyAt( Enemy_t* list, int count, int row, int col );
+Enemy_t* EnemyMobileAt( Enemy_t* list, int count, int row, int col );
 int      EnemiesInCombat( Enemy_t* list, int count );
 
 void EnemyBasicAITick( Enemy_t* e, int player_row, int player_col,

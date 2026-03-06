@@ -4,6 +4,7 @@
 
 #include "dungeon.h"
 #include "dungeon_spawner.h"
+#include "interactive_tile.h"
 #include "player.h"
 #include "items.h"
 #include "movement.h"
@@ -41,11 +42,12 @@ void SpawnFloor3( NPC_t* npcs, int* num_npcs,
 
   /* Ex-cultist town (room t) */
   NPCSpawn( npcs, num_npcs, NPCTypeByKey( "muri" ),
-            54, 41, tw, th );
+            60, 52, tw, th );
   NPCSpawn( npcs, num_npcs, NPCTypeByKey( "drem" ),
-            54, 51, tw, th );
+            55, 53, tw, th );
   NPCSpawn( npcs, num_npcs, NPCTypeByKey( "murl" ),
-            55, 49, tw, th );
+            57, 49, tw, th );
+  ShopSpawn( world );
 
   /* Found Horror — Bloop (room )) */
   NPCSpawn( npcs, num_npcs, NPCTypeByKey( "found_horror" ),
@@ -55,14 +57,31 @@ void SpawnFloor3( NPC_t* npcs, int* num_npcs,
   EnemySpawn( enemies, num_enemies, EnemyTypeByKey( "lost_horror" ),
               15, 52, tw, th );
 
-  /* Horror (room 7) */
+  /* Horrors */
   EnemySpawn( enemies, num_enemies, EnemyTypeByKey( "horror" ),
               50, 70, tw, th );
+  EnemySpawn( enemies, num_enemies, EnemyTypeByKey( "horror" ),
+              54, 58, tw, th );
+  SpawnRandomT2Consumable( items, num_items, 54, 57, tw, th );
+  EnemySpawn( enemies, num_enemies, EnemyTypeByKey( "horror" ),
+              64, 64, tw, th );
+  SpawnRandomT2Consumable( items, num_items, 64, 63, tw, th );
+  EnemySpawn( enemies, num_enemies, EnemyTypeByKey( "horror" ),
+              70, 58, tw, th );
+  SpawnRandomT2Consumable( items, num_items, 70, 57, tw, th );
+  EnemySpawn( enemies, num_enemies, EnemyTypeByKey( "horror" ),
+              55, 35, tw, th );
+  EnemySpawn( enemies, num_enemies, EnemyTypeByKey( "lost_horror" ),
+              54, 33, tw, th );
+  SpawnRandomT2Consumable( items, num_items, 52, 36, tw, th );
 
   /* Cultist enemies (room w) */
   int cult_e = EnemyTypeByKey( "cultist" );
   EnemySpawn( enemies, num_enemies, cult_e, 20, 44, tw, th );
   EnemySpawn( enemies, num_enemies, cult_e, 22, 44, tw, th );
+  EnemySpawn( enemies, num_enemies, cult_e, 54, 40, tw, th );
+  EnemySpawn( enemies, num_enemies, cult_e, 59, 43, tw, th );
+  EnemySpawn( enemies, num_enemies, cult_e, 61, 43, tw, th );
 
   /* Void slimes */
   int vs = EnemyTypeByKey( "void_slime" );
@@ -70,6 +89,16 @@ void SpawnFloor3( NPC_t* npcs, int* num_npcs,
   EnemySpawn( enemies, num_enemies, vs, 34, 43, tw, th );
   EnemySpawn( enemies, num_enemies, vs, 39, 40, tw, th );
   EnemySpawn( enemies, num_enemies, vs, 50, 44, tw, th );
+  EnemySpawn( enemies, num_enemies, vs, 62, 58, tw, th );
+  EnemySpawn( enemies, num_enemies, vs, 17, 64, tw, th );
+  EnemySpawn( enemies, num_enemies, vs, 9, 64, tw, th );
+
+  /* Small health potion */
+  {
+    int shp = ConsumableByKey( "small_health_potion" );
+    if ( shp >= 0 )
+      GroundItemSpawn( items, num_items, shp, 61, 58, tw, th );
+  }
 
   /* T2 consumables beside slimes */
   SpawnRandomT2Consumable( items, num_items, 35, 47, tw, th );
@@ -84,10 +113,61 @@ void SpawnFloor3( NPC_t* npcs, int* num_npcs,
   }
 
   SpawnRandomT2Consumable( items, num_items, 26, 43, tw, th );
+  SpawnRandomT2Consumable( items, num_items, 49, 43, tw, th );
+
+  /* Medium health potion - entry area */
+  {
+    int mhp2 = ConsumableByKey( "medium_health_potion" );
+    if ( mhp2 >= 0 )
+      GroundItemSpawn( items, num_items, mhp2, 42, 72, tw, th );
+  }
 
   /* T2 consumables */
   SpawnRandomT2Consumable( items, num_items, 55, 66, tw, th );
   SpawnRandomT2Consumable( items, num_items, 53, 72, tw, th );
   SpawnRandomT2Consumable( items, num_items, 67, 70, tw, th );
   SpawnRandomT2Consumable( items, num_items, 42, 60, tw, th );
+  SpawnRandomConsumable( items, num_items, 13, 59, tw, th );
+
+  /* Lost horrors + class-based rare consumable */
+  {
+    int lh = EnemyTypeByKey( "lost_horror" );
+    const char* cls = PlayerClassKey();
+    const char* rare;
+    if ( strcmp( cls, "mercenary" ) == 0 )      rare = "dragon_pepper";
+    else if ( strcmp( cls, "rogue" ) == 0 )     rare = "smoke_bomb";
+    else                                         rare = "scroll_teleport";
+
+    int idx;
+    EnemySpawn( enemies, num_enemies, lh, 67, 46, tw, th );
+    idx = ConsumableByKey( rare );
+    if ( idx >= 0 ) GroundItemSpawn( items, num_items, idx, 67, 45, tw, th );
+
+    EnemySpawn( enemies, num_enemies, lh, 67, 40, tw, th );
+    idx = ConsumableByKey( rare );
+    if ( idx >= 0 ) GroundItemSpawn( items, num_items, idx, 67, 39, tw, th );
+
+    EnemySpawn( enemies, num_enemies, lh, 57, 39, tw, th );
+    idx = ConsumableByKey( rare );
+    if ( idx >= 0 ) GroundItemSpawn( items, num_items, idx, 57, 38, tw, th );
+  }
+
+  /* Large sack */
+  {
+    int sack_idx = ConsumableByKey( "sack" );
+    if ( sack_idx >= 0 )
+      GroundItemSpawn( items, num_items, sack_idx, 18, 66, tw, th );
+  }
+  SpawnRandomT2Consumable( items, num_items, 16, 66, tw, th );
+
+  /* Urns - placed by the cult along corridors and flanking doorways */
+  ITilePlace( world, 40, 53, ITILE_URN );   /* entry corridor, near top */
+  ITilePlace( world, 57, 35, ITILE_URN );   /* entry corridor, before turn */
+  ITilePlace( world, 48, 45, ITILE_URN );   /* flanking corridor to room q */
+  ITilePlace( world, 27, 43, ITILE_URN );   /* west passage near room 2 */
+  ITilePlace( world, 44, 53, ITILE_URN );   /* church hall corridor */
+  ITilePlace( world, 15, 49, ITILE_URN );   /* west corridor near church */
+  ITilePlace( world, 44, 66, ITILE_URN );   /* south corridor near rooms 0/1 */
+  ITilePlace( world, 40, 66, ITILE_URN );   /* south corridor, paired */
+  ITileUrnScatterGold();
 }

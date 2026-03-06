@@ -5,7 +5,7 @@
 #include "world.h"
 #include "game_viewport.h"
 
-#define MAX_GROUND_ITEMS 64
+#define MAX_GROUND_ITEMS 96
 
 #define GROUND_CONSUMABLE 0
 #define GROUND_MAP        1

@@ -86,8 +86,8 @@ void ShopSpawn( World_t* world )
   if ( g_current_floor >= 3 )
   {
     static const int f3[6][2] = {
-      {56,49}, {57,49}, {58,49},
-      {56,50}, {57,50}, {58,50}
+      {54,49}, {55,49}, {56,49},
+      {54,50}, {55,50}, {56,50}
     };
     memcpy( rug, f3, sizeof(rug) );
   }

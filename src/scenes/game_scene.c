@@ -177,7 +177,7 @@ void GameSceneInit( void )
   DungeonHandlerInit( world );
 
   GameTurnsInit( &console, &sfx_click, enemies, &num_enemies,
-                 npcs, &num_npcs, ground_items, &num_ground_items );
+                 npcs, &num_npcs, ground_items, &num_ground_items, world );
   GameInputInit( world, &camera, &console,
                  enemies, &num_enemies, npcs, &num_npcs );
   DevModeInit( &console );
@@ -242,7 +242,7 @@ static void gs_Logic( float dt )
   {
     FlagClear( "stair_descend" );
     /* Destroy treasure maps - they're floor-specific */
-    for ( int i = 0; i < MAX_INVENTORY; i++ )
+    for ( int i = 0; i < player.max_inventory; i++ )
       if ( player.inventory[i].type == INV_MAP )
         InventoryRemove( i );
     g_current_floor++;
@@ -549,6 +549,47 @@ static void gs_Draw( float dt )
       sts.align = TEXT_ALIGN_CENTER;
       a_DrawText( "Press SPACE to skip turn",
                   (int)( cr.x + cr.w / 2 ), (int)( cr.y - 48 ), sts );
+    }
+  }
+
+  /* Inventory expansion hint arrow */
+  {
+    float et = GameTurnsInvExpandHintTimer();
+    if ( et > 0.0f )
+    {
+      float alpha = 1.0f;
+      if ( et < HINT_FADE ) alpha = et / HINT_FADE;
+
+      aContainerWidget_t* ip = a_GetContainerFromWidget( "inv_panel" );
+      aRectf_t ir = ip->rect;
+      ir.x += TransitionGetRightOX();
+
+      /* Point at the middle-left of the inventory panel */
+      float tip_x = ir.x - 6.0f + sinf( ( HINT_DURATION - et ) * 4.0f ) * 4.0f;
+      float tip_y = ir.y + ir.h * 0.5f;
+
+      int a = (int)( 255 * alpha );
+      aColor_t hc = { 0x75, 0xa7, 0x43, a };
+
+      a_DrawFilledTriangle(
+        (int)tip_x, (int)tip_y,
+        (int)( tip_x - 14 ), (int)( tip_y - 8 ),
+        (int)( tip_x - 14 ), (int)( tip_y + 8 ),
+        hc
+      );
+
+      float shaft_x = tip_x - 14;
+      for ( int dy = -1; dy <= 1; dy++ )
+        a_DrawLine( (int)( shaft_x - 30 ), (int)( tip_y + dy ),
+                    (int)shaft_x, (int)( tip_y + dy ), hc );
+
+      aTextStyle_t ets = a_default_text_style;
+      ets.bg    = (aColor_t){ 0, 0, 0, 0 };
+      ets.fg    = hc;
+      ets.scale = 1.2f;
+      ets.align = TEXT_ALIGN_RIGHT;
+      a_DrawText( "INVENTORY EXPANDED!",
+                  (int)( shaft_x - 36 ), (int)( tip_y - 5 ), ets );
     }
   }
 

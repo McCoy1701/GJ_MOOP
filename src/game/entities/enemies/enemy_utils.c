@@ -192,6 +192,17 @@ Enemy_t* EnemyAt( Enemy_t* list, int count, int row, int col )
   return NULL;
 }
 
+Enemy_t* EnemyMobileAt( Enemy_t* list, int count, int row, int col )
+{
+  for ( int i = 0; i < count; i++ )
+  {
+    if ( list[i].alive && list[i].row == row && list[i].col == col
+         && strcmp( g_enemy_types[list[i].type_idx].ai, "static" ) != 0 )
+      return &list[i];
+  }
+  return NULL;
+}
+
 int EnemiesInCombat( Enemy_t* list, int count )
 {
   for ( int i = 0; i < count; i++ )

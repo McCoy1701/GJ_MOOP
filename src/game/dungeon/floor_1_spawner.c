@@ -4,6 +4,7 @@
 
 #include "dungeon.h"
 #include "dungeon_spawner.h"
+#include "interactive_tile.h"
 #include "player.h"
 #include "items.h"
 #include "movement.h"
@@ -215,6 +216,10 @@ void SpawnFloor1( NPC_t* npcs, int* num_npcs,
                        world->tile_w, world->tile_h );   /* gallery (rogue shortcut) */
       GroundItemSpawn( items, num_items, hp_idx, 30, 24,
                        world->tile_w, world->tile_h );   /* east corridor (mage shortcut) */
+      GroundItemSpawn( items, num_items, hp_idx, 21, 24,
+                       world->tile_w, world->tile_h );
+      GroundItemSpawn( items, num_items, hp_idx, 18, 6,
+                       world->tile_w, world->tile_h );
     }
   }
 
@@ -242,6 +247,14 @@ void SpawnFloor1( NPC_t* npcs, int* num_npcs,
   /* Side room off white corridor */
   SpawnRandomEnemy( enemies, num_enemies,
                     9, 42, world->tile_w, world->tile_h );
+  {
+    int bag_idx = ConsumableByKey( "bag" );
+    if ( bag_idx >= 0 )
+      GroundItemSpawn( items, num_items, bag_idx, 10, 41,
+                       world->tile_w, world->tile_h );
+  }
+  SpawnRandomConsumable( items, num_items, 10, 42,
+                         world->tile_w, world->tile_h );
 
   /* Class elite - guards elite room, drops class weapon */
   SpawnClassElite( enemies, num_enemies,
@@ -250,6 +263,14 @@ void SpawnFloor1( NPC_t* npcs, int* num_npcs,
   /* Fallen adventurer's journal in elite room */
   NPCSpawn( npcs, num_npcs, NPCTypeByKey( "journal" ),
             3, 44, world->tile_w, world->tile_h );
+
+  /* Bag near upper passage */
+  {
+    int bag_idx = ConsumableByKey( "bag" );
+    if ( bag_idx >= 0 )
+      GroundItemSpawn( items, num_items, bag_idx, 4, 3,
+                       world->tile_w, world->tile_h );
+  }
 
   /* Upper Passage (\ room) */
   SpawnRandomEnemy( enemies, num_enemies,
@@ -285,7 +306,30 @@ void SpawnFloor1( NPC_t* npcs, int* num_npcs,
     }
   }
 
+  /* Sacks — class-gated chambers, only 1 reachable per class */
+  {
+    int sack_idx = ConsumableByKey( "sack" );
+    int tw = world->tile_w, th = world->tile_h;
+    if ( sack_idx >= 0 )
+    {
+      GroundItemSpawn( items, num_items, sack_idx, 14, 45, tw, th );
+      GroundItemSpawn( items, num_items, sack_idx, 24, 45, tw, th );
+      GroundItemSpawn( items, num_items, sack_idx, 30, 45, tw, th );
+    }
+  }
+
   /* Stairway in exit chamber (past rat hole room) */
   NPCSpawn( npcs, num_npcs, NPCTypeByKey( "stairway" ),
             10, 1, world->tile_w, world->tile_h );
+
+  /* Old crates - scattered across corridors and side areas */
+  ITilePlace( world, 31, 9, ITILE_OLD_CRATE );    /* upper corridor junction */
+  ITilePlace( world, 8, 7, ITILE_OLD_CRATE );     /* horizontal corridor */
+  ITilePlace( world, 4, 13, ITILE_OLD_CRATE );    /* west corridor north */
+  ITilePlace( world, 1, 22, ITILE_OLD_CRATE );    /* west corridor south */
+  ITilePlace( world, 6, 31, ITILE_OLD_CRATE );    /* long east-west corridor */
+  ITilePlace( world, 22, 16, ITILE_OLD_CRATE );    /* long east-west corridor */
+  ITilePlace( world, 24, 32, ITILE_OLD_CRATE );   /* south corridor west */
+  ITilePlace( world, 20, 32, ITILE_OLD_CRATE );   /* south corridor east */
+  ITileCrateScatterGold();
 }
