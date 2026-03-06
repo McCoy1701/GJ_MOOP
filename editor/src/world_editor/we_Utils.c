@@ -148,7 +148,7 @@ void we_MapMouseCheck( dVec2_t* pos, aRectf_t menu_rect )
   }
 }
 
-static void GetSelectGridSize( dVec2_t* select_pos, dVec2_t* highlight_pos,
+/*static void GetSelectGridSize( dVec2_t* select_pos, dVec2_t* highlight_pos,
                                int* grid_w, int* grid_h,
                                int* current_x, int* current_y )
 {
@@ -159,50 +159,33 @@ static void GetSelectGridSize( dVec2_t* select_pos, dVec2_t* highlight_pos,
   float world_mouse_x = ( select_pos->x / scale.y ) + view_x;
   float world_mouse_y = ( select_pos->y / scale.y ) + view_y;
 
-  float relative_x = world_mouse_x - originx;
-  float relative_y = world_mouse_y - originy;
-
-  int cell_x = (int)( relative_x / 16 );
-  int cell_y = (int)( relative_y / 16 );
+  float r_select_x = world_mouse_x - originx;
+  float r_select_y = world_mouse_y - originy;
   
-  int extreme_w = ( width * tile_w );
-  int extreme_h = ( height * tile_h );
+  float world_highlight_x = ( highlight_pos->x / scale.y ) + view_x;
+  float world_highlight_y = ( highlight_pos->y / scale.y ) + view_y;
 
-  if ( cell_x >= 0 && cell_x < extreme_w &&
-       cell_y >= 0 && cell_y < extreme_h )
+  float r_highlight_x = world_highlight_x - originx;
+  float r_highlight_y = world_highlight_y - originy;
+
+  *current_x = global_pos_x;
+  *current_y = global_pos_y;
+  *current_z = pos.local_z;
+
+  *grid_w = ( global_highlight_x - global_pos_x );
+  *grid_h = ( global_highlight_y - global_pos_y );
+
+  if ( *grid_w < 0 )
   {
-    *grid_x = cell_x;
-    *grid_y = cell_y;
+    *grid_w = ( global_pos_x - global_highlight_x );
+    *current_x = global_highlight_x;
   }
 
-  return 1;
-    int pos_world_x = pos.world_index / WORLD_HEIGHT;
-    int pos_world_y = pos.world_index % WORLD_HEIGHT;
-    int global_pos_x = ( pos_world_x * map->realm_width )  + pos.x;
-    int global_pos_y = ( pos_world_y * map->realm_height ) + pos.y;
-    int highlight_world_x = highlight.world_index / WORLD_HEIGHT;
-    int highlight_world_y = highlight.world_index % WORLD_HEIGHT;
-    int global_highlight_x = ( highlight_world_x * map->realm_width )  + highlight.x;
-    int global_highlight_y = ( highlight_world_y * map->realm_height ) + highlight.y;
-
-    *current_x = global_pos_x;
-    *current_y = global_pos_y;
-    *current_z = pos.local_z;
-    
-    *grid_w = ( global_highlight_x - global_pos_x );
-    *grid_h = ( global_highlight_y - global_pos_y );
-
-    if ( *grid_w < 0 )
-    {
-      *grid_w = ( global_pos_x - global_highlight_x );
-      *current_x = global_highlight_x;
-    }
-
-    if ( *grid_h < 0 )
-    {
-      *grid_h = ( global_pos_y - global_highlight_y );
-      *current_y = global_highlight_y;
-    }
+  if ( *grid_h < 0 )
+  {
+    *grid_h = ( global_pos_y - global_highlight_y );
+    *current_y = global_highlight_y;
+  }
   }
   
   else
@@ -225,4 +208,5 @@ static void GetSelectGridSize( dVec2_t* select_pos, dVec2_t* highlight_pos,
       *current_y = highlight.y;
     }
   }
-}
+}*/
+
