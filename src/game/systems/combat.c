@@ -49,25 +49,33 @@ static void shake_back_y( void* data )
   TweenFloat( &hit_tweens, &hit_shake_y, 0.0f, 0.08f, TWEEN_EASE_OUT_CUBIC );
 }
 
-static void trigger_hit_effect( void )
+static void trigger_hit_effect( int dmg )
 {
   StopTweensForTarget( &hit_tweens, &hit_shake_x );
   StopTweensForTarget( &hit_tweens, &hit_shake_y );
 
-  float sx = ( ( rand() % 2 ) ? 2.0f : -2.0f );
-  float sy = ( ( rand() % 2 ) ? 1.5f : -1.5f );
+  /* Scale shake intensity by damage */
+  float intensity = 1.0f;
+  float duration  = 0.04f;
+  if ( dmg >= 3 )      { intensity = 3.0f; duration = 0.06f; }
+  else if ( dmg == 2 ) { intensity = 1.8f; duration = 0.05f; }
+
+  float sx = ( ( rand() % 2 ) ? 2.0f : -2.0f ) * intensity;
+  float sy = ( ( rand() % 2 ) ? 1.5f : -1.5f ) * intensity;
   hit_shake_x = 0;
   hit_shake_y = 0;
-  TweenFloatWithCallback( &hit_tweens, &hit_shake_x, sx, 0.04f,
+  TweenFloatWithCallback( &hit_tweens, &hit_shake_x, sx, duration,
                            TWEEN_EASE_OUT_QUAD, shake_back_x, NULL );
-  TweenFloatWithCallback( &hit_tweens, &hit_shake_y, sy, 0.04f,
+  TweenFloatWithCallback( &hit_tweens, &hit_shake_y, sy, duration,
                            TWEEN_EASE_OUT_QUAD, shake_back_y, NULL );
 
-  /* Red flash - only start if not already active */
+  /* Red flash - scale alpha by damage */
+  float flash = ( dmg >= 3 ) ? 120.0f : ( dmg == 2 ) ? 80.0f : 60.0f;
   if ( hit_flash_alpha < 1.0f )
   {
-    hit_flash_alpha = 60.0f;
-    TweenFloat( &hit_tweens, &hit_flash_alpha, 0.0f, 0.35f, TWEEN_EASE_OUT_QUAD );
+    hit_flash_alpha = flash;
+    float fade_dur = ( dmg >= 3 ) ? 0.5f : ( dmg == 2 ) ? 0.4f : 0.35f;
+    TweenFloat( &hit_tweens, &hit_flash_alpha, 0.0f, fade_dur, TWEEN_EASE_OUT_QUAD );
   }
 }
 
@@ -436,9 +444,10 @@ void CombatEnemyHit( Enemy_t* e )
     }
   }
 
-  CombatVFXSpawnNumber( player.world_x, player.world_y, edmg,
-                        (aColor_t){ 0xcf, 0x57, 0x3c, 255 } );
-  trigger_hit_effect();
+  float num_scale = ( edmg >= 3 ) ? 2.5f : ( edmg == 2 ) ? 2.0f : 1.5f;
+  CombatVFXSpawnNumberScaled( player.world_x, player.world_y, edmg,
+                              (aColor_t){ 0xcf, 0x57, 0x3c, 255 }, num_scale );
+  trigger_hit_effect( edmg );
 
   ConsolePushF( console, (aColor_t){ 0xcf, 0x57, 0x3c, 255 },
                 "%s hits you for %d damage.", t->name, edmg );

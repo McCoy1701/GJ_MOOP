@@ -129,20 +129,14 @@ void DungeonDeferredSpawns( NPC_t* npcs, int num_npcs,
     FlagSet( "church_door_unlocked", 1 );
   }
 
-  /* Floor 3: Greta defied — Horror spawns at her feet, cultists stay calm */
+  /* Floor 3: Greta defied — Horror spawns at her old position */
   if ( g_current_floor == 3
        && FlagGet( "greta_defied" )
        && !FlagGet( "greta_defy_horror" ) )
   {
     FlagSet( "greta_defy_horror", 1 );
 
-    /* Despawn Greta */
-    int greta_idx = NPCTypeByKey( "greta" );
-    for ( int i = 0; i < num_npcs; i++ )
-      if ( npcs[i].alive && npcs[i].type_idx == greta_idx )
-        npcs[i].alive = 0;
-
-    /* Horror at Greta's position */
+    /* Horror at Greta's old position */
     EnemySpawn( enemies, num_enemies, EnemyTypeByKey( "horror" ),
                 33, 71, tw, th );
   }
@@ -173,12 +167,6 @@ void DungeonDeferredSpawns( NPC_t* npcs, int num_npcs,
        && !FlagGet( "greta_horror_spawned" ) )
   {
     FlagSet( "greta_horror_spawned", 1 );
-
-    /* Despawn Greta */
-    int greta_idx = NPCTypeByKey( "greta" );
-    for ( int i = 0; i < num_npcs; i++ )
-      if ( npcs[i].alive && npcs[i].type_idx == greta_idx )
-        npcs[i].alive = 0;
 
     /* Horror at church escort position */
     EnemySpawn( enemies, num_enemies, EnemyTypeByKey( "horror" ),

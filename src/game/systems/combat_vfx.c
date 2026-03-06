@@ -30,6 +30,7 @@ typedef struct
   float    alpha;      /* 255 → 0 fade */
   int      amount;
   aColor_t color;
+  float    scale;      /* text scale (default 1.5) */
   int      active;
 } HitMarker_t;
 
@@ -78,15 +79,14 @@ void CombatVFXUpdate( float dt )
   }
 }
 
-void CombatVFXSpawnNumber( float wx, float wy, int amount, aColor_t color )
+static void spawn_number( float wx, float wy, int amount, aColor_t color, float scale )
 {
-  /* Find a free slot */
   int slot = -1;
   for ( int i = 0; i < MAX_MARKERS; i++ )
   {
     if ( !markers[i].active ) { slot = i; break; }
   }
-  if ( slot < 0 ) return; /* pool full, drop it */
+  if ( slot < 0 ) return;
 
   HitMarker_t* m = &markers[slot];
   m->wx     = wx;
@@ -95,13 +95,21 @@ void CombatVFXSpawnNumber( float wx, float wy, int amount, aColor_t color )
   m->alpha  = 255.0f;
   m->amount = amount;
   m->color  = color;
+  m->scale  = scale;
   m->active = 1;
 
-  /* Drift up 10 world units over 0.6s */
   TweenFloat( &vfx_tweens, &m->oy, -10.0f, 0.6f, TWEEN_EASE_OUT_CUBIC );
-
-  /* Fade out over 0.6s */
   TweenFloat( &vfx_tweens, &m->alpha, 0.0f, 0.6f, TWEEN_EASE_IN_QUAD );
+}
+
+void CombatVFXSpawnNumber( float wx, float wy, int amount, aColor_t color )
+{
+  spawn_number( wx, wy, amount, color, 1.5f );
+}
+
+void CombatVFXSpawnNumberScaled( float wx, float wy, int amount, aColor_t color, float scale )
+{
+  spawn_number( wx, wy, amount, color, scale );
 }
 
 void CombatVFXSpawnText( float wx, float wy, const char* text, aColor_t color )
@@ -148,7 +156,7 @@ void CombatVFXDraw( aRectf_t vp_rect, GameCamera_t* cam )
     aTextStyle_t ts = a_default_text_style;
     ts.fg    = c;
     ts.bg    = (aColor_t){ 0, 0, 0, 0 };
-    ts.scale = 1.5f;
+    ts.scale = m->scale;
     ts.align = TEXT_ALIGN_CENTER;
     a_DrawText( buf, (int)screen_x, (int)screen_y, ts );
   }

@@ -11,7 +11,7 @@
     effect: "reveal"
     target_x: 5
     target_y: 28
-    image_path: ""
+    image_path: "resources/assets/consumables/treasure_map.png"
     description: "A crude map scratched onto parchment by Miner Mat. X marks something deep in the dungeon."
     color: [210, 190, 120, 255]
 }
@@ -23,7 +23,7 @@
     effect: "reveal"
     target_x: 18
     target_y: 38
-    image_path: ""
+    image_path: "resources/assets/consumables/treasure_map.png"
     description: "A crude map scratched onto parchment by Miner Jake. X marks something deep in the dungeon."
     color: [210, 190, 120, 255]
 }
@@ -35,7 +35,7 @@
     effect: "reveal"
     target_x: 32
     target_y: 31
-    image_path: ""
+    image_path: "resources/assets/consumables/treasure_map.png"
     description: "A crude map scratched onto parchment by Miner Chris. X marks something deep in the dungeon."
     color: [210, 190, 120, 255]
 }

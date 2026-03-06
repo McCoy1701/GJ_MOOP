@@ -318,6 +318,14 @@ void SpawnFloor1( NPC_t* npcs, int* num_npcs,
     }
   }
 
+  /* Max Health pickup */
+  {
+    int mh_idx = ConsumableByKey( "max_health" );
+    if ( mh_idx >= 0 )
+      GroundItemSpawn( items, num_items, mh_idx, 25, 11,
+                       world->tile_w, world->tile_h );
+  }
+
   /* Stairway in exit chamber (past rat hole room) */
   NPCSpawn( npcs, num_npcs, NPCTypeByKey( "stairway" ),
             10, 1, world->tile_w, world->tile_h );

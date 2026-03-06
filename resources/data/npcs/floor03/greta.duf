@@ -182,7 +182,7 @@
 }
 @betrayal_end {
     text: "Every group thinks they're different. You're not."
-    action: "relocate:0,0"
+    action: "relocate:45,18"
     set_flag: "greta_betrayed"
     goto: "end"
 }
@@ -206,7 +206,8 @@
     goto: "defy_final"
 }
 @defy_final {
-    action: "relocate:0,0"
+    text: "..."
+    action: "relocate:45,18"
     set_flag: "greta_defied"
     goto: "end"
 }
@@ -216,5 +217,49 @@
 # ==============================
 @opt_leave {
     label: "[Leave]"
+    goto: "end"
+}
+
+# ==============================
+# SECOND ENCOUNTER — UPPER SANCTUM
+# ==============================
+@sanctum_betrayed {
+    start: true
+    priority: 20
+    require_flag: "greta_betrayed"
+    text: "You followed me. I hoped you wouldn't. That would have been easier for both of us."
+    options: ["opt_sanctum_why", "opt_sanctum_fight"]
+}
+@sanctum_defied {
+    start: true
+    priority: 20
+    require_flag: "greta_defied"
+    text: "You know my name. You know what I've done. And still you come. Brave, or stupid? Same thing down here."
+    options: ["opt_sanctum_why", "opt_sanctum_fight"]
+}
+@opt_sanctum_why {
+    label: "Why are you doing this?"
+    goto: "sanctum_why_reply"
+}
+@sanctum_why_reply {
+    text: "Because the dungeon asked. And when it asks, you answer. You'll understand soon enough."
+    options: ["opt_sanctum_fight"]
+}
+@opt_sanctum_fight {
+    label: "This ends here."
+    color: "danger"
+    goto: "sanctum_fight"
+}
+@sanctum_fight {
+    text: "No, dear. It doesn't end. It just gets louder."
+    options: ["opt_sanctum_begin"]
+}
+@opt_sanctum_begin {
+    label: "[Fight]"
+    color: "danger"
+    goto: "sanctum_begin_fight"
+}
+@sanctum_begin_fight {
+    action: "boss_greta"
     goto: "end"
 }

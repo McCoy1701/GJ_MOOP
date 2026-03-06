@@ -159,7 +159,7 @@ int HUDDrawTopBar( int in_combat )
     if ( strcmp( e->effect, "amplify" ) == 0 ) continue;
     snprintf( buf, sizeof( buf ), "%s(%d)", e->effect, e->effect_value );
     float tw = strlen( buf ) * 8.0f * TB_STAT_SCALE;
-    PassiveAdd( sx, ty + 4, tw, TB_STAT_SCALE * 8.0f, player.equipment[i] );
+    PassiveAdd( sx, ty + 4, tw, r.y + r.h - ( ty + 4 ), player.equipment[i] );
     a_DrawText( buf, (int)sx, (int)( ty + 4 ), ts );
     sx += tw + TB_STAT_GAP;
   }
@@ -172,7 +172,7 @@ int HUDDrawTopBar( int in_combat )
       ts.fg = (aColor_t){ 0x75, 0xa7, 0x43, 255 };
       snprintf( buf, sizeof( buf ), "FIRST STRIKE(%d)", fs );
       float pw = strlen( buf ) * 8.0f * TB_STAT_SCALE;
-      PassiveAdd( sx, ty + 4, pw, TB_STAT_SCALE * 8.0f, FindEquipByEffect( "first_strike" ) );
+      PassiveAdd( sx, ty + 4, pw, r.y + r.h - ( ty + 4 ), FindEquipByEffect( "first_strike" ) );
       a_DrawText( buf, (int)sx, (int)( ty + 4 ), ts );
       sx += pw + TB_STAT_GAP;
     }
@@ -180,13 +180,13 @@ int HUDDrawTopBar( int in_combat )
 
   /* scroll_echo - blue, show progress toward free cast */
   {
-    int echo = PlayerEquipEffect( "scroll_echo" );
+    int echo = PlayerEquipEffectMin( "scroll_echo" );
     if ( echo > 0 )
     {
       ts.fg = (aColor_t){ 0x73, 0xbe, 0xd3, 255 };
       snprintf( buf, sizeof( buf ), "ECHO(%d/%d)", player.scroll_echo_counter, echo );
       float pw = strlen( buf ) * 8.0f * TB_STAT_SCALE;
-      PassiveAdd( sx, ty + 4, pw, TB_STAT_SCALE * 8.0f, FindEquipByEffect( "scroll_echo" ) );
+      PassiveAdd( sx, ty + 4, pw, r.y + r.h - ( ty + 4 ), FindEquipByEffect( "scroll_echo" ) );
       a_DrawText( buf, (int)sx, (int)( ty + 4 ), ts );
       sx += pw + TB_STAT_GAP;
     }
@@ -205,7 +205,7 @@ int HUDDrawTopBar( int in_combat )
         : (aColor_t){ 0x6e, 0x3b, 0x3b, 255 };
       snprintf( buf, sizeof( buf ), "BERSERK(+%d)", bsk * stacks );
       float pw = strlen( buf ) * 8.0f * TB_STAT_SCALE;
-      PassiveAdd( sx, ty + 4, pw, TB_STAT_SCALE * 8.0f, FindEquipByEffect( "berserk" ) );
+      PassiveAdd( sx, ty + 4, pw, r.y + r.h - ( ty + 4 ), FindEquipByEffect( "berserk" ) );
       a_DrawText( buf, (int)sx, (int)( ty + 4 ), ts );
       sx += pw + TB_STAT_GAP;
     }
@@ -219,7 +219,7 @@ int HUDDrawTopBar( int in_combat )
       ts.fg = (aColor_t){ 0x73, 0xbe, 0xd3, 255 };
       snprintf( buf, sizeof( buf ), "AMPLIFY(%d)", amp );
       float pw = strlen( buf ) * 8.0f * TB_STAT_SCALE;
-      PassiveAdd( sx, ty + 4, pw, TB_STAT_SCALE * 8.0f, FindEquipByEffect( "amplify" ) );
+      PassiveAdd( sx, ty + 4, pw, r.y + r.h - ( ty + 4 ), FindEquipByEffect( "amplify" ) );
       a_DrawText( buf, (int)sx, (int)( ty + 4 ), ts );
       sx += pw + TB_STAT_GAP;
     }
@@ -233,7 +233,7 @@ int HUDDrawTopBar( int in_combat )
       ts.fg = (aColor_t){ 0x75, 0xa7, 0x43, 255 };
       snprintf( buf, sizeof( buf ), "DODGE(%d/%d)", player.dodge_counter % dodge, dodge );
       float pw = strlen( buf ) * 8.0f * TB_STAT_SCALE;
-      PassiveAdd( sx, ty + 4, pw, TB_STAT_SCALE * 8.0f, FindEquipByEffect( "dodge" ) );
+      PassiveAdd( sx, ty + 4, pw, r.y + r.h - ( ty + 4 ), FindEquipByEffect( "dodge" ) );
       a_DrawText( buf, (int)sx, (int)( ty + 4 ), ts );
       sx += pw + TB_STAT_GAP;
     }
@@ -247,7 +247,7 @@ int HUDDrawTopBar( int in_combat )
       ts.fg = (aColor_t){ 0xcf, 0x57, 0x3c, 255 };
       snprintf( buf, sizeof( buf ), "BREAK(%d/%d)", player.attack_counter % ab, ab );
       float pw = strlen( buf ) * 8.0f * TB_STAT_SCALE;
-      PassiveAdd( sx, ty + 4, pw, TB_STAT_SCALE * 8.0f, FindEquipByEffect( "armor_break" ) );
+      PassiveAdd( sx, ty + 4, pw, r.y + r.h - ( ty + 4 ), FindEquipByEffect( "armor_break" ) );
       a_DrawText( buf, (int)sx, (int)( ty + 4 ), ts );
       sx += pw + TB_STAT_GAP;
     }
@@ -261,7 +261,7 @@ int HUDDrawTopBar( int in_combat )
       ts.fg = (aColor_t){ 0x73, 0xbe, 0xd3, 255 };
       snprintf( buf, sizeof( buf ), "SHIELD" );
       float pw = strlen( buf ) * 8.0f * TB_STAT_SCALE;
-      PassiveAdd( sx, ty + 4, pw, TB_STAT_SCALE * 8.0f, FindEquipByEffect( "mana_shield" ) );
+      PassiveAdd( sx, ty + 4, pw, r.y + r.h - ( ty + 4 ), FindEquipByEffect( "mana_shield" ) );
       a_DrawText( buf, (int)sx, (int)( ty + 4 ), ts );
       sx += pw + TB_STAT_GAP;
     }
@@ -299,85 +299,93 @@ int HUDDrawTopBar( int in_combat )
       return 1;
   }
 
-  /* Passive hover tooltip */
+  /* Check passive hover (drawing deferred to HUDDrawPassiveTooltip) */
   g_passive_hover = PassivesFindHover();
-  if ( g_passive_hover >= 0 )
-  {
-    PassiveHit_t* ph = &g_passives[g_passive_hover];
-    int ei = ph->equip_idx;
-    if ( ei >= 0 && ei < g_num_equipment )
-    {
-      EquipmentInfo_t* e = &g_equipment[ei];
-
-      float tw_name, th_name;
-      a_CalcTextDimensions( e->name, a_default_text_style.type, &tw_name, &th_name );
-      float mw = tw_name * HUD_MODAL_NAME_S + HUD_MODAL_PAD_X * 2;
-      if ( mw < HUD_MODAL_MIN_W ) mw = HUD_MODAL_MIN_W;
-
-      float header_h = HUD_MODAL_PAD_Y + HUD_MODAL_LINE_LG;
-      if ( e->damage > 0 )  header_h += HUD_MODAL_LINE_SM;
-      if ( e->defense > 0 ) header_h += HUD_MODAL_LINE_SM;
-      if ( strcmp( e->effect, "none" ) != 0 )
-        header_h += HUD_MODAL_LINE_MD;
-      else
-        header_h += HUD_MODAL_LINE_SM;
-      int wrap_w = (int)( mw - HUD_MODAL_PAD_X * 2 );
-      int desc_h = a_GetWrappedTextHeight( e->description,
-                                            a_default_text_style.type, wrap_w );
-      float mh = header_h + desc_h + HUD_MODAL_PAD_Y;
-      if ( mh < HUD_MODAL_H ) mh = HUD_MODAL_H;
-
-      float mx = ph->x;
-      float my = r.y + r.h + 4;
-
-      a_DrawFilledRect( (aRectf_t){ mx, my, mw, mh },
-                        (aColor_t){ 0x09, 0x0a, 0x14, 255 } );
-      a_DrawRect( (aRectf_t){ mx, my, mw, mh }, e->color );
-
-      float modal_ty = my + HUD_MODAL_PAD_Y;
-      float modal_tx = mx + HUD_MODAL_PAD_X;
-
-      ts.bg = (aColor_t){ 0, 0, 0, 0 };
-      ts.align = TEXT_ALIGN_LEFT;
-
-      ts.fg = e->color;
-      ts.scale = HUD_MODAL_NAME_S;
-      a_DrawText( e->name, (int)modal_tx, (int)modal_ty, ts );
-      modal_ty += HUD_MODAL_LINE_LG;
-
-      ts.fg = (aColor_t){ 0xeb, 0xed, 0xe9, 255 };
-      ts.scale = HUD_MODAL_TEXT_S;
-      if ( e->damage > 0 )
-      {
-        snprintf( buf, sizeof( buf ), "DMG: +%d", e->damage );
-        a_DrawText( buf, (int)modal_tx, (int)modal_ty, ts );
-        modal_ty += HUD_MODAL_LINE_SM;
-      }
-      if ( e->defense > 0 )
-      {
-        snprintf( buf, sizeof( buf ), "DEF: +%d", e->defense );
-        a_DrawText( buf, (int)modal_tx, (int)modal_ty, ts );
-        modal_ty += HUD_MODAL_LINE_SM;
-      }
-      if ( strcmp( e->effect, "none" ) != 0 )
-      {
-        ts.fg = (aColor_t){ 0xde, 0x9e, 0x41, 255 };
-        snprintf( buf, sizeof( buf ), "%s (%d)", e->effect, e->effect_value );
-        a_DrawText( buf, (int)modal_tx, (int)modal_ty, ts );
-        modal_ty += HUD_MODAL_LINE_MD;
-      }
-      else
-      {
-        modal_ty += HUD_MODAL_LINE_SM;
-      }
-
-      ts.fg = (aColor_t){ 0xa8, 0xb5, 0xb2, 255 };
-      ts.scale = HUD_MODAL_DESC_S;
-      ts.wrap_width = wrap_w;
-      a_DrawText( e->description, (int)modal_tx, (int)modal_ty, ts );
-      ts.wrap_width = 0;
-    }
-  }
 
   return 0;
+}
+
+void HUDDrawPassiveTooltip( void )
+{
+  if ( g_passive_hover < 0 ) return;
+
+  PassiveHit_t* ph = &g_passives[g_passive_hover];
+  int ei = ph->equip_idx;
+  if ( ei < 0 || ei >= g_num_equipment ) return;
+
+  EquipmentInfo_t* e = &g_equipment[ei];
+  char buf[48];
+
+  aContainerWidget_t* tb = a_GetContainerFromWidget( "top_bar" );
+  aRectf_t r = tb->rect;
+  r.y += TransitionGetTopBarOY();
+
+  float tw_name, th_name;
+  a_CalcTextDimensions( e->name, a_default_text_style.type, &tw_name, &th_name );
+  float mw = tw_name * HUD_MODAL_NAME_S + HUD_MODAL_PAD_X * 2;
+  if ( mw < HUD_MODAL_MIN_W ) mw = HUD_MODAL_MIN_W;
+
+  float header_h = HUD_MODAL_PAD_Y + HUD_MODAL_LINE_LG;
+  if ( e->damage > 0 )  header_h += HUD_MODAL_LINE_SM;
+  if ( e->defense > 0 ) header_h += HUD_MODAL_LINE_SM;
+  if ( strcmp( e->effect, "none" ) != 0 )
+    header_h += HUD_MODAL_LINE_MD;
+  else
+    header_h += HUD_MODAL_LINE_SM;
+  int wrap_w = (int)( mw - HUD_MODAL_PAD_X * 2 );
+  int desc_h = a_GetWrappedTextHeight( e->description,
+                                        a_default_text_style.type, wrap_w );
+  float mh = header_h + desc_h + HUD_MODAL_PAD_Y;
+  if ( mh < HUD_MODAL_H ) mh = HUD_MODAL_H;
+
+  float mx = ph->x;
+  float my = r.y + r.h + 4;
+
+  a_DrawFilledRect( (aRectf_t){ mx, my, mw, mh },
+                    (aColor_t){ 0x09, 0x0a, 0x14, 255 } );
+  a_DrawRect( (aRectf_t){ mx, my, mw, mh }, e->color );
+
+  float modal_ty = my + HUD_MODAL_PAD_Y;
+  float modal_tx = mx + HUD_MODAL_PAD_X;
+
+  aTextStyle_t ts = a_default_text_style;
+  ts.bg = (aColor_t){ 0, 0, 0, 0 };
+  ts.align = TEXT_ALIGN_LEFT;
+
+  ts.fg = e->color;
+  ts.scale = HUD_MODAL_NAME_S;
+  a_DrawText( e->name, (int)modal_tx, (int)modal_ty, ts );
+  modal_ty += HUD_MODAL_LINE_LG;
+
+  ts.fg = (aColor_t){ 0xeb, 0xed, 0xe9, 255 };
+  ts.scale = HUD_MODAL_TEXT_S;
+  if ( e->damage > 0 )
+  {
+    snprintf( buf, sizeof( buf ), "DMG: +%d", e->damage );
+    a_DrawText( buf, (int)modal_tx, (int)modal_ty, ts );
+    modal_ty += HUD_MODAL_LINE_SM;
+  }
+  if ( e->defense > 0 )
+  {
+    snprintf( buf, sizeof( buf ), "DEF: +%d", e->defense );
+    a_DrawText( buf, (int)modal_tx, (int)modal_ty, ts );
+    modal_ty += HUD_MODAL_LINE_SM;
+  }
+  if ( strcmp( e->effect, "none" ) != 0 )
+  {
+    ts.fg = (aColor_t){ 0xde, 0x9e, 0x41, 255 };
+    snprintf( buf, sizeof( buf ), "%s (%d)", e->effect, e->effect_value );
+    a_DrawText( buf, (int)modal_tx, (int)modal_ty, ts );
+    modal_ty += HUD_MODAL_LINE_MD;
+  }
+  else
+  {
+    modal_ty += HUD_MODAL_LINE_SM;
+  }
+
+  ts.fg = (aColor_t){ 0xa8, 0xb5, 0xb2, 255 };
+  ts.scale = HUD_MODAL_DESC_S;
+  ts.wrap_width = wrap_w;
+  a_DrawText( e->description, (int)modal_tx, (int)modal_ty, ts );
+  ts.wrap_width = 0;
 }

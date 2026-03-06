@@ -256,28 +256,49 @@ void GameInputMovement( void )
        || GameTurnsEnemyDelay() > 0 )
     return;
 
-  /* Rooted — forced skip turn */
+  /* Rooted — can attack adjacent enemies but can't move */
   if ( player.root_turns > 0 )
   {
-    /* Any movement key or space consumes the root turn */
-    int any_key = app.keyboard[SDL_SCANCODE_SPACE] == 1
-               || app.keyboard[SDL_SCANCODE_UP] == 1
-               || app.keyboard[SDL_SCANCODE_DOWN] == 1
-               || app.keyboard[SDL_SCANCODE_LEFT] == 1
-               || app.keyboard[SDL_SCANCODE_RIGHT] == 1
-               || app.keyboard[SDL_SCANCODE_W] == 1
-               || app.keyboard[SDL_SCANCODE_A] == 1
-               || app.keyboard[SDL_SCANCODE_S] == 1
-               || app.keyboard[SDL_SCANCODE_D] == 1;
-    if ( any_key )
+    /* Space = skip turn, consumes root */
+    if ( app.keyboard[SDL_SCANCODE_SPACE] == 1 )
     {
-      for ( int k = 0; k < SDL_NUM_SCANCODES; k++ )
-        if ( app.keyboard[k] == 1 ) app.keyboard[k] = 0;
+      app.keyboard[SDL_SCANCODE_SPACE] = 0;
       player.root_turns--;
       turn_skipped = 1;
       ConsolePushF( gi_console, (aColor_t){ 0x9a, 0x8c, 0x7a, 255 },
                     "You struggle against the web! (%d)", player.root_turns );
       return;
+    }
+
+    /* Direction keys — allow bump-attacks, block movement */
+    int dr = 0, dc = 0;
+    if ( app.keyboard[SDL_SCANCODE_UP] == 1 || app.keyboard[SDL_SCANCODE_W] == 1 )
+    { app.keyboard[SDL_SCANCODE_UP] = 0; app.keyboard[SDL_SCANCODE_W] = 0; dc = -1; }
+    else if ( app.keyboard[SDL_SCANCODE_DOWN] == 1 || app.keyboard[SDL_SCANCODE_S] == 1 )
+    { app.keyboard[SDL_SCANCODE_DOWN] = 0; app.keyboard[SDL_SCANCODE_S] = 0; dc =  1; }
+    else if ( app.keyboard[SDL_SCANCODE_LEFT] == 1 || app.keyboard[SDL_SCANCODE_A] == 1 )
+    { app.keyboard[SDL_SCANCODE_LEFT] = 0; app.keyboard[SDL_SCANCODE_A] = 0; dr = -1; }
+    else if ( app.keyboard[SDL_SCANCODE_RIGHT] == 1 || app.keyboard[SDL_SCANCODE_D] == 1 )
+    { app.keyboard[SDL_SCANCODE_RIGHT] = 0; app.keyboard[SDL_SCANCODE_D] = 0; dr =  1; }
+
+    if ( dr == 0 && dc == 0 ) return;
+
+    int fpr, fpc;
+    GameTurnsGetPlayerTile( &fpr, &fpc );
+    int tr = fpr + dr;
+    int tc = fpc + dc;
+    Enemy_t* bump = EnemyAt( gi_enemies, *gi_num_enemies, tr, tc );
+    if ( bump )
+    {
+      PlayerLunge( dr, dc );
+      CombatAttack( bump );
+    }
+    else
+    {
+      player.root_turns--;
+      turn_skipped = 1;
+      ConsolePushF( gi_console, (aColor_t){ 0x9a, 0x8c, 0x7a, 255 },
+                    "You struggle against the web! (%d)", player.root_turns );
     }
     return;
   }
@@ -350,20 +371,6 @@ void GameInputMovement( void )
       DialogueStart( bump_npc->type_idx );
     }
   }
-  else if ( TileWalkable( tr, tc ) || DevModeNoclip() )
-    PlayerStartMove( tr, tc );
-  else if ( TileHasDoor( tr, tc ) )
-  {
-    if ( TileActionsTryOpen( tr, tc ) )
-      PlayerStartMove( tr, tc );
-    else
-      PlayerShake( dr, dc );
-  }
-  else if ( ITileIsHiddenWall( tr, tc ) )
-  {
-    ITileOpenHiddenWall( gi_world, tr, tc );
-    PlayerStartMove( tr, tc );
-  }
   else if ( ITileAt( tr, tc ) && ( ITileAt( tr, tc )->type == ITILE_OLD_CRATE
             || ITileAt( tr, tc )->type == ITILE_URN ) )
   {
@@ -394,6 +401,20 @@ void GameInputMovement( void )
       ConsolePushF( gi_console, c, "You smash the %s. Empty.", name );
     }
     turn_skipped = 1;
+  }
+  else if ( TileWalkable( tr, tc ) || DevModeNoclip() )
+    PlayerStartMove( tr, tc );
+  else if ( TileHasDoor( tr, tc ) )
+  {
+    if ( TileActionsTryOpen( tr, tc ) )
+      PlayerStartMove( tr, tc );
+    else
+      PlayerShake( dr, dc );
+  }
+  else if ( ITileIsHiddenWall( tr, tc ) )
+  {
+    ITileOpenHiddenWall( gi_world, tr, tc );
+    PlayerStartMove( tr, tc );
   }
   else
     PlayerWallBump( dr, dc );

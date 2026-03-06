@@ -14,6 +14,7 @@
     class: "mercenary"
     description: "Blunt and brutal. Hits harder than a rusty blade."
     color: [200, 100, 100, 255]
+    image_path: "resources/assets/equipment/heavy_mace.png"
 }
 @chainmail {
     name: "Chainmail"
@@ -50,6 +51,7 @@
     class: "mercenary"
     description: "Forged iron plates. Nothing gets through easy."
     color: [200, 100, 100, 255]
+    image_path: "resources/assets/equipment/plate_mail.png"
 }
 @blackiron_plate {
     name: "Blackiron Plate"
@@ -75,6 +77,7 @@
     class: "mercenary"
     description: "Enemies that hit you take 2 damage back."
     color: [200, 100, 100, 255]
+    image_path: "resources/assets/equipment/crimson_ring.png"
 }
 @blood_medal {
     name: "Blood Medal"
@@ -88,6 +91,7 @@
     class: "mercenary"
     description: "+1 damage for each 40% HP missing."
     color: [200, 100, 100, 255]
+    image_path: "resources/assets/equipment/blood_medal.png"
 }
 
 # ==============================
@@ -178,6 +182,7 @@
     class: "rogue"
     description: "Coated in something foul. Melee attacks poison enemies."
     color: [100, 200, 100, 255]
+    image_path: "resources/assets/equipment/viper_ring.png"
 }
 
 # ==============================
@@ -268,6 +273,7 @@
     class: "mage"
     description: "Scrolls crackle with extra force. +1 scroll damage."
     color: [100, 100, 200, 255]
+    image_path: "resources/assets/equipment/surge_stone.png"
 }
 
 # ==============================

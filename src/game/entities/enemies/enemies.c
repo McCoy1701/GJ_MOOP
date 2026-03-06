@@ -116,6 +116,48 @@ int EnemyHorrorSpawnBaby( int row, int col, int (*walkable)(int,int),
   return -1;
 }
 
+void EnemyBossGretaSpawn( int npc_type_idx )
+{
+  if ( !stored_list || !stored_count || !world ) return;
+  if ( !npc_list || !npc_count ) return;
+
+  /* Find the Greta NPC and get her position, then despawn her */
+  int row = -1, col = -1;
+  for ( int i = 0; i < *npc_count; i++ )
+  {
+    if ( npc_list[i].alive && npc_list[i].type_idx == npc_type_idx )
+    {
+      row = npc_list[i].row;
+      col = npc_list[i].col;
+      npc_list[i].alive = 0;
+      break;
+    }
+  }
+  if ( row < 0 ) return;
+
+  int tw = world->tile_w, th = world->tile_h;
+
+  /* Spawn Greta as enemy at her position */
+  int gi = EnemyTypeByKey( "greta" );
+  if ( gi >= 0 )
+    EnemySpawn( stored_list, stored_count, gi, row, col, tw, th );
+
+  /* Spawn elder horror adjacent */
+  int ei = EnemyTypeByKey( "elder_horror" );
+  if ( ei >= 0 )
+  {
+    static const int dx[] = { 0, 1, -1, 0 };
+    static const int dy[] = { 1, -1, 0, 0 };
+    for ( int d = 0; d < 4; d++ )
+    {
+      int nr = row + dx[d], nc = col + dy[d];
+      if ( EnemyAt( stored_list, *stored_count, nr, nc ) ) continue;
+      Enemy_t* eh = EnemySpawn( stored_list, stored_count, ei, nr, nc, tw, th );
+      if ( eh ) break;
+    }
+  }
+}
+
 int EnemyBlockedByNPC( int row, int col )
 {
   if ( !npc_list || !npc_count ) return 0;

@@ -39,6 +39,8 @@ void SpawnFloor3( NPC_t* npcs, int* num_npcs,
   NPCSpawn( npcs, num_npcs, cult, 44, 55, tw, th );
   NPCSpawn( npcs, num_npcs, cult, 44, 51, tw, th );
   NPCSpawn( npcs, num_npcs, cult, 40, 51, tw, th );
+  EnemySpawn( enemies, num_enemies, EnemyTypeByKey( "cultist" ), 49, 22, tw, th );
+  EnemySpawn( enemies, num_enemies, EnemyTypeByKey( "cultist" ), 49, 21, tw, th );
 
   /* Ex-cultist town (room t) */
   NPCSpawn( npcs, num_npcs, NPCTypeByKey( "muri" ),
@@ -75,6 +77,16 @@ void SpawnFloor3( NPC_t* npcs, int* num_npcs,
               54, 33, tw, th );
   SpawnRandomT2Consumable( items, num_items, 52, 36, tw, th );
 
+  /* Baby horrors */
+  EnemySpawn( enemies, num_enemies, EnemyTypeByKey( "lost_horror" ),
+              59, 26, tw, th );
+  EnemySpawn( enemies, num_enemies, EnemyTypeByKey( "lost_horror" ),
+              61, 26, tw, th );
+  EnemySpawn( enemies, num_enemies, EnemyTypeByKey( "lost_horror" ),
+              43, 22, tw, th );
+
+  SpawnRandomT2Consumable( items, num_items, 49, 26, tw, th );
+
   /* Cultist enemies (room w) */
   int cult_e = EnemyTypeByKey( "cultist" );
   EnemySpawn( enemies, num_enemies, cult_e, 20, 44, tw, th );
@@ -92,12 +104,16 @@ void SpawnFloor3( NPC_t* npcs, int* num_npcs,
   EnemySpawn( enemies, num_enemies, vs, 62, 58, tw, th );
   EnemySpawn( enemies, num_enemies, vs, 17, 64, tw, th );
   EnemySpawn( enemies, num_enemies, vs, 9, 64, tw, th );
+  EnemySpawn( enemies, num_enemies, vs, 68, 33, tw, th );
 
   /* Small health potion */
   {
     int shp = ConsumableByKey( "small_health_potion" );
     if ( shp >= 0 )
+    {
       GroundItemSpawn( items, num_items, shp, 61, 58, tw, th );
+      GroundItemSpawn( items, num_items, shp, 61, 29, tw, th );
+    }
   }
 
   /* T2 consumables beside slimes */
@@ -128,6 +144,20 @@ void SpawnFloor3( NPC_t* npcs, int* num_npcs,
   SpawnRandomT2Consumable( items, num_items, 67, 70, tw, th );
   SpawnRandomT2Consumable( items, num_items, 42, 60, tw, th );
   SpawnRandomConsumable( items, num_items, 13, 59, tw, th );
+  SpawnRandomT2Consumable( items, num_items, 57, 29, tw, th );
+  SpawnRandomT2Consumable( items, num_items, 66, 33, tw, th );
+  {
+    int bag_idx = ConsumableByKey( "bag" );
+    if ( bag_idx >= 0 )
+      GroundItemSpawn( items, num_items, bag_idx, 67, 33, tw, th );
+  }
+
+  /* Max Health pickup */
+  {
+    int mh_idx = ConsumableByKey( "max_health" );
+    if ( mh_idx >= 0 )
+      GroundItemSpawn( items, num_items, mh_idx, 60, 26, tw, th );
+  }
 
   /* Lost horrors + class-based rare consumable */
   {

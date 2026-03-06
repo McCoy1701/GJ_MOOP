@@ -318,7 +318,7 @@ void ShopDrawItems( aRectf_t vp_rect, GameCamera_t* cam,
       EquipmentInfo_t* ei = &g_equipment[si->item_index];
       glyph = ei->glyph;
       color = ei->color;
-      img   = NULL; /* equipment has no image field */
+      img   = ei->image;
     }
 
     if ( img && gfx_mode == GFX_IMAGE )

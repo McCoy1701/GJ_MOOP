@@ -114,3 +114,23 @@
   room_id: "i"
   name: "Inner Cellar"
 }
+@upper_sanctum {
+  room_id: "o"
+  name: "Upper Sanctum"
+}
+@scriptorium {
+  room_id: "p"
+  name: "Scriptorium"
+}
+@undercroft {
+  room_id: "h"
+  name: "Undercroft"
+}
+@cloister {
+  room_id: "g"
+  name: "Cloister"
+}
+@stairwell {
+  room_id: "f"
+  name: "Stairwell"
+}

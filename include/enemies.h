@@ -90,6 +90,9 @@ int  EnemyGridH( void );
 int  EnemyShamanSpawnTotem( int row, int col, int (*walkable)(int,int),
                             Enemy_t* all, int count );
 
+/* Boss spawn: Greta fight (despawns NPC, spawns Greta enemy + elder horror) */
+void EnemyBossGretaSpawn( int npc_type_idx );
+
 /* Horror AI */
 void EnemyHorrorTick( Enemy_t* e, int player_row, int player_col,
                       int (*walkable)(int,int),

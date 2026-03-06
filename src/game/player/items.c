@@ -405,6 +405,25 @@ int PlayerEquipEffect( const char* name )
   return total;
 }
 
+int PlayerEquipEffectMin( const char* name )
+{
+  int best = 0;
+  int count = 0;
+  for ( int i = 0; i < EQUIP_SLOTS; i++ )
+  {
+    if ( player.equipment[i] < 0 ) continue;
+    EquipmentInfo_t* eq = &g_equipment[player.equipment[i]];
+    if ( strcmp( eq->effect, name ) == 0 )
+    {
+      if ( count == 0 || eq->effect_value < best )
+        best = eq->effect_value;
+      count++;
+    }
+  }
+  if ( count >= 2 ) best /= 2;
+  return best > 0 ? best : 0;
+}
+
 int EquipSlotForKind( const char* kind )
 {
   if ( strcmp( kind, "weapon" ) == 0 ) return EQUIP_WEAPON;
@@ -420,7 +439,15 @@ int EquipSlotForKind( const char* kind )
 
 int EquipSlotForTrinket( int equip_idx )
 {
-  (void)equip_idx;
+  const char* new_eff = g_equipment[equip_idx].effect;
+
+  /* Block if the other trinket slot already has the same effect */
+  if ( player.equipment[EQUIP_TRINKET1] >= 0
+       && strcmp( g_equipment[player.equipment[EQUIP_TRINKET1]].effect, new_eff ) == 0 )
+    return EQUIP_TRINKET1;  /* swap into same slot */
+  if ( player.equipment[EQUIP_TRINKET2] >= 0
+       && strcmp( g_equipment[player.equipment[EQUIP_TRINKET2]].effect, new_eff ) == 0 )
+    return EQUIP_TRINKET2;  /* swap into same slot */
 
   /* First empty slot, or default to slot 2 */
   if ( player.equipment[EQUIP_TRINKET1] == -1 ) return EQUIP_TRINKET1;
@@ -524,6 +551,7 @@ void PlayerFullReset( int class_index )
   player.dodge_counter = 0;
   player.attack_counter = 0;
   player.root_turns = 0;
+  player.max_health_ups = 0;
   player.last_room_id = -1;
   for ( int i = 0; i < EQUIP_SLOTS; i++ )
     player.equipment[i] = -1;

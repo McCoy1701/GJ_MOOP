@@ -14,14 +14,14 @@
 @greeting_no_quest {
     start: true
     priority: 0
-    require_not_flag: "quest_found_horror"
+    require_not_flag: "quest_bloop"
     text: "A small horror stares at you. You have no idea what to do with this."
     options: ["opt_leave"]
 }
 @greeting_quest {
     start: true
     priority: 5
-    require_flag: "quest_found_horror"
+    require_flag: "quest_bloop"
     require_not_flag: "found_horror_rescued"
     text: "The small horror tilts its head. Its eyes are wide and wet. It doesn't move."
     options: ["opt_bloop", "opt_leave"]

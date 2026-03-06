@@ -12,6 +12,7 @@
 #include "lore.h"
 #include "bank.h"
 #include "npc_relocate.h"
+#include "enemies.h"
 
 extern Player_t player;
 
@@ -610,6 +611,13 @@ static void DialogueDispatchAction( const char* a )
       NPCRelocate( dlg_npc_type, row, col, 1 );
       DialogueEnd();
     }
+  }
+
+  /* boss_greta - despawn NPC, spawn Greta enemy + elder horror */
+  if ( strcmp( a, "boss_greta" ) == 0 )
+  {
+    EnemyBossGretaSpawn( dlg_npc_type );
+    DialogueEnd();
   }
 }
 

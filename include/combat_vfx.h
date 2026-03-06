@@ -12,6 +12,7 @@ void CombatVFXDraw( aRectf_t vp_rect, GameCamera_t* cam );
 
 /* Spawn a floating damage number at world position */
 void CombatVFXSpawnNumber( float wx, float wy, int amount, aColor_t color );
+void CombatVFXSpawnNumberScaled( float wx, float wy, int amount, aColor_t color, float scale );
 
 /* Spawn floating text at world position (speech bubbles, etc.) */
 void CombatVFXSpawnText( float wx, float wy, const char* text, aColor_t color );

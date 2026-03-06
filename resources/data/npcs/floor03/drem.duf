@@ -12,7 +12,7 @@
 @greeting {
     start: true
     priority: 0
-    require_not_flag: "quest_found_horror"
+    require_not_flag: "quest_bloop"
     require_not_flag: "told_drem_rescued"
     text: "You... you're going out there? Into the tunnels? Please. I need to ask you something."
     options: ["opt_what", "opt_leave"]
@@ -20,7 +20,7 @@
 @greeting_quest {
     start: true
     priority: 1
-    require_flag: "quest_found_horror"
+    require_flag: "quest_bloop"
     require_not_flag: "found_horror_rescued"
     text: "Did you find her? Bloop? She's small. Doesn't bite. Much."
     options: ["opt_not_yet", "opt_leave"]
@@ -55,7 +55,7 @@
 @opt_accept {
     label: "I'll look for her."
     color: "quest"
-    set_flag: "quest_found_horror"
+    set_flag: "quest_bloop"
     goto: "accept_reply"
 }
 @accept_reply {

@@ -238,7 +238,7 @@ void QuestTrackerDraw( aRectf_t vp_rect )
   }
 
   /* Find Bloop */
-  if ( FlagGet( "quest_found_horror" ) && !FlagGet( "told_drem_rescued" ) )
+  if ( FlagGet( "quest_bloop" ) && !FlagGet( "told_drem_rescued" ) )
   {
     if ( FlagGet( "found_horror_rescued" ) )
     {

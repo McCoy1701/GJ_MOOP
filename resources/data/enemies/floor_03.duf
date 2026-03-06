@@ -26,6 +26,34 @@
     description: "A robed figure, no longer praying. Its eyes are wrong."
 }
 
+@greta {
+    name: "Greta"
+    glyph: "W"
+    hp: 18
+    damage: 4
+    defense: 2
+    ai: "basic"
+    sight_range: 7
+    gold_drop: 3
+    color: [200, 180, 160, 255]
+    image_path: "resources/assets/npcs/greta.png"
+    description: "The woman in dark robes is no longer smiling."
+}
+
+@elder_horror {
+    name: "Elder Horror"
+    glyph: "E"
+    hp: 32
+    damage: 6
+    defense: 3
+    ai: "basic"
+    sight_range: 8
+    gold_drop: 3
+    color: [80, 20, 60, 255]
+    image_path: "resources/assets/enemies/elder_horror.png"
+    description: "The thing the horrors were before they forgot. It remembers."
+}
+
 @void_slime {
     name: "Void Slime"
     glyph: "S"

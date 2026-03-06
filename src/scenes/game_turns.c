@@ -192,6 +192,20 @@ void GameTurnsHandleTurnEnd( float dt, int turn_skipped )
                   inv_expand_hint_timer = HINT_DURATION;
                 }
               }
+              else if ( strcmp( ckey, "max_health" ) == 0 )
+              {
+                gi->alive = 0;
+                player.max_hp += 1;
+                player.hp    += 1;
+                player.max_health_ups += 1;
+                a_AudioPlaySound( &gt_sfx_powerup, NULL );
+                int m = player.max_health_ups;
+                ConsolePushF( gt_console, (aColor_t){ 50, 205, 50, 255 },
+                              "Max Health +1! (%d/3)", m > 3 ? 3 : m );
+                CombatVFXSpawnText( player.world_x, player.world_y,
+                                    "Max Health +1",
+                                    (aColor_t){ 50, 205, 50, 255 } );
+              }
             }
             else
             {

@@ -106,12 +106,14 @@
 # ==============================
 @opt_drem {
     label: "What's wrong with Drem?"
+    color: "quest"
     require_not_flag: "told_drem_rescued"
     require_not_flag: "drem_grieving"
     goto: "drem_reply"
 }
 @drem_reply {
     text: "His horror wandered off. Named her Bloop. Stupid name. He's a wreck about it. If you see a small horror out there that doesn't try to kill you... that's probably her."
+    set_flag: "quest_bloop"
     options: ["opt_cult", "opt_church", "opt_leave"]
 }
 

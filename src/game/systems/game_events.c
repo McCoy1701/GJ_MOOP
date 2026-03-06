@@ -324,7 +324,7 @@ static int apply_totem_def( Enemy_t* e, int damage )
 
 static void consume_scroll( int inv_slot )
 {
-  int echo = PlayerEquipEffect( "scroll_echo" );
+  int echo = PlayerEquipEffectMin( "scroll_echo" );
   if ( echo > 0 )
   {
     player.scroll_echo_counter++;

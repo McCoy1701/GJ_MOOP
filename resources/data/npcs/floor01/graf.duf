@@ -453,12 +453,12 @@
     options: ["opt_show_note", "opt_whats_up", "opt_ask_rats", "opt_about_rats_followup", "opt_claim_reward", "opt_leave"]
 }
 @opt_show_note {
-    label: "A letter from Mayor Greta. Says the bearer can leave."
-    color:"quest"
+    label: "A letter from the Mayor. Says the bearer can leave."
+    color:"complete"
     goto: "show_note_reply"
 }
 @show_note_reply {
-    text: "Let me see that. 'To whom it may concern... permission to leave... signed, Mayor Greta.' This is... this is REAL. I'm being RELIEVED! Here, take my sandwich. I won't need it. I'm going HOME. I'm going to sleep in a BED."
+    text: "Let me see that. 'To whom it may concern... permission to leave...' This is... this is REAL. I'm being RELIEVED! Here, take my sandwich. I won't need it. I'm going HOME. I'm going to sleep in a BED."
     set_flag: "got_sandwich"
     clear_flag: "has_mayors_note"
     take_item: "Mayor's Note"

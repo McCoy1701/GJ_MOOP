@@ -267,6 +267,13 @@ void SpawnFloor2( NPC_t* npcs, int* num_npcs,
       GroundItemSpawn( items, num_items, sack_idx, 42, 37, tw, th );
   }
 
+  /* Max Health pickup */
+  {
+    int mh_idx = ConsumableByKey( "max_health" );
+    if ( mh_idx >= 0 )
+      GroundItemSpawn( items, num_items, mh_idx, 47, 35, tw, th );
+  }
+
   /* Cave mushrooms for Nettle's quest - one per W-accessible path */
   {
     int cm = ConsumableByKey( "cave_mushroom" );

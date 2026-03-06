@@ -65,12 +65,14 @@ typedef struct
   int attack_counter;                   /* outgoing attacks toward armor break */
   int last_room_id;                     /* detect room changes */
   int root_turns;                       /* forced skip turns (spider web etc.) */
+  int max_health_ups;                   /* max health pickups collected (persists across floors) */
 } Player_t;
 
 void PlayerInitStats( void );
 void PlayerRecalcStats( void );
 int  PlayerStat( const char* key );
 int  PlayerEquipEffect( const char* name );
+int  PlayerEquipEffectMin( const char* name );
 
 /* Gameplay state wrappers - funnel all mutations through these */
 void PlayerFullReset( int class_index );

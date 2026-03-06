@@ -433,6 +433,23 @@ static void gs_Draw( float dt )
       }
     }
 
+    /* Low HP red border pulse */
+    if ( player.max_hp > 0 && player.hp > 0
+         && player.hp <= player.max_hp / 4 )
+    {
+      static float pulse_t = 0;
+      pulse_t += dt * 2.5f;
+      float pulse = ( sinf( pulse_t ) + 1.0f ) * 0.5f;  /* 0..1 */
+      int alpha = 80 + (int)( pulse * 120.0f );          /* 80..200 */
+      aColor_t rc = { 0xb0, 0x20, 0x20, alpha };
+      aRectf_t b = vp_rect;
+      for ( int t = 0; t < 3; t++ )
+      {
+        a_DrawRect( b, rc );
+        b.x += 1; b.y += 1; b.w -= 2; b.h -= 2;
+      }
+    }
+
     /* Quest tracker - top-left of viewport */
     QuestTrackerDraw( vp_rect );
 
@@ -463,6 +480,9 @@ static void gs_Draw( float dt )
 
   InventoryUISetIntroOffset( TransitionGetRightOX(), TransitionGetUIAlpha() );
   InventoryUIDraw();
+
+  /* Passive tooltip - drawn after viewport so it's on top */
+  HUDDrawPassiveTooltip();
 
   /* First-consumable hint arrow */
   {

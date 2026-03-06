@@ -278,7 +278,7 @@
     bonus_damage: 0
     effect: "heal"
     heal: 4
-    image_path: ""
+    image_path: "resources/assets/consumables/small_health_potion.png"
     description: "Restores 4 HP. Works for anyone with a mouth. Or a skull."
     color: [220, 60, 80, 255]
 }
@@ -289,7 +289,7 @@
     bonus_damage: 0
     effect: "heal"
     heal: 8
-    image_path: ""
+    image_path: "resources/assets/consumables/medium_health_potion.png"
     description: "Restores 8 HP. Twice the potion, twice the recovery."
     color: [200, 40, 60, 255]
 }
@@ -302,8 +302,8 @@
     glyph: "="
     bonus_damage: 0
     effect: "none"
-    image_path: ""
-    description: "An official letter from Mayor Greta granting permission to leave the dungeon."
+    image_path: "resources/assets/consumables/mayors_note.png"
+    description: "An official letter from the Mayor granting permission to leave the dungeon."
     color: [240, 230, 180, 255]
 }
 @guards_sandwich {
@@ -368,7 +368,7 @@
     bonus_damage: 0
     effect: "empower"
     heal: 0
-    image_path: ""
+    image_path: "resources/assets/consumables/unyielding_ale.png"
     description: "Grishnak's cave ale. Spite-brewed. Your next attack deals double damage."
     color: [60, 85, 110, 255]
 }
@@ -379,7 +379,7 @@
     bonus_damage: 0
     effect: "heal"
     heal: 99
-    image_path: ""
+    image_path: "resources/assets/consumables/mushroom_mint_tea.png"
     description: "Nettle's specialty. Earthy, sharp, and surprisingly restorative. Heals to full HP."
     color: [120, 160, 90, 255]
 }
@@ -405,4 +405,14 @@
     image_path: "resources/assets/consumables/large_sack.png"
     description: "A large canvas sack. +2 inventory slots."
     color: [201, 158, 80, 255]
+}
+@max_health {
+    name: "Max Health"
+    type: "pickup"
+    glyph: "♥"
+    bonus_damage: 0
+    effect: "none"
+    image_path: "resources/assets/consumables/max_health.png"
+    description: "A mysterious vital essence. +1 max HP."
+    color: [50, 205, 50, 255]
 }
