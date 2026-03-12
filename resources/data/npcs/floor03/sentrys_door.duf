@@ -2,16 +2,16 @@
     name: "Sentry's Door"
     glyph: "+"
     color: [100, 80, 120, 255]
-    image_path: "resources/assets/npcs/goblin_door.png"
+    image_path: "resources/assets/npcs/sentry_door.png"
     description: "A massive stone slab. It hums faintly, vibrating in tune with the walls."
     action: "Open"
     no_face: true
     no_shadow: true
 }
 
-# ==============================
+# =========
 # LOCKED (default)
-# ==============================
+# =========
 @locked {
     start: true
     priority: 0
@@ -20,9 +20,9 @@
     options: ["opt_leave"]
 }
 
-# ==============================
+# =========
 # GATE OPENED — UNLOCKED
-# ==============================
+# =========
 @unlocked {
     start: true
     priority: 5
@@ -31,9 +31,9 @@
     options: ["opt_enter", "opt_leave"]
 }
 
-# ==============================
+# =========
 # OPTIONS
-# ==============================
+# =========
 @opt_enter {
     label: "Enter"
     color: "danger"
@@ -41,9 +41,9 @@
     goto: "end"
 }
 
-# ==============================
+# =========
 # LEAVE
-# ==============================
+# =========
 @opt_leave {
     label: "[Step away]"
     goto: "end"

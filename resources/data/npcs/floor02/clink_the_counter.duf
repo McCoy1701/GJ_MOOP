@@ -6,9 +6,9 @@
     description: "A goblin behind a stone counter, carefully stacking coins into perfectly even piles."
 }
 
-# ==============================
+# =========
 # GREETINGS
-# ==============================
+# =========
 @greeting {
     start: true
     priority: 0
@@ -25,9 +25,9 @@
     options: ["opt_deposit", "opt_withdraw", "opt_how_much", "opt_leave"]
 }
 
-# ==============================
+# =========
 # HOW DOES IT WORK
-# ==============================
+# =========
 @opt_how_work {
     label: "How does this work?"
     goto: "how_work_reply"
@@ -46,9 +46,9 @@
     options: ["opt_deposit", "opt_withdraw", "opt_leave"]
 }
 
-# ==============================
+# =========
 # INTEREST
-# ==============================
+# =========
 @opt_interest {
     label: "No interest? At all?"
     goto: "interest_reply"
@@ -74,9 +74,9 @@
     options: ["opt_deposit", "opt_withdraw", "opt_leave"]
 }
 
-# ==============================
+# =========
 # DEPOSIT
-# ==============================
+# =========
 @opt_deposit {
     label: "Store 10 gold."
     color: "quest"
@@ -85,9 +85,9 @@
     goto: "bank_more"
 }
 
-# ==============================
+# =========
 # WITHDRAW
-# ==============================
+# =========
 @opt_withdraw {
     label: "Withdraw 10 gold."
     color: "quest"
@@ -96,9 +96,9 @@
     goto: "bank_more"
 }
 
-# ==============================
+# =========
 # HOW MUCH IS IN THERE
-# ==============================
+# =========
 @opt_how_much {
     label: "How much do I have stored?"
     action: "bank_check"
@@ -109,9 +109,9 @@
     options: ["opt_deposit", "opt_withdraw", "opt_leave"]
 }
 
-# ==============================
+# =========
 # BANK MORE (shared loop-back)
-# ==============================
+# =========
 @bank_more {
     text: "Anything else?"
     set_flag: "used_bank"
@@ -119,9 +119,9 @@
     options: ["opt_deposit", "opt_withdraw", "opt_how_much", "opt_leave"]
 }
 
-# ==============================
+# =========
 # LEAVE
-# ==============================
+# =========
 @opt_leave {
     label: "[Leave]"
     goto: "end"

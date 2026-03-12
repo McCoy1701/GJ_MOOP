@@ -6,9 +6,9 @@
     description: "An ex-cultist sitting with his head in his hands. He keeps glancing at the west corridor."
 }
 
-# ==============================
+# =========
 # GREETINGS
-# ==============================
+# =========
 @greeting {
     start: true
     priority: 0
@@ -43,9 +43,9 @@
     options: ["opt_leave"]
 }
 
-# ==============================
+# =========
 # QUEST START
-# ==============================
+# =========
 @opt_what {
     label: "What is it?"
     goto: "quest_start"
@@ -73,9 +73,9 @@
     options: ["opt_leave"]
 }
 
-# ==============================
+# =========
 # QUEST IN PROGRESS
-# ==============================
+# =========
 @opt_not_yet {
     label: "Not yet."
     goto: "not_yet_reply"
@@ -93,9 +93,9 @@
     options: ["opt_leave"]
 }
 
-# ==============================
+# =========
 # QUEST COMPLETE — RESCUED
-# ==============================
+# =========
 @opt_shes_back {
     label: "She's safe."
     color: "complete"
@@ -112,9 +112,9 @@
     goto: "end"
 }
 
-# ==============================
+# =========
 # LEAVE
-# ==============================
+# =========
 @opt_leave {
     label: "[Leave]"
     goto: "end"

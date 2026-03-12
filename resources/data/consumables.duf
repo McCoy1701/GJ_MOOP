@@ -1,9 +1,9 @@
 # Consumable items - picked up in the dungeon, used for special attacks
 # type determines which character class can use them
 # bonus_damage = extra damage on top of base attack
-# ==============================
+# =========
 # FOOD (Mercenary) - modifies your MELEE attack
-# ==============================
+# =========
 @bread {
     name: "Stale Bread"
     type: "food"
@@ -87,9 +87,9 @@
     description: "Breathe fire in a wide cone. Burns enemies for 1 damage over 2 turns."
     color: [255, 60, 30, 255]
 }
-# ==============================
+# =========
 # GADGETS (Rogue) - precision tools, placement matters
-# ==============================
+# =========
 @flint_arrow {
     name: "Flint Arrow"
     type: "gadget"
@@ -177,9 +177,9 @@
     description: "Throw at an adjacent tile. Deals damage and stuns all enemies within 2 tiles for 2 turns."
     color: [120, 120, 120, 255]
 }
-# ==============================
+# =========
 # SCROLLS (Mage) - rule-breaking, area effects
-# ==============================
+# =========
 @scroll_spark {
     name: "Scroll of Spark"
     type: "scroll"
@@ -268,9 +268,9 @@
     description: "Teleport to an enemy, dealing bonus damage and cleaving all adjacent foes on arrival."
     color: [180, 80, 255, 255]
 }
-# ==============================
+# =========
 # POTIONS (Any class) - instant use, no attack required
-# ==============================
+# =========
 @small_health_potion {
     name: "Small Health Potion"
     type: "potion"
@@ -293,9 +293,9 @@
     description: "Restores 8 HP. Twice the potion, twice the recovery."
     color: [200, 40, 60, 255]
 }
-# ==============================
+# =========
 # QUEST ITEMS - carried, not class-locked
-# ==============================
+# =========
 @mayors_note {
     name: "Mayor's Note"
     type: "quest"
@@ -359,6 +359,7 @@
     effect: "none"
     image_path: ""
     description: "A crude iron key. The tag reads 'Vactaion Room' in scratchy handwriting."
+    image_path: "resources/assets/equipment/goblin_key.png"
     color: [180, 160, 100, 255]
 }
 @unyielding_ale {
@@ -383,9 +384,9 @@
     description: "Nettle's specialty. Earthy, sharp, and surprisingly restorative. Heals to full HP."
     color: [120, 160, 90, 255]
 }
-# ==============================
+# =========
 # PICKUPS (instant, no inventory slot)
-# ==============================
+# =========
 @bag {
     name: "Bag"
     type: "pickup"

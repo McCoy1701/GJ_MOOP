@@ -6,9 +6,9 @@
     description: "A suspiciously lumpy figure in a trench coat. Something is moving near the ankles."
 }
 
-# ==============================
+# =========
 # GREETINGS
-# ==============================
+# =========
 @greeting {
     start: true
     priority: 0
@@ -71,9 +71,9 @@
     options: ["opt_leave"]
 }
 
-# ==============================
+# =========
 # WHO ARE YOU (before discovery)
-# ==============================
+# =========
 @opt_who_are_you {
     label: "What... are you, exactly?"
     require_not_flag: "knows_shop_rats"
@@ -110,9 +110,9 @@
     options: ["opt_how_shop", "opt_browse", "opt_leave"]
 }
 
-# ==============================
+# =========
 # RAT QUEST - THE REVEAL
-# ==============================
+# =========
 @opt_rat_quest {
     label: "The guard upstairs wants me to kill rats."
     require_flag: "quest_rats"
@@ -166,9 +166,9 @@
     options: ["opt_three_of_you", "opt_browse", "opt_leave"]
 }
 
-# ==============================
+# =========
 # RAT QUEST DONE - ALTERNATE REVEAL
-# ==============================
+# =========
 @opt_rat_quest_done {
     label: "I cleared out a rat problem for the guard upstairs."
     require_flag: "rats_cleared"
@@ -186,9 +186,9 @@
     goto: "rat_quest_push_reply"
 }
 
-# ==============================
+# =========
 # POST-DISCOVERY - THE RATS
-# ==============================
+# =========
 @opt_three_of_you {
     label: "Tell me about the three of you."
     require_flag: "knows_shop_rats"
@@ -242,9 +242,9 @@
     options: ["opt_browse", "opt_leave"]
 }
 
-# ==============================
+# =========
 # RAT KING (post-boss)
-# ==============================
+# =========
 @opt_rat_king {
     label: "I defeated the Rat King."
     require_flag: "rat_king_defeated"
@@ -266,9 +266,9 @@
     options: ["opt_browse", "opt_leave"]
 }
 
-# ==============================
+# =========
 # KNOWS JONATHON
-# ==============================
+# =========
 @opt_know_jonathon {
     label: "You know Jonathon the painter?"
     require_flag: "lore_jonathon"
@@ -288,9 +288,9 @@
     options: ["opt_browse", "opt_leave"]
 }
 
-# ==============================
+# =========
 # KNOWS GRAF
-# ==============================
+# =========
 @opt_know_graf {
     label: "There's a guard named Graf nearby."
     require_flag: "lore_graf"
@@ -302,9 +302,9 @@
     options: ["opt_browse", "opt_leave"]
 }
 
-# ==============================
+# =========
 # HOW DOES THIS WORK
-# ==============================
+# =========
 @opt_how_shop {
     label: "How does your shop work?"
     goto: "how_shop_reply"
@@ -323,9 +323,9 @@
     options: ["opt_browse", "opt_leave"]
 }
 
-# ==============================
+# =========
 # STINKY CHEESE
-# ==============================
+# =========
 @opt_offer_cheese {
     label: "I found this cheese. Want it?"
     require_item: "Stinky Cheese"
@@ -356,9 +356,9 @@
     options: ["opt_rat_queen_rumor", "opt_browse", "opt_leave"]
 }
 
-# ==============================
+# =========
 # GRAF'S SANDWICH
-# ==============================
+# =========
 @opt_offer_sandwich {
     label: "Want a sandwich?"
     require_item: "Graf's Sandwich"
@@ -380,18 +380,18 @@
     options: ["opt_who_are_you", "opt_how_shop", "opt_browse", "opt_rat_quest", "opt_rat_quest_done", "opt_leave"]
 }
 
-# ==============================
+# =========
 # BROWSE
-# ==============================
+# =========
 @opt_browse {
     label: "Let me look around."
     set_flag: "visited_shop"
     goto: "end"
 }
 
-# ==============================
+# =========
 # LEAVE
-# ==============================
+# =========
 @opt_leave {
     label: "[Leave]"
     goto: "end"

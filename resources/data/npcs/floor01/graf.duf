@@ -9,9 +9,9 @@
     idle_cooldown: 5
 }
 
-# ==============================
+# =========
 # GREETINGS (priority-based)
-# ==============================
+# =========
 @greeting {
     start: true
     priority: 0
@@ -55,9 +55,9 @@
     options: ["opt_whats_up", "opt_ask_for_sandwich", "opt_about_town", "opt_leave"]
 }
 
-# ==============================
+# =========
 # WHO ARE YOU
-# ==============================
+# =========
 @opt_who_are_you {
     label: "Who are you, anyway?"
     color: "lore"
@@ -85,9 +85,9 @@
     options: ["opt_about_sandwich", "opt_whats_up", "opt_about_town", "opt_leave"]
 }
 
-# ==============================
+# =========
 # FRIENDLY / HOSTILE openers
-# ==============================
+# =========
 @opt_friendly {
     label: "Just passing through."
     goto: "friendly_reply"
@@ -107,9 +107,9 @@
     options: ["opt_leave"]
 }
 
-# ==============================
+# =========
 # WHAT ARE YOU DOING HERE branch
-# ==============================
+# =========
 @opt_whats_up {
     label: "What are you doing down here?"
     color: "quest"
@@ -155,9 +155,9 @@
     options: ["opt_lost", "opt_about_town", "opt_leave"]
 }
 
-# ==============================
+# =========
 # TOWN LORE branch
-# ==============================
+# =========
 @opt_about_town {
     label: "Tell me about the town."
     color: "lore"
@@ -209,9 +209,9 @@
     options: ["opt_lost", "opt_ask_rats", "opt_about_rats_followup", "opt_about_town", "opt_leave"]
 }
 
-# ==============================
+# =========
 # SANDWICH (Rogue gets it free, others earn it)
-# ==============================
+# =========
 @opt_about_sandwich {
     label: "Tell me about this sandwich."
     goto: "sandwich_reply"
@@ -222,9 +222,9 @@
     options: ["opt_whats_up", "opt_ask_rats", "opt_about_rats_followup", "opt_leave"]
 }
 
-# ==============================
+# =========
 # MAGIC BED (Mage-specific)
-# ==============================
+# =========
 @opt_magic_bed {
     label: "That's not how magic works."
     goto: "magic_bed_reply"
@@ -242,9 +242,9 @@
     options: ["opt_whats_up", "opt_ask_rats", "opt_about_rats_followup", "opt_leave"]
 }
 
-# ==============================
+# =========
 # RAT QUEST
-# ==============================
+# =========
 @opt_ask_rats {
     label: "Tell me about the rats."
     require_not_flag: "knows_about_rats"
@@ -324,9 +324,9 @@
     options: ["opt_leave"]
 }
 
-# ==============================
+# =========
 # SLIMES
-# ==============================
+# =========
 @opt_about_slimes {
     label: "What about the slimes?"
     color: "lore"
@@ -346,9 +346,9 @@
     options: ["opt_ask_rats", "opt_about_rats_followup", "opt_about_town", "opt_leave"]
 }
 
-# ==============================
+# =========
 # SANDWICH NEGOTIATIONS (post-rats, requires knows_sandwich)
-# ==============================
+# =========
 @opt_ask_for_sandwich {
     label: "So about that sandwich..."
     require_flag: "rats_cleared"
@@ -442,9 +442,9 @@
     options: ["opt_leave"]
 }
 
-# ==============================
+# =========
 # MAYOR'S NOTE (requires has_mayors_note)
-# ==============================
+# =========
 @greeting_has_note {
     start: true
     priority: 4
@@ -476,9 +476,9 @@
     options: ["opt_ask_rats", "opt_about_rats_followup", "opt_leave"]
 }
 
-# ==============================
+# =========
 # POST-DEPARTURE
-# ==============================
+# =========
 @greeting_leaving {
     start: true
     priority: 5
@@ -495,9 +495,9 @@
     options: ["opt_leave"]
 }
 
-# ==============================
+# =========
 # LEAVE
-# ==============================
+# =========
 @opt_leave {
     label: "[Leave]"
     goto: "end"

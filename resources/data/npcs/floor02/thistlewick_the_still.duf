@@ -8,9 +8,9 @@
     idle_cooldown: 8
 }
 
-# ==============================
+# =========
 # PRE-RELIC - WON'T TALK
-# ==============================
+# =========
 @greeting {
     start: true
     priority: 0
@@ -60,9 +60,9 @@
     options: ["opt_leave"]
 }
 
-# ==============================
+# =========
 # HAS RELIC - NOW HE TALKS
-# ==============================
+# =========
 @greeting_has_relic {
     start: true
     priority: 1
@@ -101,9 +101,9 @@
     options: ["opt_warn_him", "opt_leave"]
 }
 
-# ==============================
+# =========
 # THE WARNING
-# ==============================
+# =========
 @opt_warn_him {
     label: "Laura says something is coming from below."
     goto: "warn_reply"
@@ -152,9 +152,9 @@
     options: ["opt_fight", "opt_run", "opt_laura_right", "opt_leave"]
 }
 
-# ==============================
+# =========
 # THE REAL THISTLEWICK
-# ==============================
+# =========
 @opt_fight {
     label: "You could fight."
     goto: "fight_reply"
@@ -190,9 +190,9 @@
     options: ["opt_leave"]
 }
 
-# ==============================
+# =========
 # POST-WARNING
-# ==============================
+# =========
 @greeting_warned {
     start: true
     priority: 2
@@ -209,9 +209,9 @@
     options: ["opt_leave"]
 }
 
-# ==============================
+# =========
 # LEAVE
-# ==============================
+# =========
 @opt_leave {
     label: "[Leave]"
     goto: "end"

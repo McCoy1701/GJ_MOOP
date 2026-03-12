@@ -9,9 +9,9 @@
     no_shadow: true
 }
 
-# ==============================
+# =========
 # LOCKED (default)
-# ==============================
+# =========
 @locked {
     start: true
     priority: 0
@@ -20,9 +20,9 @@
     options: ["opt_leave"]
 }
 
-# ==============================
+# =========
 # GATEKEEPER DEAD — UNLOCKED
-# ==============================
+# =========
 @unlocked {
     start: true
     priority: 5
@@ -31,19 +31,19 @@
     options: ["opt_pass", "opt_leave"]
 }
 
-# ==============================
+# =========
 # OPTIONS
-# ==============================
+# =========
 @opt_pass {
     label: "Pass through"
     color: "complete"
-    action: "relocate:0,0"
+    action: "player_teleport_rel:0,-2"
     goto: "end"
 }
 
-# ==============================
+# =========
 # LEAVE
-# ==============================
+# =========
 @opt_leave {
     label: "[Step away]"
     goto: "end"

@@ -6,9 +6,9 @@
     description: "An ex-cultist with cropped hair and steady hands. She does the talking."
 }
 
-# ==============================
+# =========
 # GREETINGS
-# ==============================
+# =========
 @greeting {
     start: true
     priority: 0
@@ -33,9 +33,9 @@
     options: ["opt_who", "opt_cult", "opt_church", "opt_leave"]
 }
 
-# ==============================
+# =========
 # WHO ARE YOU
-# ==============================
+# =========
 @opt_who {
     label: "Who are you people?"
     goto: "who_reply"
@@ -53,9 +53,9 @@
     options: ["opt_cult", "opt_church", "opt_leave"]
 }
 
-# ==============================
+# =========
 # MURI AND DREM
-# ==============================
+# =========
 @opt_drem_close {
     label: "You and Drem seem close."
     require_flag: "talked_drem"
@@ -74,9 +74,9 @@
     options: ["opt_cult", "opt_church", "opt_leave"]
 }
 
-# ==============================
+# =========
 # THE CULT
-# ==============================
+# =========
 @opt_cult {
     label: "Tell me about the cult."
     color: "lore"
@@ -88,9 +88,9 @@
     options: ["opt_naming", "opt_church", "opt_greta", "opt_leave"]
 }
 
-# ==============================
+# =========
 # THE NAMING CONVENTION
-# ==============================
+# =========
 @opt_naming {
     label: "Why is the horror named Murl?"
     color: "lore"
@@ -102,9 +102,9 @@
     options: ["opt_drem", "opt_cult", "opt_church", "opt_leave"]
 }
 
-# ==============================
+# =========
 # THE CHURCH HALL
-# ==============================
+# =========
 @opt_church {
     label: "What's in the church hall?"
     goto: "church_reply"
@@ -122,9 +122,9 @@
     options: ["opt_cult", "opt_naming", "opt_leave"]
 }
 
-# ==============================
+# =========
 # DREM
-# ==============================
+# =========
 @opt_drem {
     label: "What's wrong with Drem?"
     color: "quest"
@@ -139,9 +139,9 @@
     options: ["opt_cult", "opt_church", "opt_leave"]
 }
 
-# ==============================
+# =========
 # GRETA
-# ==============================
+# =========
 @opt_greta {
     label: "The woman in the robes?"
     goto: "greta_reply"
@@ -151,9 +151,9 @@
     options: ["opt_cult", "opt_church", "opt_leave"]
 }
 
-# ==============================
+# =========
 # LEAVE
-# ==============================
+# =========
 @opt_leave {
     label: "[Leave]"
     goto: "end"

@@ -1,56 +1,56 @@
-# ==============================
+# =========
 # FLOOR 3 LORE ENTRIES
 # Discovered through NPC dialogue on Floor 3.
-# ==============================
+# =========
 
-# ==============================
+# =========
 # PEOPLE
-# ==============================
+# =========
 @the_cult {
     title: "The Cult of the Hum"
     category: "People"
     description: "Worshippers of the dungeon. They knelt until the hum chanted back. The woman who leads them has been guiding adventurers to the feast table for decades. She smiles a lot."
 }
 
-# ==============================
+# =========
 # ENEMIES
-# ==============================
+# =========
 @the_horrors {
     title: "The Horrors"
     category: "Enemies"
     description: "What the hum makes out of people who stop resisting and start worshipping. The cultists each had one. They named them after themselves — easy to remember when the hum eats everything else. Some named theirs differently. Those ones got attached."
 }
 
-# ==============================
+# =========
 # PLACES
-# ==============================
+# =========
 @millhaven_truth {
     title: "Millhaven's True Purpose"
     category: "Places"
     description: "Millhaven is not a town. It is a lure. Twelve residents, a bakery, a guard post — enough to look real, enough to make travelers stop. The mercenary guild postings, the rumors of treasure, the bounty board. All designed to attract adventurers in threes. A soldier, a thief, a mage. None of them knew. Not Graf. Not Thom. Not Jonathon. They thought they lived in a town. They lived in bait."
 }
 
-# ==============================
+# =========
 # MYSTERIES
-# ==============================
+# =========
 @final_feast {
     title: "The Final Feast"
     category: "Mysteries"
     description: "The table at the bottom has been set since before anyone can remember. Three plates — red, green, blue. Three chairs. The dungeon wants them filled. Every group of three that enters fails. They turn, they break, they die. The table resets. The dungeon waits. It has been waiting for a very long time."
 }
 
-# ==============================
+# =========
 # PEOPLE (GRETA)
-# ==============================
+# =========
 @cult_leader_greta {
     title: "Cult Leader Greta"
     category: "People"
     description: "Mayor of Millhaven. Cult leader. Forty years of feeding adventurers to the dungeon. She heard the hum as a girl and it told her to bring them. So she built a town that looked like a town, posted a guard who didn't know he was bait, and kept a ledger of every name. Soldiers, thieves, mages. Dozens of them. All fed."
 }
 
-# ==============================
+# =========
 # MYSTERIES (SENTRY / GATEKEEPER)
-# ==============================
+# =========
 @the_sentry {
     title: "The Sentry"
     category: "Mysteries"

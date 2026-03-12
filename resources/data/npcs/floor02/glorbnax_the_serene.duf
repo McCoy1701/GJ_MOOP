@@ -6,9 +6,9 @@
     description: "A goblin in dark robes, blue chalk on his face. Perfectly still."
 }
 
-# ==============================
+# =========
 # GREETINGS (priority-based)
-# ==============================
+# =========
 @greeting {
     start: true
     priority: 0
@@ -59,9 +59,9 @@
     options: ["opt_appropriate", "opt_the_hum", "opt_slime_quest", "opt_slime_quest_active", "opt_leave"]
 }
 
-# ==============================
+# =========
 # WHO ARE YOU
-# ==============================
+# =========
 @opt_who_are_you {
     label: "Who are you?"
     color: "lore"
@@ -80,9 +80,9 @@
     options: ["opt_why_standing", "opt_peace_tribe", "opt_leave"]
 }
 
-# ==============================
+# =========
 # WHY STANDING STILL
-# ==============================
+# =========
 @opt_why_standing {
     label: "You watched us fight and did nothing."
     goto: "why_standing_reply"
@@ -108,9 +108,9 @@
     options: ["opt_about_laura", "opt_peace_tribe", "opt_leave"]
 }
 
-# ==============================
+# =========
 # ABOUT LAURA
-# ==============================
+# =========
 @opt_about_laura {
     label: "What do you think of Laura?"
     goto: "about_laura_reply"
@@ -136,9 +136,9 @@
     options: ["opt_peace_tribe", "opt_leave"]
 }
 
-# ==============================
+# =========
 # PEACE TRIBE INFO
-# ==============================
+# =========
 @opt_peace_tribe {
     label: "Tell me about the peace tribe."
     color: "lore"
@@ -178,9 +178,9 @@
     options: ["opt_the_hum", "opt_directions", "opt_leave"]
 }
 
-# ==============================
+# =========
 # THE HUM
-# ==============================
+# =========
 @opt_the_hum {
     label: "The hum... what do you know about it?"
     color: "lore"
@@ -207,9 +207,9 @@
     options: ["opt_directions", "opt_about_laura", "opt_leave"]
 }
 
-# ==============================
+# =========
 # DIRECTIONS
-# ==============================
+# =========
 @opt_directions {
     label: "How do I reach the peace tribe?"
     goto: "directions_reply"
@@ -227,9 +227,9 @@
     options: ["opt_leave"]
 }
 
-# ==============================
+# =========
 # THISTLEWICK PREP
-# ==============================
+# =========
 @opt_thistlewick_expect {
     label: "What should I expect from Thistlewick?"
     goto: "thistlewick_expect_reply"
@@ -239,9 +239,9 @@
     options: ["opt_directions", "opt_leave"]
 }
 
-# ==============================
+# =========
 # POST-WARNING
-# ==============================
+# =========
 @opt_appropriate {
     label: "Meditating? Something is coming to KILL everyone."
     goto: "appropriate_reply"
@@ -251,9 +251,9 @@
     options: ["opt_the_hum", "opt_leave"]
 }
 
-# ==============================
+# =========
 # RED SLIME QUEST
-# ==============================
+# =========
 @opt_slime_quest {
     label: "What creature do you hate the most?"
     color: "quest"
@@ -360,9 +360,9 @@
     options: ["opt_leave"]
 }
 
-# ==============================
+# =========
 # LEAVE
-# ==============================
+# =========
 @opt_leave {
     label: "[Leave]"
     goto: "end"

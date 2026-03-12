@@ -72,6 +72,14 @@ void SpawnFloor3( NPC_t* npcs, int* num_npcs,
   NPCSpawn( npcs, num_npcs, NPCTypeByKey( "keepers_gate" ),
             6, 9, tw, th );
 
+  /* Victory altars - one per class, past the Keeper's Gate */
+  NPCSpawn( npcs, num_npcs, NPCTypeByKey( "end_table_red" ),
+            4, 2, tw, th );
+  NPCSpawn( npcs, num_npcs, NPCTypeByKey( "end_table_green" ),
+            5, 2, tw, th );
+  NPCSpawn( npcs, num_npcs, NPCTypeByKey( "end_table_blue" ),
+            6, 2, tw, th );
+
   /* The Gatekeeper - final boss */
   EnemySpawn( enemies, num_enemies, EnemyTypeByKey( "gatekeeper" ),
               7, 11, tw, th );

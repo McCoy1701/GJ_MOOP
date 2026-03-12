@@ -9,9 +9,9 @@
     no_shadow: true
 }
 
-# ==============================
+# =========
 # GREETINGS
-# ==============================
+# =========
 @locked {
     start: true
     priority: 0
@@ -35,9 +35,9 @@
     options: ["opt_open_hostile", "opt_leave"]
 }
 
-# ==============================
+# =========
 # OPTIONS
-# ==============================
+# =========
 @opt_knock {
     label: "Knock"
     goto: "knock_reply"
@@ -60,9 +60,9 @@
     goto: "end"
 }
 
-# ==============================
+# =========
 # LEAVE
-# ==============================
+# =========
 @opt_leave {
     label: "[Step away]"
     goto: "end"

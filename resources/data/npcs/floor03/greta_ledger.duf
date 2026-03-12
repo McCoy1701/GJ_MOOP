@@ -7,9 +7,9 @@
     no_face: true
 }
 
-# ==============================
+# =========
 # CLASS-SPECIFIC STARTS
-# ==============================
+# =========
 @start_merc {
     start: true
     priority: 1
@@ -32,9 +32,9 @@
     options: ["opt_read_on", "opt_leave"]
 }
 
-# ==============================
+# =========
 # THE TOWN
-# ==============================
+# =========
 @opt_read_on {
     label: "[Read on]"
     color: "lore"
@@ -46,9 +46,9 @@
     options: ["opt_continue_method", "opt_leave"]
 }
 
-# ==============================
+# =========
 # THE METHOD
-# ==============================
+# =========
 @opt_continue_method {
     label: "[Continue]"
     color: "lore"
@@ -59,9 +59,9 @@
     options: ["opt_continue_feast", "opt_leave"]
 }
 
-# ==============================
+# =========
 # THE FEAST
-# ==============================
+# =========
 @opt_continue_feast {
     label: "[Continue]"
     color: "lore"
@@ -73,9 +73,9 @@
     options: ["opt_continue_purpose", "opt_leave"]
 }
 
-# ==============================
+# =========
 # THE PURPOSE
-# ==============================
+# =========
 @opt_continue_purpose {
     label: "[Continue]"
     color: "lore"
@@ -86,9 +86,9 @@
     options: ["opt_continue_final", "opt_leave"]
 }
 
-# ==============================
+# =========
 # THE FINAL ENTRY
-# ==============================
+# =========
 @opt_continue_final {
     label: "[Continue]"
     color: "lore"
@@ -100,9 +100,9 @@
     options: ["opt_close", "opt_leave"]
 }
 
-# ==============================
+# =========
 # CLOSE
-# ==============================
+# =========
 @opt_close {
     label: "[Close the ledger]"
     color: "lore"
@@ -113,9 +113,9 @@
     options: ["opt_leave"]
 }
 
-# ==============================
+# =========
 # LEAVE
-# ==============================
+# =========
 @opt_leave {
     label: "[Put it down]"
     color: "lore"

@@ -9,9 +9,9 @@
     no_shadow: true
 }
 
-# ==============================
+# =========
 # LOCKED (default)
-# ==============================
+# =========
 @locked {
     start: true
     priority: 0
@@ -19,9 +19,9 @@
     options: ["opt_knock", "opt_leave"]
 }
 
-# ==============================
+# =========
 # HAS KEY
-# ==============================
+# =========
 @has_key {
     start: true
     priority: 5
@@ -30,9 +30,9 @@
     options: ["opt_unlock", "opt_leave"]
 }
 
-# ==============================
+# =========
 # OPTIONS
-# ==============================
+# =========
 @opt_knock {
     label: "Knock anyway"
     goto: "knock_reply"
@@ -51,9 +51,9 @@
     goto: "end"
 }
 
-# ==============================
+# =========
 # LEAVE
-# ==============================
+# =========
 @opt_leave {
     label: "[Step away]"
     goto: "end"

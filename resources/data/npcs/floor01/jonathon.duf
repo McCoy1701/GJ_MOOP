@@ -6,9 +6,9 @@
     description: "A skeleton in a beret, standing next to an easel. He seems... calm."
 }
 
-# ==============================
+# =========
 # GREETINGS (priority-based)
-# ==============================
+# =========
 @greeting {
     start: true
     priority: 0
@@ -51,9 +51,9 @@
     options: ["opt_painting", "opt_you_ok", "opt_feast_rumor", "opt_leave"]
 }
 
-# ==============================
+# =========
 # WHY ARE YOU A SKELETON
-# ==============================
+# =========
 @opt_why_skeleton {
     label: "Why are you... a skeleton?"
     color: "lore"
@@ -72,9 +72,9 @@
     options: ["opt_other_dead", "opt_millhaven", "opt_painting", "opt_leave"]
 }
 
-# ==============================
+# =========
 # PAINTING
-# ==============================
+# =========
 @opt_painting {
     label: "What are you painting?"
     goto: "painting_reply"
@@ -100,9 +100,9 @@
     options: ["opt_why_skeleton", "opt_millhaven", "opt_leave"]
 }
 
-# ==============================
+# =========
 # FRIENDLY SKELETONS / THE TURNING
-# ==============================
+# =========
 @opt_other_dead {
     label: "Are there other... friendly skeletons?"
     color: "lore"
@@ -130,9 +130,9 @@
     options: ["opt_turning_why", "opt_the_bottom", "opt_leave"]
 }
 
-# ==============================
+# =========
 # THE DEEPER FLOORS
-# ==============================
+# =========
 @opt_the_bottom {
     label: "What's at the bottom of the dungeon?"
     color: "lore"
@@ -152,9 +152,9 @@
     options: ["opt_who_built", "opt_feast_rumor", "opt_leave"]
 }
 
-# ==============================
+# =========
 # WHO BUILT THIS PLACE
-# ==============================
+# =========
 @opt_who_built {
     label: "Do you know who built this dungeon?"
     color: "lore"
@@ -174,9 +174,9 @@
     options: ["opt_feast_rumor", "opt_the_bottom", "opt_leave"]
 }
 
-# ==============================
+# =========
 # THE FEAST TABLE RUMOR
-# ==============================
+# =========
 @opt_feast_rumor {
     label: "Have you heard any other rumors about this place?"
     color: "lore"
@@ -204,9 +204,9 @@
     options: ["opt_dungeon_alive", "opt_leave"]
 }
 
-# ==============================
+# =========
 # IS THE DUNGEON ALIVE
-# ==============================
+# =========
 @opt_dungeon_alive {
     label: "You think the dungeon is... alive?"
     color: "lore"
@@ -226,9 +226,9 @@
     options: ["opt_you_ok", "opt_leave"]
 }
 
-# ==============================
+# =========
 # MILLHAVEN LIFE - FLAVOR
-# ==============================
+# =========
 @opt_millhaven_life {
     label: "What was Millhaven like before the dungeon?"
     color: "lore"
@@ -268,9 +268,9 @@
     options: ["opt_the_bottom", "opt_who_built", "opt_leave"]
 }
 
-# ==============================
+# =========
 # MILLHAVEN CONNECTION
-# ==============================
+# =========
 @opt_millhaven {
     label: "Are you from Millhaven?"
     color: "lore"
@@ -302,9 +302,9 @@
     options: ["opt_know_mayor", "opt_leave"]
 }
 
-# ==============================
+# =========
 # THE NOTE / SKELETON QUEST
-# ==============================
+# =========
 @opt_about_note {
     label: "That note... could I have it?"
     color: "quest"
@@ -336,9 +336,9 @@
     options: ["opt_leave"]
 }
 
-# ==============================
+# =========
 # SKELETON QUEST PROGRESS
-# ==============================
+# =========
 @opt_skeletons_not_yet {
     label: "Still working on it."
     goto: "skeletons_not_yet_reply"
@@ -361,9 +361,9 @@
     options: ["opt_you_ok", "opt_leave"]
 }
 
-# ==============================
+# =========
 # POST-QUEST EMOTIONAL BEAT
-# ==============================
+# =========
 @opt_you_ok {
     label: "Are you okay? Being stuck down here?"
     goto: "you_ok_reply"
@@ -389,9 +389,9 @@
     options: ["opt_leave"]
 }
 
-# ==============================
+# =========
 # MAGE-SPECIFIC
-# ==============================
+# =========
 @opt_unskeleton {
     label: "I really don't think that's a thing."
     goto: "unskeleton_reply"
@@ -401,9 +401,9 @@
     options: ["opt_why_skeleton", "opt_painting", "opt_leave"]
 }
 
-# ==============================
+# =========
 # DIRECT HELP PATH (to skeleton quest)
-# ==============================
+# =========
 @opt_need_help {
     label: "Need any help down here?"
     color: "quest"
@@ -438,9 +438,9 @@
     options: ["opt_you_ok", "opt_leave"]
 }
 
-# ==============================
+# =========
 # LEAVE
-# ==============================
+# =========
 @opt_leave {
     label: "[Leave]"
     goto: "end"

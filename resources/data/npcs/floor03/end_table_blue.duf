@@ -1,0 +1,46 @@
+@npc {
+    name: "Azure Altar"
+    glyph: "T"
+    color: [80, 120, 200, 255]
+    image_path: "resources/assets/npcs/end_table_blue.png"
+    description: "A stone altar inlaid with arcane runes. The air crackles around it."
+    action: "Examine"
+    no_face: true
+    no_shadow: true
+}
+
+# =========
+# WRONG CLASS
+# =========
+@wrong_class {
+    start: true
+    priority: 0
+    text: "The runes flicker but fall silent. Only a mage's hand can wake this altar."
+    options: ["opt_leave"]
+}
+
+# =========
+# MAGE - VICTORY
+# =========
+@right_class {
+    start: true
+    priority: 5
+    require_class: "Mage"
+    text: "The runes ignite at your touch, filling the chamber with light. The dungeon bows before you."
+    options: ["opt_claim", "opt_leave"]
+}
+
+# =========
+# OPTIONS
+# =========
+@opt_claim {
+    label: "Claim your victory"
+    color: "complete"
+    action: "victory"
+    goto: "end"
+}
+
+@opt_leave {
+    label: "[Step away]"
+    goto: "end"
+}

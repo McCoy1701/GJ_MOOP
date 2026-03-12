@@ -2,9 +2,9 @@
 # required_type determines which character can open them
 # "any" means all characters can open it
 
-# ==============================
+# =========
 # DOORS - passage between rooms
-# ==============================
+# =========
 @red_door {
     name: "Red Door"
     kind: "door"
@@ -42,9 +42,9 @@
     description: "Anyone can open this door."
 }
 
-# ==============================
+# =========
 # CHESTS - contain consumables
-# ==============================
+# =========
 @red_chest {
     name: "Red Chest"
     kind: "chest"

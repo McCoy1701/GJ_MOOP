@@ -1,11 +1,11 @@
-# ==============================
+# =========
 # FLOOR 2 LORE ENTRIES
 # Discovered through NPC dialogue on Floor 2.
-# ==============================
+# =========
 
-# ==============================
+# =========
 # PEOPLE
-# ==============================
+# =========
 @peace_tribe {
     title: "The Peace Tribe"
     category: "People"
@@ -32,9 +32,9 @@
     description: "Warlord of the war tribe. Big goblin, red paint, big axe. Stole the peace tribe's Hearthstone because he knew it would hurt. Grishnak challenged him to a fight once. Grishnak said no. Kragthar got confused and left. Would charge headfirst into whatever lurks below and get everyone killed. Bravely. Stupidly."
 }
 
-# ==============================
+# =========
 # HISTORY
-# ==============================
+# =========
 @goblin_refuge {
     title: "The Goblin Refuge"
     category: "History"
@@ -51,9 +51,9 @@
     description: "The colored doors, the hum, the stone table - all of it predates the goblins. When the first goblin families arrived underground, the dungeon was already built. Already waiting. The goblins didn't create the thing that split them apart. They just moved into it."
 }
 
-# ==============================
+# =========
 # CREATURES
-# ==============================
+# =========
 @red_slimes {
     title: "The Red Slimes"
     category: "Enemies"
@@ -65,9 +65,9 @@
     description: "When the deeper floors opened up, the spiders crawled out. Not the small ones from above - cave spiders. Fast, aggressive, and silent. They spin webs across corridors and wait. They do not respect the concept of a gate, a wall, or personal space."
 }
 
-# ==============================
+# =========
 # MYSTERIES
-# ==============================
+# =========
 @the_feast {
     title: "The Stone Table"
     category: "Mysteries"

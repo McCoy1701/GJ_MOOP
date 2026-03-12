@@ -1,8 +1,8 @@
 # Equipment - starter gear only, one of each per class
 
-# ==============================
+# =========
 # STARTER WEAPONS
-# ==============================
+# =========
 @rusty_sword {
     name: "Rusty Sword"
     kind: "weapon"
@@ -43,9 +43,9 @@
     image_path: "resources/assets/equipment/gnarled_staff.png"
 }
 
-# ==============================
+# =========
 # STARTER ARMOR
-# ==============================
+# =========
 @leather_vest {
     name: "Leather Vest"
     kind: "armor"
@@ -87,9 +87,9 @@
     image_path: "resources/assets/equipment/tattered_robes.png"
 }
 
-# ==============================
+# =========
 # STARTER TRINKETS (unique passive per class)
-# ==============================
+# =========
 @iron_ring {
     name: "Iron Ring"
     kind: "trinket"

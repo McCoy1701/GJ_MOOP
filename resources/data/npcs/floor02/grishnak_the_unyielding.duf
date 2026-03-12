@@ -6,9 +6,9 @@
     description: "A very large goblin with smudged blue face paint, gripping a beer mug."
 }
 
-# ==============================
+# =========
 # GREETINGS
-# ==============================
+# =========
 @greeting {
     start: true
     priority: 0
@@ -51,9 +51,9 @@
     options: ["opt_peace_tribe", "opt_laura_said", "opt_leave"]
 }
 
-# ==============================
+# =========
 # NO WHAT
-# ==============================
+# =========
 @opt_no_what {
     label: "'No' what?"
     goto: "no_what_reply"
@@ -63,9 +63,9 @@
     options: ["opt_who_are_you", "opt_what_drinking", "opt_peace_tribe", "opt_leave"]
 }
 
-# ==============================
+# =========
 # WHO ARE YOU
-# ==============================
+# =========
 @opt_who_are_you {
     label: "Who are you?"
     color: "lore"
@@ -84,9 +84,9 @@
     options: ["opt_mornings", "opt_peace_tribe", "opt_laura_said", "opt_leave"]
 }
 
-# ==============================
+# =========
 # MORNINGS
-# ==============================
+# =========
 @opt_mornings {
     label: "You're underground. There are no mornings."
     goto: "mornings_reply"
@@ -96,9 +96,9 @@
     options: ["opt_peace_tribe", "opt_what_drinking", "opt_laura_said", "opt_leave"]
 }
 
-# ==============================
+# =========
 # WHAT ARE YOU DRINKING
-# ==============================
+# =========
 @opt_what_drinking {
     label: "What are you drinking?"
     goto: "drinking_reply"
@@ -116,9 +116,9 @@
     options: ["opt_try_ale", "opt_who_are_you", "opt_peace_tribe", "opt_leave"]
 }
 
-# ==============================
+# =========
 # MERC - TWELVE OPINIONS
-# ==============================
+# =========
 @opt_twelve_opinions {
     label: "Twelve opinions? Really?"
     goto: "twelve_opinions_reply"
@@ -128,9 +128,9 @@
     options: ["opt_who_are_you", "opt_what_drinking", "opt_peace_tribe", "opt_leave"]
 }
 
-# ==============================
+# =========
 # MAGE - OPINIONS ON MAGIC
-# ==============================
+# =========
 @opt_opinions_magic {
     label: "Let's hear them."
     goto: "opinions_magic_reply"
@@ -140,9 +140,9 @@
     options: ["opt_who_are_you", "opt_what_drinking", "opt_peace_tribe", "opt_leave"]
 }
 
-# ==============================
+# =========
 # PEACE TRIBE
-# ==============================
+# =========
 @opt_peace_tribe {
     label: "Tell me about the peace tribe."
     color: "lore"
@@ -162,9 +162,9 @@
     options: ["opt_war_goblins", "opt_laura_said", "opt_leave"]
 }
 
-# ==============================
+# =========
 # WAR GOBLINS
-# ==============================
+# =========
 @opt_war_goblins {
     label: "What about the war goblins?"
     goto: "war_goblins_reply"
@@ -174,9 +174,9 @@
     options: ["opt_peace_tribe", "opt_laura_said", "opt_leave"]
 }
 
-# ==============================
+# =========
 # HOW LONG - DEEP LORE CHAIN
-# ==============================
+# =========
 @opt_how_long_here {
     label: "How long have goblins lived down here?"
     color: "lore"
@@ -216,9 +216,9 @@
     options: ["opt_leave"]
 }
 
-# ==============================
+# =========
 # LAURA SAID (flag-gated)
-# ==============================
+# =========
 @opt_laura_said {
     label: "Laura says you're exhausting."
     require_flag: "knows_grishnak"
@@ -253,9 +253,9 @@
     options: ["opt_leave"]
 }
 
-# ==============================
+# =========
 # ALE QUEST
-# ==============================
+# =========
 @opt_try_ale {
     label: "Can I try some?"
     color: "quest"
@@ -278,9 +278,9 @@
     options: ["opt_leave"]
 }
 
-# ==============================
+# =========
 # MUSHROOM TURN-IN
-# ==============================
+# =========
 @opt_give_mushrooms {
     label: "I found some cave mushrooms."
     color: "complete"
@@ -297,9 +297,9 @@
     options: ["opt_leave"]
 }
 
-# ==============================
+# =========
 # LEAVE
-# ==============================
+# =========
 @opt_leave {
     label: "[Leave]"
     goto: "end"

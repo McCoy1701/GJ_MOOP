@@ -8,9 +8,9 @@
     image_path: "resources/assets/tiles/hole.png"
 }
 
-# ==============================
+# =========
 # ENTRY
-# ==============================
+# =========
 @start {
     start: true
     priority: 0
@@ -18,9 +18,9 @@
     options: ["opt_descend", "opt_back"]
 }
 
-# ==============================
+# =========
 # JUMP DOWN
-# ==============================
+# =========
 @opt_descend {
     label: "Jump down."
     color: "quest"
@@ -32,9 +32,9 @@
     options: ["opt_back"]
 }
 
-# ==============================
+# =========
 # BACK
-# ==============================
+# =========
 @opt_back {
     label: "[Continue]"
     goto: "end"

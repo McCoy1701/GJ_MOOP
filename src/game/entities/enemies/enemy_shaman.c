@@ -213,7 +213,7 @@ void EnemyShamanTick( Enemy_t* e, int player_row, int player_col,
 
   int allies = has_allies( all, count, e );
 
-  /* ======== SUPPORT MODE: allies alive ======== */
+  /* = SUPPORT MODE: allies alive = */
   if ( allies && ( can_see || e->chase_turns > 0 ) )
   {
     /* Totem cooldown tick */
@@ -240,7 +240,7 @@ void EnemyShamanTick( Enemy_t* e, int player_row, int player_col,
     return;
   }
 
-  /* ======== COMBAT MODE: no allies, fight like a rat ======== */
+  /* = COMBAT MODE: no allies, fight like a rat = */
   if ( !can_see && e->chase_turns <= 0 ) return; /* idle */
   if ( can_see && dist <= 1 ) return;             /* adjacent, attack handled */
 

@@ -7,9 +7,9 @@
     no_face: true
 }
 
-# ==============================
+# =========
 # CLASS-SPECIFIC STARTS
-# ==============================
+# =========
 @start_merc {
     start: true
     priority: 1
@@ -32,9 +32,9 @@
     options: ["opt_read_on_mage", "opt_leave"]
 }
 
-# ==============================
+# =========
 # MERCENARY PATH - Aldric's entries
-# ==============================
+# =========
 @opt_read_on_merc {
     label: "[Read on]"
     goto: "page_1_merc"
@@ -70,9 +70,9 @@
     options: ["opt_leave"]
 }
 
-# ==============================
+# =========
 # ROGUE PATH - Vessa's entries
-# ==============================
+# =========
 @opt_read_on_rogue {
     label: "[Read on]"
     goto: "page_1_rogue"
@@ -108,9 +108,9 @@
     options: ["opt_leave"]
 }
 
-# ==============================
+# =========
 # MAGE PATH - R.'s entries
-# ==============================
+# =========
 @opt_read_on_mage {
     label: "[Read on]"
     goto: "page_1_mage"
@@ -147,9 +147,9 @@
 }
 
 
-# ==============================
+# =========
 # LEAVE
-# ==============================
+# =========
 @opt_leave {
     label: "[Put it down]"
     goto: "end"

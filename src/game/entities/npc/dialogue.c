@@ -13,6 +13,7 @@
 #include "bank.h"
 #include "npc_relocate.h"
 #include "enemies.h"
+#include "victory.h"
 
 extern Player_t player;
 
@@ -611,6 +612,29 @@ static void DialogueDispatchAction( const char* a )
       NPCRelocate( dlg_npc_type, row, col, 1 );
       DialogueEnd();
     }
+  }
+
+  /* player_teleport_rel:DR,DC - move player relative to current position */
+  if ( strncmp( a, "player_teleport_rel:", 20 ) == 0 )
+  {
+    int dr = 0, dc = 0;
+    if ( sscanf( a + 20, "%d,%d", &dr, &dc ) == 2 )
+    {
+      float tw = 16.0f, th = 16.0f;
+      int cur_row = (int)( player.world_x / tw );
+      int cur_col = (int)( player.world_y / th );
+      int new_row = cur_row + dr;
+      int new_col = cur_col + dc;
+      PlayerSetWorldPos( new_row * tw + tw / 2.0f, new_col * th + th / 2.0f );
+      DialogueEnd();
+    }
+  }
+
+  /* victory - trigger the victory screen */
+  if ( strcmp( a, "victory" ) == 0 )
+  {
+    VictoryTrigger();
+    DialogueEnd();
   }
 
   /* boss_greta - despawn NPC, spawn Greta enemy + elder horror */

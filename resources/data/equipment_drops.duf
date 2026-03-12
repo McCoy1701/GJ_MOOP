@@ -1,8 +1,8 @@
 # Equipment - droppable / spawnable upgrades (non-starter)
 
-# ==============================
+# =========
 # MERCENARY
-# ==============================
+# =========
 @heavy_mace {
     name: "Heavy Mace"
     kind: "weapon"
@@ -106,9 +106,9 @@
     image_path: "resources/assets/equipment/blood_medal.png"
 }
 
-# ==============================
+# =========
 # ROGUE
-# ==============================
+# =========
 @serrated_blade {
     name: "Serrated Blade"
     kind: "weapon"
@@ -120,6 +120,8 @@
     class: "rogue"
     description: "Jagged edge cuts deep. A clean upgrade."
     color: [100, 200, 100, 255]
+    image_path: "resources/assets/equipment/serrated_blade.png"
+
 }
 @shadow_vest {
     name: "Shadow Vest"
@@ -209,9 +211,9 @@
     image_path: "resources/assets/equipment/viper_ring.png"
 }
 
-# ==============================
+# =========
 # MAGE
-# ==============================
+# =========
 @arcane_rod {
     name: "Arcane Rod"
     kind: "weapon"
@@ -312,9 +314,9 @@
     image_path: "resources/assets/equipment/surge_stone.png"
 }
 
-# ==============================
+# =========
 # UPGRADED TRINKETS (floor 3 shop)
-# ==============================
+# =========
 @venom_fang {
     name: "Venom Fang"
     kind: "trinket"
@@ -355,9 +357,9 @@
     color: [100, 100, 200, 255]
 }
 
-# ==============================
+# =========
 # COUNTING TRINKETS (floor 2)
-# ==============================
+# =========
 @fracture_knuckle {
     name: "Fracture Knuckle"
     kind: "trinket"
@@ -398,9 +400,9 @@
     color: [100, 100, 200, 255]
 }
 
-# ==============================
+# =========
 # UNIVERSAL
-# ==============================
+# =========
 @golden_ring {
     name: "Golden Ring"
     kind: "trinket"

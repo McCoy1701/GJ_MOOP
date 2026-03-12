@@ -5,9 +5,9 @@
     spawn_max: 6
 }
 
-# ==============================
+# =========
 # FOOD (Mercenary)
-# ==============================
+# =========
 @stale_bread {
     item_key: "bread"
     type: "consumable"
@@ -37,9 +37,9 @@
     class: "Mercenary"
 }
 
-# ==============================
+# =========
 # GADGETS (Rogue)
-# ==============================
+# =========
 @flint_arrow {
     item_key: "flint_arrow"
     type: "consumable"
@@ -69,9 +69,9 @@
     class: "Rogue"
 }
 
-# ==============================
+# =========
 # SCROLLS (Mage)
-# ==============================
+# =========
 @scroll_spark {
     item_key: "scroll_spark"
     type: "consumable"
@@ -101,9 +101,9 @@
     class: "Mage"
 }
 
-# ==============================
+# =========
 # UNIVERSAL
-# ==============================
+# =========
 @small_health_potion {
     item_key: "small_health_potion"
     type: "consumable"

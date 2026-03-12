@@ -8,9 +8,9 @@
     idle_cooldown: 6
 }
 
-# ==============================
+# =========
 # GREETINGS
-# ==============================
+# =========
 @greeting_merc {
     start: true
     priority: 1
@@ -60,9 +60,9 @@
     options: ["opt_who_are_you", "opt_robes", "opt_church_door", "opt_help_me", "opt_mayor_greta", "opt_leave"]
 }
 
-# ==============================
+# =========
 # WHO ARE YOU
-# ==============================
+# =========
 @opt_who_are_you {
     label: "Who are you?"
     goto: "who_reply"
@@ -88,9 +88,9 @@
     options: ["opt_help_me", "opt_church_door", "opt_leave"]
 }
 
-# ==============================
+# =========
 # THE ROBES
-# ==============================
+# =========
 @opt_robes {
     label: "Why are you dressed like that?"
     goto: "robes_reply"
@@ -100,9 +100,9 @@
     options: ["opt_who_are_you", "opt_church_door", "opt_help_me", "opt_leave"]
 }
 
-# ==============================
+# =========
 # THE CHURCH DOOR
-# ==============================
+# =========
 @opt_church_door {
     label: "What's behind the door to the north?"
     goto: "church_door_reply"
@@ -120,9 +120,9 @@
     options: ["opt_help_me", "opt_leave"]
 }
 
-# ==============================
+# =========
 # TRUST PATH — ESCORT
-# ==============================
+# =========
 @opt_help_me {
     label: "Can you help me get through?"
     color: "quest"
@@ -145,9 +145,9 @@
     goto: "end"
 }
 
-# ==============================
+# =========
 # TRUST PATH — BETRAYAL
-# ==============================
+# =========
 @betrayal_merc {
     start: true
     priority: 10
@@ -187,9 +187,9 @@
     goto: "end"
 }
 
-# ==============================
+# =========
 # DEFY PATH — MAYOR REVEAL
-# ==============================
+# =========
 @opt_mayor_greta {
     label: "...Mayor Greta?"
     color: "danger"
@@ -212,17 +212,17 @@
     goto: "end"
 }
 
-# ==============================
+# =========
 # LEAVE
-# ==============================
+# =========
 @opt_leave {
     label: "[Leave]"
     goto: "end"
 }
 
-# ==============================
+# =========
 # SECOND ENCOUNTER — UPPER SANCTUM
-# ==============================
+# =========
 @sanctum_betrayed {
     start: true
     priority: 20

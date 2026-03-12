@@ -5,9 +5,9 @@
     spawn_max: 6
 }
 
-# ==============================
+# =========
 # FOOD (Mercenary) - tier 3
-# ==============================
+# =========
 @iron_loaf {
     item_key: "iron_loaf"
     type: "consumable"
@@ -37,9 +37,9 @@
     class: "Mercenary"
 }
 
-# ==============================
+# =========
 # GADGETS (Rogue) - tier 3
-# ==============================
+# =========
 @steel_arrow {
     item_key: "steel_arrow"
     type: "consumable"
@@ -69,9 +69,9 @@
     class: "Rogue"
 }
 
-# ==============================
+# =========
 # SCROLLS (Mage) - tier 3
-# ==============================
+# =========
 @scroll_lightning {
     item_key: "scroll_lightning"
     type: "consumable"
@@ -101,9 +101,9 @@
     class: "Mage"
 }
 
-# ==============================
+# =========
 # UNIVERSAL
-# ==============================
+# =========
 @medium_health_potion {
     item_key: "medium_health_potion"
     type: "consumable"

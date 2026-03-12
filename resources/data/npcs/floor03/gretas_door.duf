@@ -9,9 +9,9 @@
     no_shadow: true
 }
 
-# ==============================
+# =========
 # LOCKED (default)
-# ==============================
+# =========
 @locked {
     start: true
     priority: 0
@@ -19,9 +19,9 @@
     options: ["opt_leave"]
 }
 
-# ==============================
+# =========
 # GRETA DEAD — UNLOCKED
-# ==============================
+# =========
 @unlocked {
     start: true
     priority: 5
@@ -30,9 +30,9 @@
     options: ["opt_open", "opt_leave"]
 }
 
-# ==============================
+# =========
 # OPTIONS
-# ==============================
+# =========
 @opt_open {
     label: "Open"
     color: "complete"
@@ -40,9 +40,9 @@
     goto: "end"
 }
 
-# ==============================
+# =========
 # LEAVE
-# ==============================
+# =========
 @opt_leave {
     label: "[Step away]"
     goto: "end"

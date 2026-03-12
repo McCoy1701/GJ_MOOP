@@ -8,9 +8,9 @@
     idle_cooldown: 8
 }
 
-# ==============================
+# =========
 # GREETINGS
-# ==============================
+# =========
 @greeting {
     start: true
     priority: 0
@@ -26,9 +26,9 @@
     options: ["opt_who", "opt_always", "opt_leave"]
 }
 
-# ==============================
+# =========
 # OPTIONS
-# ==============================
+# =========
 @opt_who {
     label: "Who are you?"
     goto: "who_reply"
@@ -78,9 +78,9 @@
     options: ["opt_what_happened", "opt_leave"]
 }
 
-# ==============================
+# =========
 # LEAVE
-# ==============================
+# =========
 @opt_leave {
     label: "[Leave]"
     goto: "end"

@@ -38,6 +38,7 @@
 #include "target_mode.h"
 #include "pause_menu.h"
 #include "game_over.h"
+#include "victory.h"
 #include "room_enumerator.h"
 #include "game_camera.h"
 #include "game_turns.h"
@@ -206,6 +207,7 @@ void GameSceneInit( void )
   NPCRelocateInit( npcs, &num_npcs );
 
   GameOverReset();
+  VictoryReset();
   SoundManagerPlayGame();
   TransitionIntroStart();
 }
@@ -228,6 +230,15 @@ static void gs_Logic( float dt )
   if ( GameCameraIntro( dt ) )         return;
   if ( FloorCutsceneUpdate( dt ) )   { GameCameraFollow(); return; }
   if ( NPCRelocateUpdate( dt ) )     { GameCameraFollow(); return; }
+
+  /* Victory - takes priority over everything */
+  if ( VictoryActive() )
+  {
+    int r = VictoryLogic( dt );
+    if ( r == 2 ) { a_WidgetCacheFree(); MainMenuInit(); return; }
+    GameCameraFollow();
+    return;
+  }
 
   /* Game over - takes priority over everything */
   GameOverCheck( dt );
@@ -656,4 +667,7 @@ static void gs_Draw( float dt )
 
   /* Game over - drawn on top of absolutely everything */
   GameOverDraw();
+
+  /* Victory - drawn on top of absolutely everything */
+  VictoryDraw();
 }

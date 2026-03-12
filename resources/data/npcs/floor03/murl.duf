@@ -8,9 +8,9 @@
     idle_cooldown: 8
 }
 
-# ==============================
+# =========
 # GREETINGS
-# ==============================
+# =========
 @greeting {
     start: true
     priority: 0
@@ -18,9 +18,9 @@
     options: ["opt_how", "opt_leave"]
 }
 
-# ==============================
+# =========
 # OPTIONS
-# ==============================
+# =========
 @opt_how {
     label: "How does a horror run a shop?"
     goto: "how_reply"
@@ -38,9 +38,9 @@
     options: ["opt_leave"]
 }
 
-# ==============================
+# =========
 # LEAVE
-# ==============================
+# =========
 @opt_leave {
     label: "[Step away]"
     goto: "end"

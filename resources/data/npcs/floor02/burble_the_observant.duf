@@ -8,9 +8,9 @@
     idle_cooldown: 5
 }
 
-# ==============================
+# =========
 # GREETINGS
-# ==============================
+# =========
 @greeting {
     start: true
     priority: 0
@@ -26,9 +26,9 @@
     options: ["opt_thistlewick_where", "opt_spider_quest", "opt_spider_quest_active", "opt_leave"]
 }
 
-# ==============================
+# =========
 # ARE YOU A GUARD
-# ==============================
+# =========
 @opt_guard {
     label: "Are you a guard?"
     goto: "guard_reply"
@@ -46,9 +46,9 @@
     options: ["opt_stop_me", "opt_about_raid", "opt_leave"]
 }
 
-# ==============================
+# =========
 # AREN'T YOU GOING TO STOP ME
-# ==============================
+# =========
 @opt_stop_me {
     label: "Aren't you going to stop me?"
     goto: "stop_me_reply"
@@ -74,9 +74,9 @@
     options: ["opt_leave"]
 }
 
-# ==============================
+# =========
 # THE RAID
-# ==============================
+# =========
 @opt_about_raid {
     label: "I heard the war goblins raided this place."
     require_flag: "quest_relic"
@@ -120,9 +120,9 @@
     options: ["opt_leave"]
 }
 
-# ==============================
+# =========
 # THISTLEWICK DIRECTIONS
-# ==============================
+# =========
 @opt_thistlewick_where {
     label: "Where's Thistlewick?"
     require_flag: "quest_relic"
@@ -143,9 +143,9 @@
     options: ["opt_thistlewick_where", "opt_guard", "opt_about_raid", "opt_leave"]
 }
 
-# ==============================
+# =========
 # SPIDER QUEST
-# ==============================
+# =========
 @opt_spider_quest {
     label: "What creature do you hate the most?"
     color: "quest"
@@ -242,9 +242,9 @@
     options: ["opt_leave"]
 }
 
-# ==============================
+# =========
 # LEAVE
-# ==============================
+# =========
 @opt_leave {
     label: "[Leave]"
     goto: "end"

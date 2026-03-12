@@ -9,9 +9,9 @@
     no_shadow: true
 }
 
-# ==============================
+# =========
 # PRE-LAURA (default)
-# ==============================
+# =========
 @start_default {
     start: true
     priority: 0
@@ -20,9 +20,9 @@
     options: ["opt_leave"]
 }
 
-# ==============================
+# =========
 # LAURA RELOCATED - can remove
-# ==============================
+# =========
 @greeting_can_remove {
     start: true
     priority: 1
@@ -32,9 +32,9 @@
     options: ["opt_remove", "opt_not_yet", "opt_leave"]
 }
 
-# ==============================
+# =========
 # OPTIONS
-# ==============================
+# =========
 @opt_remove {
     label: "Hop the barricade."
     color: "quest"
@@ -55,9 +55,9 @@
     options: ["opt_leave"]
 }
 
-# ==============================
+# =========
 # LEAVE
-# ==============================
+# =========
 @opt_leave {
     label: "[Step away]"
     goto: "end"

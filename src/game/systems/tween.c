@@ -10,9 +10,9 @@
 
 #include "tween.h"
 
-// ============================================================================
+// =============
 // CONSTANTS
-// ============================================================================
+// =============
 
 #define TWEEN_PI            3.14159265358979323846f
 #define TWEEN_MAX_DT        0.1f  // Clamp dt to 100ms (10 FPS) to prevent lag spike issues
@@ -35,11 +35,11 @@
 #define ELASTIC_PERIOD      0.3f        // Oscillation period
 #define ELASTIC_AMPLITUDE   1.0f        // Overshoot amount
 
-// ============================================================================
+// =============
 // EASING FUNCTIONS (Pure Math)
 // Reference: Robert Penner's Easing Functions
 // All functions take normalized time t in [0, 1] and return eased value in [0, 1]
-// ============================================================================
+// =============
 
 static float EaseLinear(float t) {
     return t;
@@ -115,9 +115,9 @@ static float EaseOutElastic(float t) {
            sinf((t - s) * (2.0f * TWEEN_PI) / p) + 1.0f;
 }
 
-// ============================================================================
+// =============
 // EASING DISPATCHER
-// ============================================================================
+// =============
 
 static float ApplyEasing(float t, TweenEasing_t easing) {
     switch (easing) {
@@ -135,9 +135,9 @@ static float ApplyEasing(float t, TweenEasing_t easing) {
     }
 }
 
-// ============================================================================
+// =============
 // POINTER RESOLUTION (For ARRAY_ELEM targets)
-// ============================================================================
+// =============
 
 static float* get_tween_target_pointer(Tween_t* tween) {
     if (!tween || !tween->active) {
@@ -170,9 +170,9 @@ static float* get_tween_target_pointer(Tween_t* tween) {
     return target_ptr;
 }
 
-// ============================================================================
+// =============
 // LIFECYCLE
-// ============================================================================
+// =============
 
 void InitTweenManager(TweenManager_t* manager) {
     if (!manager) return;
@@ -195,9 +195,9 @@ void CleanupTweenManager(TweenManager_t* manager) {
     manager->active_count = 0;
 }
 
-// ============================================================================
+// =============
 // TWEEN CREATION
-// ============================================================================
+// =============
 
 bool TweenFloat(TweenManager_t* manager, float* target, float end_value,
                 float duration, TweenEasing_t easing) {
@@ -305,9 +305,9 @@ bool TweenFloatInArray(TweenManager_t* manager,
     return true;
 }
 
-// ============================================================================
+// =============
 // UPDATE
-// ============================================================================
+// =============
 
 void UpdateTweens(TweenManager_t* manager, float dt) {
     if (!manager || dt <= 0.0f) return;
@@ -361,9 +361,9 @@ void UpdateTweens(TweenManager_t* manager, float dt) {
     }
 }
 
-// ============================================================================
+// =============
 // CONTROL
-// ============================================================================
+// =============
 
 int StopTweensForTarget(TweenManager_t* manager, float* target) {
     if (!manager || !target) return 0;
@@ -413,9 +413,9 @@ int GetActiveTweenCount(const TweenManager_t* manager) {
     return manager->active_count;
 }
 
-// ============================================================================
+// =============
 // UTILITY (Query & Debug)
-// ============================================================================
+// =============
 
 bool IsTweenActive(const TweenManager_t* manager, const float* target) {
     if (!manager || !target) return false;

@@ -1,0 +1,46 @@
+@npc {
+    name: "Crimson Altar"
+    glyph: "T"
+    color: [200, 80, 80, 255]
+    image_path: "resources/assets/npcs/end_table_red.png"
+    description: "A stone altar etched with crossed swords. It radiates heat."
+    action: "Examine"
+    no_face: true
+    no_shadow: true
+}
+
+# =========
+# WRONG CLASS
+# =========
+@wrong_class {
+    start: true
+    priority: 0
+    text: "The altar pulses with a fierce warmth, but it does not answer to you. Only a warrior's hand can wake it."
+    options: ["opt_leave"]
+}
+
+# =========
+# MERCENARY - VICTORY
+# =========
+@right_class {
+    start: true
+    priority: 5
+    require_class: "Mercenary"
+    text: "The altar blazes to life beneath your hand. The dungeon shudders. You have proven yourself."
+    options: ["opt_claim", "opt_leave"]
+}
+
+# =========
+# OPTIONS
+# =========
+@opt_claim {
+    label: "Claim your victory"
+    color: "complete"
+    action: "victory"
+    goto: "end"
+}
+
+@opt_leave {
+    label: "[Step away]"
+    goto: "end"
+}

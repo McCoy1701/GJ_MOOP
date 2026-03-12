@@ -1,6 +1,6 @@
-# ====================================================================
+# ============
 # PROJECT CONFIGURATION
-# ====================================================================
+# ============
 
 # Compiler and Tools
 CC = gcc
@@ -35,9 +35,9 @@ C_FLAGS = -std=c99 -Wall -Wextra $(CINC)
 NATIVE_C_FLAGS = $(C_FLAGS) -ggdb -lArchimedes -lDaedalus
 
 
-# ====================================================================
+# ============
 # EDITOR LIBRARY OBJECTS (Core C Files)
-# ====================================================================
+# ============
 
 EDITOR_SRCS = editor.c \
 							entity_editor.c\
@@ -75,17 +75,17 @@ MAIN_OBJ = $(OBJ_DIR_NATIVE)/main.o
 NATIVE_EXE_OBJS = $(ENTITY_EDITOR_LIB_OBJS) $(WORLD_EDITOR_LIB_OBJS) $(NPC_EDITOR_LIB_OBJS) $(NATIVE_LIB_OBJS) $(SPAWN_OBJS) $(MAIN_OBJ)
 
 
-# ====================================================================
+# ============
 # PHONY TARGETS
-# ====================================================================
+# ============
 
 .PHONY: all clean bear bearclean
 all: $(BIN_DIR)/native
 
 
-# ====================================================================
+# ============
 # DIRECTORY & UTILITY RULES
-# ====================================================================
+# ============
 
 # Ensure the directories exist before attempting to write files to them
 $(BIN_DIR) $(OBJ_DIR_NATIVE) $(OBJ_DIR_EE) $(OBJ_DIR_WE) $(OBJ_DIR_NE) $(OBJ_DIR_EM) $(INDEX_DIR) $(OBJ_DIR_SCENES):
@@ -102,9 +102,9 @@ bearclean:
 	rm compile_commands.json
 
 
-# ====================================================================
+# ============
 # COMPILATION RULES
-# ====================================================================
+# ============
 
 $(OBJ_DIR_NATIVE)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR_NATIVE)
 	$(CC) -c $< -o $@ $(NATIVE_C_FLAGS)
@@ -128,9 +128,9 @@ $(OBJ_DIR_NATIVE)/spawn_duf.o: $(GAME_DUNGEON)/spawn_duf.c | $(OBJ_DIR_NATIVE)
 	$(CC) -c $< -o $@ $(NATIVE_C_FLAGS)
 
 
-# ====================================================================
+# ============
 # LINKING RULES
-# ====================================================================
+# ============
 
 # Target: Native Executable
 $(BIN_DIR)/native: $(NATIVE_EXE_OBJS) | $(BIN_DIR)

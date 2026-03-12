@@ -9,9 +9,9 @@
     no_face: true
 }
 
-# ==============================
+# =========
 # CLASS-SPECIFIC GREETINGS
-# ==============================
+# =========
 @start_merc {
     start: true
     priority: 1
@@ -34,9 +34,9 @@
     options: ["opt_what_are_you", "opt_the_test", "opt_how_long", "opt_ready", "opt_leave"]
 }
 
-# ==============================
+# =========
 # WHAT ARE YOU
-# ==============================
+# =========
 @opt_what_are_you {
     label: "What are you?"
     goto: "what_reply"
@@ -56,9 +56,9 @@
     options: ["opt_the_test", "opt_ready", "opt_leave"]
 }
 
-# ==============================
+# =========
 # THE TEST
-# ==============================
+# =========
 @opt_the_test {
     label: "What is this place?"
     goto: "test_reply"
@@ -86,9 +86,9 @@
     options: ["opt_ready", "opt_leave"]
 }
 
-# ==============================
+# =========
 # HOW LONG
-# ==============================
+# =========
 @opt_how_long {
     label: "How long have you been here?"
     goto: "how_long_reply"
@@ -98,9 +98,9 @@
     options: ["opt_the_test", "opt_ready", "opt_leave"]
 }
 
-# ==============================
+# =========
 # READY
-# ==============================
+# =========
 @opt_ready {
     label: "I'm ready."
     color: "quest"
@@ -121,9 +121,9 @@
     goto: "end"
 }
 
-# ==============================
+# =========
 # LEAVE
-# ==============================
+# =========
 @opt_leave {
     label: "[Leave]"
     goto: "end"

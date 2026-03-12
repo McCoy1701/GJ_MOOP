@@ -1,6 +1,6 @@
-# ====================================================================
+# ============
 # PROJECT CONFIGURATION
-# ====================================================================
+# ============
 
 # Compiler and Tools
 CC = gcc
@@ -61,9 +61,9 @@ C_FLAGS = -std=c99 -Wall -Wextra $(CINC)
 NATIVE_C_FLAGS = $(C_FLAGS) -ggdb -lArchimedes -lDaedalus
 EMSCRIP_C_FLAGS = -std=gnu99 -Wall -Wextra $(CINC) -I$(ARCHIMEDES_INC) -I$(DAEDALUS_INC) $(EFLAGS)
 
-# ====================================================================
+# ============
 # GAME JAM MOOP LIBRARY OBJECTS (Core C Files)
-# ====================================================================
+# ============
 
 SCENES_SRCS = main_menu.c \
 							game_scene.c \
@@ -85,7 +85,8 @@ UI_SRCS     = inventory_ui.c \
 						shop_ui.c \
 						target_mode.c \
 						pause_menu.c \
-						game_over.c
+						game_over.c \
+						victory.c
 UTILS_SRCS  = draw_utils.c \
 							context_menu.c \
 							input_mode.c
@@ -173,9 +174,9 @@ EMCC_DUNGEON_OBJS = $(patsubst %.c, $(OBJ_DIR_EM_DUNGEON)/%.o, $(DUNGEON_SRCS))
 
 EMCC_EXE_OBJS = $(EMCC_SCENES_OBJS) $(EMCC_LIB_OBJS) $(EMCC_UI_OBJS) $(EMCC_UTILS_OBJS) $(EMCC_PLAYER_OBJS) $(EMCC_SYS_OBJS) $(EMCC_WORLD_OBJS) $(EMCC_ENEMIES_OBJS) $(EMCC_NPC_OBJS) $(EMCC_GROUND_OBJS) $(EMCC_DUNGEON_OBJS) $(EM_MAIN_OBJ)
 
-# ====================================================================
+# ============
 # PHONY TARGETS
-# ====================================================================
+# ============
 
 .PHONY: all em clean bear bearclean
 all: $(BIN_DIR)/native
@@ -183,9 +184,9 @@ all: $(BIN_DIR)/native
 # Emscripten Targets
 em: $(INDEX_DIR)/index
 
-# ====================================================================
+# ============
 # DIRECTORY & UTILITY RULES
-# ====================================================================
+# ============
 
 # Ensure the directories exist before attempting to write files to them
 $(BIN_DIR) $(OBJ_DIR_NATIVE) $(OBJ_DIR_EM) $(INDEX_DIR) $(OBJ_DIR_SCENES) $(OBJ_DIR_UI) $(OBJ_DIR_UTILS) $(OBJ_DIR_PLAYER) $(OBJ_DIR_SYS) $(OBJ_DIR_WORLD) $(OBJ_DIR_ENEMIES) $(OBJ_DIR_NPC) $(OBJ_DIR_GROUND) $(OBJ_DIR_DUNGEON) $(OBJ_DIR_EM_SCENES) $(OBJ_DIR_EM_UI) $(OBJ_DIR_EM_UTILS) $(OBJ_DIR_EM_PLAYER) $(OBJ_DIR_EM_SYS) $(OBJ_DIR_EM_WORLD) $(OBJ_DIR_EM_ENEMIES) $(OBJ_DIR_EM_NPC) $(OBJ_DIR_EM_GROUND) $(OBJ_DIR_EM_DUNGEON):
@@ -201,9 +202,9 @@ bear:
 bearclean:
 	rm compile_commands.json
 
-# ====================================================================
+# ============
 # COMPILATION RULES
-# ====================================================================
+# ============
 
 $(OBJ_DIR_SCENES)/%.o: $(SCENES_DIR)/%.c | $(OBJ_DIR_SCENES)
 	$(CC) -c $< -o $@ $(NATIVE_C_FLAGS)
@@ -242,9 +243,9 @@ $(OBJ_DIR_NATIVE)/main.o: $(SRC_DIR)/main.c | $(OBJ_DIR_NATIVE)
 	$(CC) -c $< -o $@ $(NATIVE_C_FLAGS)
 
 
-# ====================================================================
+# ============
 # COMPILATION RULES (Emscripten - ECC)
-# ====================================================================
+# ============
 
 $(OBJ_DIR_EM)/%.o: $(GAME_DIR)/%.c | $(OBJ_DIR_EM)
 	$(ECC) -c $< -o $@ $(EMSCRIP_C_FLAGS)
@@ -282,9 +283,9 @@ $(OBJ_DIR_EM_DUNGEON)/%.o: $(DUNGEON_DIR)/%.c | $(OBJ_DIR_EM_DUNGEON)
 $(OBJ_DIR_EM)/main.o: $(SRC_DIR)/main.c | $(OBJ_DIR_EM)
 	$(ECC) -c $< -o $@ $(EMSCRIP_C_FLAGS)
 
-# ====================================================================
+# ============
 # LINKING RULES
-# ====================================================================
+# ============
 
 # Target: Native Executable
 $(BIN_DIR)/native: $(NATIVE_EXE_OBJS) | $(BIN_DIR)

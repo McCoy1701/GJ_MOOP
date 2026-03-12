@@ -11,9 +11,9 @@
     damage: 2
 }
 
-# ==============================
+# =========
 # GREETINGS (priority-based)
-# ==============================
+# =========
 @greeting_merc {
     start: true
     priority: 1
@@ -100,9 +100,9 @@
     options: ["opt_leave"]
 }
 
-# ==============================
+# =========
 # NEED HELP - MAIN QUEST SPINE
-# ==============================
+# =========
 @opt_need_help {
     label: "Need any help?"
     color: "quest"
@@ -170,9 +170,9 @@
     options: ["opt_about_below", "opt_who_are_you", "opt_leave"]
 }
 
-# ==============================
+# =========
 # READY FOR KRAGTHAR?
-# ==============================
+# =========
 @opt_ready {
     label: "Am I ready for Kragthar?"
     goto: "ready_reply"
@@ -182,9 +182,9 @@
     options: ["opt_accept_relic", "opt_leave"]
 }
 
-# ==============================
+# =========
 # WHO ARE YOU (color, not required)
-# ==============================
+# =========
 @opt_who_are_you {
     label: "Who are you?"
     color: "lore"
@@ -212,9 +212,9 @@
     options: ["opt_why_exiled", "opt_need_help", "opt_whats_going_on", "opt_leave"]
 }
 
-# ==============================
+# =========
 # WHAT'S GOING ON (lore branch, hangs off spine)
-# ==============================
+# =========
 @opt_whats_going_on {
     label: "What's the situation down here?"
     goto: "situation_reply"
@@ -250,9 +250,9 @@
     options: ["opt_need_help", "opt_leave"]
 }
 
-# ==============================
+# =========
 # WHAT'S BELOW - Laura's fear
-# ==============================
+# =========
 @opt_about_below {
     label: "What did you see down there?"
     goto: "about_below_reply"
@@ -278,9 +278,9 @@
     options: ["opt_need_help", "opt_leave"]
 }
 
-# ==============================
+# =========
 # WHY ARE YOU FIGHTING
-# ==============================
+# =========
 @opt_why_fighting {
     label: "You actually fought with me. No one else does that."
     goto: "why_fighting_reply"
@@ -298,9 +298,9 @@
     options: ["opt_need_help", "opt_leave"]
 }
 
-# ==============================
+# =========
 # RELIC RETRIEVED
-# ==============================
+# =========
 @opt_what_say {
     label: "What should I tell Thistlewick?"
     require_flag: "has_relic"
@@ -311,9 +311,9 @@
     options: ["opt_about_below", "opt_leave"]
 }
 
-# ==============================
+# =========
 # WARNING DELIVERED
-# ==============================
+# =========
 @opt_told_him {
     label: "He listened. I don't think he will do anything."
     require_flag: "relic_returned"
@@ -334,9 +334,9 @@
     options: ["opt_leave"]
 }
 
-# ==============================
+# =========
 # WHAT NOW - POST WARNING
-# ==============================
+# =========
 @opt_what_now {
     label: "So what do we do now?"
     color: "quest"
@@ -372,9 +372,9 @@
     options: ["opt_go_south", "opt_leave"]
 }
 
-# ==============================
+# =========
 # GO SOUTH - triggers relocate
-# ==============================
+# =========
 @opt_go_south {
     label: "What about the south passage?"
     color: "quest"
@@ -401,9 +401,9 @@
     options: ["opt_leave"]
 }
 
-# ==============================
+# =========
 # LEAVE
-# ==============================
+# =========
 @opt_leave {
     label: "[Leave]"
     goto: "end"

@@ -1,0 +1,46 @@
+@npc {
+    name: "Emerald Altar"
+    glyph: "T"
+    color: [80, 200, 80, 255]
+    image_path: "resources/assets/npcs/end_table_green.png"
+    description: "A stone altar carved with twin daggers. Shadows pool around its base."
+    action: "Examine"
+    no_face: true
+    no_shadow: true
+}
+
+# =========
+# WRONG CLASS
+# =========
+@wrong_class {
+    start: true
+    priority: 0
+    text: "The altar stirs faintly, but its shadows recoil from your touch. Only a rogue's hand can wake it."
+    options: ["opt_leave"]
+}
+
+# =========
+# ROGUE - VICTORY
+# =========
+@right_class {
+    start: true
+    priority: 5
+    require_class: "Rogue"
+    text: "The shadows coil around your fingers and the altar hums. The dungeon knows your name."
+    options: ["opt_claim", "opt_leave"]
+}
+
+# =========
+# OPTIONS
+# =========
+@opt_claim {
+    label: "Claim your victory"
+    color: "complete"
+    action: "victory"
+    goto: "end"
+}
+
+@opt_leave {
+    label: "[Step away]"
+    goto: "end"
+}

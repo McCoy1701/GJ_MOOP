@@ -60,10 +60,10 @@
     color: [50, 220, 50, 255]
     description: "Easy to kill but leaves a poison pool on death for 3 turns."
 }
-# ==============================
+# =========
 # UNDEAD MINERS - one per class, same display name
 # Each drops a Treasure Map on death
-# ==============================
+# =========
 @miner_mat {
     name: "Undead Miner"
     glyph: "M"
@@ -104,9 +104,9 @@
     description: "The reanimated corpse of Miner Chris. Still clutching his pickaxe."
 }
 
-# ==============================
+# =========
 # ELITE ENEMIES - one per class, drops class weapon
-# ==============================
+# =========
 @elite_merc {
     name: "Fallen Knight"
     glyph: "K"
@@ -145,4 +145,5 @@
     gold_drop: 3
     color: [100, 100, 200, 255]
     description: "A wizard consumed by dungeon magic. His rod still glows."
+    image_path: "resources/assets/enemies/corrupt_wizard.png"
 }

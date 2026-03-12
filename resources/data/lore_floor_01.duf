@@ -1,12 +1,12 @@
-# ==============================
+# =========
 # LORE ENTRIES
 # Discovered through NPC dialogue, persists across runs.
 # Categories: Places, People, Enemies, History
-# ==============================
+# =========
 
-# ==============================
+# =========
 # PLACES
-# ==============================
+# =========
 @millhaven {
     title: "Millhaven"
     category: "Places"
@@ -33,9 +33,9 @@
     description: "Before the miners arrived, Millhaven was a quiet town of twelve. Old Thom burnt bread, Mayor Greta kept order, and Jonathon painted the same three trees at the edge of town. Then the miners cracked open the wrong wall."
 }
 
-# ==============================
+# =========
 # PEOPLE
-# ==============================
+# =========
 @mayor_greta {
     title: "Mayor Greta"
     category: "People"
@@ -62,9 +62,9 @@
     description: "A shop run by three rats in a trench coat calling themselves Steve Humanton. Gerald handles negotiations from the top, Pip manages finances from the middle, and Trevor provides structural support from the bottom. They collect items from dead adventurers and resell them at markup. Independent contractors."
 }
 
-# ==============================
+# =========
 # ENEMIES
-# ==============================
+# =========
 @the_turning {
     title: "The Turning"
     category: "Enemies"
@@ -91,9 +91,9 @@
     description: "Slow, blobby creatures that keep to themselves. Mostly harmless unless you leave metal lying around - they dissolve it overnight. Don't smell bad alive, but pop one and the vinegar stink gets in your armor and never comes out. Graf lost a belt buckle to one."
 }
 
-# ==============================
+# =========
 # HISTORY
-# ==============================
+# =========
 @colored_doors {
     title: "The Colored Doors"
     category: "History"
@@ -120,9 +120,9 @@
     description: "One of the two surviving miners left a journal at Old Thom's bakery. The last pages were filled with a single word written hundreds of times: 'OPEN.' Thom used the journal as kindling for his oven."
 }
 
-# ==============================
+# =========
 # ELITES
-# ==============================
+# =========
 @fallen_knight {
     title: "Aldric, the Fallen Knight"
     category: "Elites"

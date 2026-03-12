@@ -16,15 +16,15 @@
 #include <stdbool.h>
 #include <stddef.h>  // For size_t and offsetof
 
-// ============================================================================
+// =============
 // CONFIGURATION
-// ============================================================================
+// =============
 
 #define TWEEN_MAX_ACTIVE 32  // Maximum simultaneous tweens
 
-// ============================================================================
+// =============
 // EASING TYPES
-// ============================================================================
+// =============
 
 typedef enum TweenEasing {
     TWEEN_LINEAR,
@@ -39,9 +39,9 @@ typedef enum TweenEasing {
     TWEEN_EASE_OUT_ELASTIC,
 } TweenEasing_t;
 
-// ============================================================================
+// =============
 // TWEEN STRUCTURE
-// ============================================================================
+// =============
 
 typedef void (*TweenCallback_t)(void* user_data);
 
@@ -74,9 +74,9 @@ typedef struct Tween {
     void* user_data;          // User data passed to callback
 } Tween_t;
 
-// ============================================================================
+// =============
 // TWEEN MANAGER (Fixed Pool)
-// ============================================================================
+// =============
 
 typedef struct TweenManager {
     Tween_t tweens[TWEEN_MAX_ACTIVE];  // Fixed array of tweens
@@ -84,16 +84,16 @@ typedef struct TweenManager {
     int highest_active_slot;            // Highest index with active tween (-1 if none active)
 } TweenManager_t;
 
-// ============================================================================
+// =============
 // LIFECYCLE
-// ============================================================================
+// =============
 
 void InitTweenManager(TweenManager_t* manager);
 void CleanupTweenManager(TweenManager_t* manager);
 
-// ============================================================================
+// =============
 // TWEEN CREATION
-// ============================================================================
+// =============
 
 bool TweenFloat(TweenManager_t* manager, float* target, float end_value,
                 float duration, TweenEasing_t easing);
@@ -110,23 +110,23 @@ bool TweenFloatWithCallback(TweenManager_t* manager, float* target, float end_va
                              float duration, TweenEasing_t easing,
                              TweenCallback_t on_complete, void* user_data);
 
-// ============================================================================
+// =============
 // UPDATE
-// ============================================================================
+// =============
 
 void UpdateTweens(TweenManager_t* manager, float dt);
 
-// ============================================================================
+// =============
 // CONTROL
-// ============================================================================
+// =============
 
 int StopTweensForTarget(TweenManager_t* manager, float* target);
 int StopAllTweens(TweenManager_t* manager);
 int GetActiveTweenCount(const TweenManager_t* manager);
 
-// ============================================================================
+// =============
 // UTILITY (Query & Debug)
-// ============================================================================
+// =============
 
 bool IsTweenActive(const TweenManager_t* manager, const float* target);
 float GetTweenProgress(const TweenManager_t* manager, const float* target);
