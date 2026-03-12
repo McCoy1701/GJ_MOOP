@@ -19,6 +19,7 @@
 typedef struct
 {
   int (*walkable)(int,int);
+  int player_row, player_col;
   Enemy_t* all;
   int count;
 } SkelPathCtx_t;
@@ -28,7 +29,13 @@ static int skel_blocked( int r, int c, void* ctx )
   SkelPathCtx_t* p = ctx;
   if ( !p->walkable( r, c ) )              return 1;
   if ( EnemyBlockedByNPC( r, c ) )         return 1;
-  if ( EnemyAt( p->all, p->count, r, c ) ) return 1;
+  if ( EnemyAt( p->all, p->count, r, c ) )
+  {
+    /* Allow pathing through enemies adjacent to player */
+    int dr = abs( r - p->player_row );
+    int dc = abs( c - p->player_col );
+    if ( dr + dc > 1 ) return 1;
+  }
   return 0;
 }
 
@@ -38,6 +45,7 @@ static int skel_blocked( int r, int c, void* ctx )
    Returns 1 and sets out_dr/out_dc to the firing direction. */
 static int has_clear_shot( Enemy_t* e, int pr, int pc, int range,
                            int (*walkable)(int,int),
+                           Enemy_t* all, int count,
                            int* out_dr, int* out_dc )
 {
   if ( e->row == pr && e->col != pc )
@@ -52,6 +60,7 @@ static int has_clear_shot( Enemy_t* e, int pr, int pc, int range,
       cc += dc;
       if ( !walkable( e->row, cc ) ) return 0;
       if ( EnemyBlockedByNPC( e->row, cc ) ) return 0;
+      if ( cc != pc && EnemyMobileAt( all, count, e->row, cc ) ) return 0;
     }
     *out_dr = 0;
     *out_dc = dc;
@@ -69,6 +78,7 @@ static int has_clear_shot( Enemy_t* e, int pr, int pc, int range,
       cr += dr;
       if ( !walkable( cr, e->col ) ) return 0;
       if ( EnemyBlockedByNPC( cr, e->col ) ) return 0;
+      if ( cr != pr && EnemyMobileAt( all, count, cr, e->col ) ) return 0;
     }
     *out_dr = dr;
     *out_dc = 0;
@@ -82,7 +92,7 @@ static void move_toward( Enemy_t* e, int target_r, int target_c,
                          int (*walkable)(int,int),
                          Enemy_t* all, int count )
 {
-  SkelPathCtx_t ctx = { walkable, all, count };
+  SkelPathCtx_t ctx = { walkable, target_r, target_c, all, count };
   PathNode_t path[PATH_MAX_LEN];
   int len = PathfindAStar( e->row, e->col, target_r, target_c,
                            EnemyGridW(), EnemyGridH(),
@@ -231,7 +241,8 @@ void EnemySkeletonTick( Enemy_t* e, int player_row, int player_col,
       int shot_dr, shot_dc;
       if ( can_see
            && has_clear_shot( e, player_row, player_col, t->range,
-                              walkable, &shot_dr, &shot_dc ) )
+                              walkable, all, count,
+                              &shot_dr, &shot_dc ) )
       {
         e->ai_dir_row = shot_dr;
         e->ai_dir_col = shot_dc;
@@ -239,9 +250,50 @@ void EnemySkeletonTick( Enemy_t* e, int player_row, int player_col,
         return;
       }
 
-      /* No shot - move toward player to get into position */
+      /* No shot - try to reposition to a tile that gives one */
       if ( can_see )
-        move_toward( e, player_row, player_col, walkable, all, count );
+      {
+        static const int dx[] = { 1, -1, 0, 0 };
+        static const int dy[] = { 0, 0, 1, -1 };
+        int found = 0;
+
+        if ( dist <= t->range )
+        {
+          /* Check each neighbor for a clear shot */
+          int start = rand() % 4;
+          for ( int i = 0; i < 4; i++ )
+          {
+            int d = ( start + i ) % 4;
+            int nr = e->row + dx[d];
+            int nc = e->col + dy[d];
+            if ( !walkable( nr, nc ) )            continue;
+            if ( EnemyAt( all, count, nr, nc ) ) continue;
+            if ( EnemyBlockedByNPC( nr, nc ) )   continue;
+
+            /* Temporarily move, check for shot, move back */
+            int orig_r = e->row, orig_c = e->col;
+            e->row = nr; e->col = nc;
+            int tmp_dr, tmp_dc;
+            int shot = has_clear_shot( e, player_row, player_col,
+                                       t->range, walkable,
+                                       all, count,
+                                       &tmp_dr, &tmp_dc );
+            e->row = orig_r; e->col = orig_c;
+
+            if ( shot )
+            {
+              e->row = nr;
+              e->col = nc;
+              found = 1;
+              break;
+            }
+          }
+        }
+
+        /* No adjacent tile gives a shot - approach instead */
+        if ( !found )
+          move_toward( e, player_row, player_col, walkable, all, count );
+      }
       else
         do_chase( e, walkable, all, count );
       break;

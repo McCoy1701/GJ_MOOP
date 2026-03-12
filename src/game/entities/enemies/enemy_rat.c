@@ -11,6 +11,7 @@
 typedef struct
 {
   int (*walkable)(int,int);
+  int player_row, player_col;
   Enemy_t* all;
   int count;
 } RatPathCtx_t;
@@ -20,7 +21,13 @@ static int rat_blocked( int r, int c, void* ctx )
   RatPathCtx_t* p = ctx;
   if ( !p->walkable( r, c ) )              return 1;
   if ( EnemyBlockedByNPC( r, c ) )         return 1;
-  if ( EnemyMobileAt( p->all, p->count, r, c ) ) return 1;
+  if ( EnemyMobileAt( p->all, p->count, r, c ) )
+  {
+    /* Allow pathing through enemies adjacent to player */
+    int dr = abs( r - p->player_row );
+    int dc = abs( c - p->player_col );
+    if ( dr + dc > 1 ) return 1;
+  }
   return 0;
 }
 
@@ -95,7 +102,7 @@ void EnemyBasicAITick( Enemy_t* e, int player_row, int player_col,
   }
 
   /* A* pathfinding toward best adjacent tile */
-  RatPathCtx_t ctx = { walkable, all, count };
+  RatPathCtx_t ctx = { walkable, player_row, player_col, all, count };
   PathNode_t path[PATH_MAX_LEN];
   int len = PathfindAStar( e->row, e->col, best_r, best_c,
                            EnemyGridW(), EnemyGridH(),

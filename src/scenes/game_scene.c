@@ -276,6 +276,8 @@ static void gs_Logic( float dt )
       if ( player.inventory[i].type == INV_MAP )
         InventoryRemove( i );
     g_current_floor++;
+    PlayerResetFirstStrike();
+    player.fs_visited = 0;
     a_WidgetCacheFree();
     GameSceneInit();
     return;

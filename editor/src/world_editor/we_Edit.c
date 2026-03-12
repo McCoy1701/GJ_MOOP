@@ -800,8 +800,8 @@ static void we_EditDraw( float dt )
     float view_y = app.g_viewport.y - app.g_viewport.h;
     int tw = g_map->tile_w;
     int th = g_map->tile_h;
-    float wx = originx + hover_grid_x * tw;
-    float wy = originy + hover_grid_y * th;
+    float wx = originx + hover_grid_x * tw + tw;
+    float wy = originy + hover_grid_y * th + th;
     float sx = ( wx - view_x ) * scale.y;
     float sy = ( wy - view_y ) * scale.y;
     float sw = tw * scale.y;
@@ -1288,8 +1288,8 @@ static void we_EditDraw( float dt )
       float view_y = app.g_viewport.y - app.g_viewport.h;
       int tw = g_map->tile_w;
       int th = g_map->tile_h;
-      float twx = originx + ctx_row * tw;
-      float twy = originy + ctx_col * th;
+      float twx = originx + ctx_row * tw + tw;
+      float twy = originy + ctx_col * th + th;
       float tsx = ( twx - view_x ) * scale.y;
       float tsy = ( twy - view_y ) * scale.y;
       float tsw = tw * scale.y;

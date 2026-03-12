@@ -4,6 +4,10 @@
 #include "placed_traps.h"
 #include "visibility.h"
 #include "defines.h"
+#include "items.h"
+#include "player.h"
+
+extern Player_t player;
 
 static PlacedTrap_t traps[MAX_PLACED_TRAPS];
 static int          num_traps = 0;
@@ -20,7 +24,7 @@ void PlacedTrapsInit( Console_t* con )
 }
 
 void PlacedTrapSpawn( int row, int col, int damage, int stun_turns,
-                      aImage_t* image )
+                      int cons_idx, aImage_t* image )
 {
   int slot = -1;
   for ( int i = 0; i < num_traps; i++ )
@@ -38,6 +42,7 @@ void PlacedTrapSpawn( int row, int col, int damage, int stun_turns,
   traps[slot].damage      = damage;
   traps[slot].stun_turns  = stun_turns;
   traps[slot].active      = 1;
+  traps[slot].cons_idx    = cons_idx;
   traps[slot].image       = image;
 }
 
@@ -54,6 +59,20 @@ PlacedTrap_t* PlacedTrapAt( int row, int col )
 void PlacedTrapRemove( PlacedTrap_t* trap )
 {
   trap->active = 0;
+}
+
+int PlacedTrapPickup( int row, int col )
+{
+  PlacedTrap_t* trap = PlacedTrapAt( row, col );
+  if ( !trap ) return 0;
+
+  int slot = InventoryAdd( INV_CONSUMABLE, trap->cons_idx );
+  if ( slot < 0 ) return 0;
+
+  ConsolePushF( console, (aColor_t){ 0x75, 0xa7, 0x43, 255 },
+                "You pick up your %s.", g_consumables[trap->cons_idx].name );
+  PlacedTrapRemove( trap );
+  return 1;
 }
 
 void PlacedTrapsDrawAll( aRectf_t vp_rect, GameCamera_t* cam,

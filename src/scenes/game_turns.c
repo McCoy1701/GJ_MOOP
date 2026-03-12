@@ -19,6 +19,7 @@
 #include "room_enumerator.h"
 #include "dialogue.h"
 #include "interactive_tile.h"
+#include "placed_traps.h"
 
 extern Player_t player;
 
@@ -244,6 +245,10 @@ void GameTurnsHandleTurnEnd( float dt, int turn_skipped )
       if ( room != player.last_room_id )
         PlayerSetRoom( room );
     }
+
+    /* Pick up your own traps by walking over them */
+    if ( !turn_skipped )
+      PlacedTrapPickup( frame_pr, frame_pc );
 
     /* Interactive tile checks (only on actual movement, not skipped turns) */
     if ( !turn_skipped )

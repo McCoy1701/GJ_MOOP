@@ -144,6 +144,9 @@ void WorldDraw( const int x_off, const int y_off,
 
     if ( has_viewport && !draw_ascii )
     {
+      draw_x += world->tile_w;
+      draw_y += world->tile_h;
+
       /*if ( x + world->tile_w < ( app.g_viewport.x - app.g_viewport.w ) ||
            x > ( app.g_viewport.x + app.g_viewport.w ) ||
            y + world->tile_h < ( app.g_viewport.x - app.g_viewport.w ) ||
@@ -234,8 +237,8 @@ void DrawSelected( World_t* world, dVec2_t* selected_pos,
                     &start_pos );
   
   aRectf_t select_rect = {
-    .x = (start_pos.x * world->tile_w) + world->originx,
-    .y = (start_pos.y * world->tile_h) + world->originy,
+    .x = (start_pos.x * world->tile_w) + world->originx + world->tile_w,
+    .y = (start_pos.y * world->tile_h) + world->originy + world->tile_h,
     .w = grid_w * world->tile_w,
     .h = grid_h * world->tile_h
   };

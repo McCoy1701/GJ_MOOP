@@ -20,6 +20,7 @@
 #include "utils.h"
 #include "world.h"
 #include "world_editor.h"
+#include "npc_editor.h"
 #include "item_catalog.h"
 
 static void ed_Logic( float );
@@ -28,6 +29,7 @@ static void ed_Draw( float );
 static void pending_world_action( void );
 static void pending_item_action( void );
 static void pending_entity_action( void );
+static void pending_npc_action( void );
 
 aColor_t master_colors[MAX_COLOR_GROUPS][48] = {0};
 Tileset_t* g_tile_sets[MAX_TILESETS] = {NULL};
@@ -75,12 +77,16 @@ void EditorInit( void )
 
     if ( strcmp( current->name, "entity" ) == 0 )
       current->action = pending_entity_action;
+
+    if ( strcmp( current->name, "npc" ) == 0 )
+      current->action = pending_npc_action;
   }
 }
 
 static void pending_world_action( void )  { pending_init = e_WorldEditorInit; }
 static void pending_item_action( void )   { pending_init = e_ItemEditorInit; }
 static void pending_entity_action( void ) { pending_init = e_EntityEditorInit; }
+static void pending_npc_action( void )    { pending_init = e_NPCEditorInit; }
 
 static void ed_Logic( float dt )
 {

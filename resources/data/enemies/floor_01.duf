@@ -51,7 +51,7 @@
     damage: 1
     defense: 0
     ai: "basic"
-    sight_range: 5
+    sight_range: 6
     image_path: "resources/assets/enemies/acid_slime.png"
     on_death: "poison_pool"
     pool_duration: 3

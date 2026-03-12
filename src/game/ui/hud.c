@@ -157,6 +157,9 @@ int HUDDrawTopBar( int in_combat )
     if ( strcmp( e->effect, "berserk" ) == 0 ) continue;
     if ( strcmp( e->effect, "poison" ) == 0 ) continue;
     if ( strcmp( e->effect, "amplify" ) == 0 ) continue;
+    if ( strcmp( e->effect, "dodge" ) == 0 ) continue;
+    if ( strcmp( e->effect, "armor_break" ) == 0 ) continue;
+    if ( strcmp( e->effect, "mana_shield" ) == 0 ) continue;
     if ( strcmp( e->effect, "companion" ) == 0 ) continue;
     snprintf( buf, sizeof( buf ), "%s(%d)", e->effect, e->effect_value );
     float tw = strlen( buf ) * 8.0f * TB_STAT_SCALE;

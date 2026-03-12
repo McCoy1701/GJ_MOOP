@@ -15,11 +15,13 @@ LIB_DIR    = lib
 INDEX_DIR  = index
 EE_DIR     = src/entity_editor
 WE_DIR     = src/world_editor
+NE_DIR     = src/npc_editor
 
 # Object Directories (Separated for different build types)
 OBJ_DIR_NATIVE = obj/native
 OBJ_DIR_EE     = obj/native/entity_editor
 OBJ_DIR_WE     = obj/native/world_editor
+OBJ_DIR_NE     = obj/native/npc_editor
 
 # Parent project directories (for shared spawn data)
 GAME_INC_DIR   = ../include
@@ -54,15 +56,23 @@ WORLD_EDITOR_SRCS = we_Creation.c\
 										we_Save.c\
 										we_Utils.c
 
+NPC_EDITOR_SRCS = npc_editor.c\
+								 ne_Browse.c\
+								 ne_Graph.c\
+								 ne_Layout.c\
+								 ne_Undo.c\
+								 ne_Edit.c
+
 NATIVE_LIB_OBJS = $(patsubst %.c, $(OBJ_DIR_NATIVE)/%.o, $(EDITOR_SRCS))
 ENTITY_EDITOR_LIB_OBJS = $(patsubst %.c, $(OBJ_DIR_EE)/%.o, $(ENTITY_EDITOR_SRCS))
 WORLD_EDITOR_LIB_OBJS = $(patsubst %.c, $(OBJ_DIR_WE)/%.o, $(WORLD_EDITOR_SRCS))
+NPC_EDITOR_LIB_OBJS = $(patsubst %.c, $(OBJ_DIR_NE)/%.o, $(NPC_EDITOR_SRCS))
 
 SPAWN_OBJS = $(OBJ_DIR_NATIVE)/spawn_data.o $(OBJ_DIR_NATIVE)/spawn_duf.o
 
 MAIN_OBJ = $(OBJ_DIR_NATIVE)/main.o
 
-NATIVE_EXE_OBJS = $(ENTITY_EDITOR_LIB_OBJS) $(WORLD_EDITOR_LIB_OBJS) $(NATIVE_LIB_OBJS) $(SPAWN_OBJS) $(MAIN_OBJ)
+NATIVE_EXE_OBJS = $(ENTITY_EDITOR_LIB_OBJS) $(WORLD_EDITOR_LIB_OBJS) $(NPC_EDITOR_LIB_OBJS) $(NATIVE_LIB_OBJS) $(SPAWN_OBJS) $(MAIN_OBJ)
 
 
 # ====================================================================
@@ -78,7 +88,7 @@ all: $(BIN_DIR)/native
 # ====================================================================
 
 # Ensure the directories exist before attempting to write files to them
-$(BIN_DIR) $(OBJ_DIR_NATIVE) $(OBJ_DIR_EE) $(OBJ_DIR_WE) $(OBJ_DIR_EM) $(INDEX_DIR) $(OBJ_DIR_SCENES):
+$(BIN_DIR) $(OBJ_DIR_NATIVE) $(OBJ_DIR_EE) $(OBJ_DIR_WE) $(OBJ_DIR_NE) $(OBJ_DIR_EM) $(INDEX_DIR) $(OBJ_DIR_SCENES):
 	mkdir -p $@
 
 clean:
@@ -103,6 +113,9 @@ $(OBJ_DIR_EE)/%.o: $(EE_DIR)/%.c | $(OBJ_DIR_EE)
 	$(CC) -c $< -o $@ $(NATIVE_C_FLAGS)
 
 $(OBJ_DIR_WE)/%.o: $(WE_DIR)/%.c | $(OBJ_DIR_WE)
+	$(CC) -c $< -o $@ $(NATIVE_C_FLAGS)
+
+$(OBJ_DIR_NE)/%.o: $(NE_DIR)/%.c | $(OBJ_DIR_NE)
 	$(CC) -c $< -o $@ $(NATIVE_C_FLAGS)
 
 $(OBJ_DIR_NATIVE)/main.o: $(SRC_DIR)/main.c | $(OBJ_DIR_NATIVE)

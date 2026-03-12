@@ -17,6 +17,7 @@
 #include "editor.h"
 #include "entity_editor.h"
 #include "items_editor.h"
+#include "npc_editor.h"
 #include "tile.h"
 #include "utils.h"
 #include "world.h"
@@ -80,6 +81,11 @@ void e_WorldEditorInit( void )
     if ( strcmp( current->name, "entity" ) == 0 )
     {
       current->action = e_EntityEditorInit;
+    }
+
+    if ( strcmp( current->name, "npc" ) == 0 )
+    {
+      current->action = e_NPCEditorInit;
     }
   }
 

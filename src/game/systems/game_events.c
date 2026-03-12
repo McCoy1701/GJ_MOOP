@@ -592,7 +592,7 @@ int GameEventResolveTarget( int consumable_idx, int inv_slot,
       return 0;
     }
 
-    PlacedTrapSpawn( target_row, target_col, dmg, 2, c->image );
+    PlacedTrapSpawn( target_row, target_col, dmg, 2, consumable_idx, c->image );
     ConsolePushF( con, hit_color, "You set a %s.", c->name );
 
     consume_scroll( inv_slot );

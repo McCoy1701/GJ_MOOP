@@ -65,6 +65,24 @@ disabled:"resources/assets/UI/button/Tan_Button_d.png"
 button_drop_offset:5
 fg:[0,0,0,255]
 bg:[79,143,186,100]
+[[WT_BUTTON.npc]]
+on_release:0
+(x,y):(260,10)
+label:"NPC"
+toggle_label:1
+boxed:1
+hidden:0
+padding:0
+texture:1
+(w,h):(20,20)
+background:"resources/assets/UI/button/Purple_Button.png"
+pressed:"resources/assets/UI/button/Purple_Button_p.png"
+hovering:"resources/assets/UI/button/Purple_Button_h.png"
+disabled:"resources/assets/UI/button/Purple_Button_d.png"
+(text_x,text_y):(3,3)
+button_drop_offset:5
+fg:[0,0,0,255]
+bg:[140,100,180,100]
 
 [WT_CONTAINER.entity_menu_bar]
 (x,y):(10,670)

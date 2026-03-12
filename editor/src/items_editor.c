@@ -6,6 +6,7 @@
 #include "editor.h"
 #include "world_editor.h"
 #include "entity_editor.h"
+#include "npc_editor.h"
 
 static void e_ItemEditorLogic( float );
 static void e_ItemEditorDraw( float );
@@ -38,8 +39,13 @@ void e_ItemEditorInit( void )
     {
       current->action = e_EntityEditorInit;
     }
+
+    if ( strcmp( current->name, "npc" ) == 0 )
+    {
+      current->action = e_NPCEditorInit;
+    }
   }
-  
+
 }
 
 static void e_ItemEditorLogic( float dt )

@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include <dirent.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -58,11 +59,11 @@ int e_GetCellAtMouseInViewport( const int width,   const int height,
   float world_mouse_x = ( app.mouse.x / scale.y ) + view_x;
   float world_mouse_y = ( app.mouse.y / scale.y ) + view_y;
 
-  float relative_x = world_mouse_x - originx;
-  float relative_y = world_mouse_y - originy;
+  float relative_x = world_mouse_x - originx - tile_w;
+  float relative_y = world_mouse_y - originy - tile_h;
 
-  int cell_x = (int)( relative_x / tile_w );
-  int cell_y = (int)( relative_y / tile_h );
+  int cell_x = (int)floorf( relative_x / tile_w );
+  int cell_y = (int)floorf( relative_y / tile_h );
   
   if ( cell_x >= 0 && cell_x < width &&
        cell_y >= 0 && cell_y < height )

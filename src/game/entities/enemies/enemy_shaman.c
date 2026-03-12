@@ -30,7 +30,13 @@ static int shaman_blocked( int r, int c, void* ctx )
   if ( !p->walkable( r, c ) )                     return 1;
   if ( r == p->player_row && c == p->player_col )  return 1;
   if ( EnemyBlockedByNPC( r, c ) )                 return 1;
-  if ( EnemyMobileAt( p->all, p->count, r, c ) )   return 1;
+  if ( EnemyMobileAt( p->all, p->count, r, c ) )
+  {
+    /* Allow pathing through enemies adjacent to player */
+    int dr = abs( r - p->player_row );
+    int dc = abs( c - p->player_col );
+    if ( dr + dc > 1 ) return 1;
+  }
   return 0;
 }
 

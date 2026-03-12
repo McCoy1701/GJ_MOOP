@@ -8,6 +8,7 @@
 #include "spell_vfx.h"
 #include "console.h"
 #include "game_events.h"
+#include "room_enumerator.h"
 
 #define STONE_HEAL_AMOUNT  2
 #define STONE_HEAL_RANGE   8   /* Manhattan distance */
@@ -102,6 +103,12 @@ void EnemyStoneRangedTick( Enemy_t* e, int player_row, int player_col,
     { gk_alive = 1; break; }
   }
   if ( !gk_alive ) { s_stone_tgt_active = 0; return; }
+
+  /* Only attack when the player is in the same room as the stone */
+  int stone_room  = RoomAt( e->row, e->col );
+  int player_room = RoomAt( player_row, player_col );
+  if ( stone_room <= 0 || player_room != stone_room )
+  { s_stone_tgt_active = 0; e->ai_state = SST_CHARGE1; return; }
 
   switch ( e->ai_state )
   {
